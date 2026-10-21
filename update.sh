@@ -59,10 +59,12 @@ elif have wget; then DOWNLOADER="wget"
 else die "需要 curl 或 wget"
 fi
 
+# 解压器优先级：python3（正确处理中文文件名）→ ditto（macOS 原生）→ unzip
 UNZIPPER=""
-if have unzip; then UNZIPPER="unzip"
-elif have python3; then UNZIPPER="python"
-else die "需要 unzip 或 python3"
+if have python3; then UNZIPPER="python"
+elif have ditto; then UNZIPPER="ditto"
+elif have unzip; then UNZIPPER="unzip"
+else die "需要 python3 / ditto / unzip 之一"
 fi
 
 if have rsync; then COPYER="rsync"; else COPYER="cp"; fi
@@ -97,17 +99,20 @@ ok "已下载 $(awk -v s="$SIZE" 'BEGIN{printf "%.1f", s/1024/1024}') MB"
 say "[2/4] 解压…"
 SRC="$TMP/src"
 mkdir -p "$SRC"
-if [ "$UNZIPPER" = "unzip" ]; then
-  unzip -q "$ZIP" -d "$SRC" || die "解压失败（zip 可能损坏）"
-else
-  python3 -m zipfile -e "$ZIP" "$SRC" || die "解压失败"
-fi
+case "$UNZIPPER" in
+  python) python3 -m zipfile -e "$ZIP" "$SRC" || die "解压失败（zip 可能损坏）" ;;
+  ditto)  ditto -x -k "$ZIP" "$SRC"             || die "解压失败（zip 可能损坏）" ;;
+  unzip)  unzip -q "$ZIP" -d "$SRC"            || die "解压失败（zip 可能损坏）" ;;
+esac
 
 # GitHub 的 zip 顶层会多一层 bubu-main/
 TOP="$(find "$SRC" -mindepth 1 -maxdepth 1 -type d | head -1)"
 [ -n "$TOP" ] || die "解压后没有目录，zip 结构异常"
-[ -f "$TOP/package.json" ] || warn "解压目录里没有 package.json，确认仓库结构没变"
-ok "解压到 $(basename "$TOP")"
+if [ ! -f "$TOP/package.json" ]; then
+  MAYBE="$(find "$SRC" -maxdepth 3 -name package.json -not -path '*/node_modules/*' | head -1)"
+  [ -n "$MAYBE" ] && TOP="$(dirname "$MAYBE")" || warn "没找到 package.json，确认仓库结构没变"
+fi
+ok "解压到 $(basename "$TOP")（$(find "$TOP" -type f | wc -l | tr -d ' ') 个文件）"
 
 # ---------- 3. 组装排除规则 ----------
 EXCLUDES=(
@@ -131,9 +136,9 @@ CHANGED="$TMP/changed.log"
 if [ "$COPYER" = "rsync" ]; then
   rsync "${RSYNC_ARGS[@]}" "$TOP"/ "$ROOT"/ > "$CHANGED" 2>&1 || die "覆盖失败"
   # itemize 输出：>f 新增/更新，*deleting 删除
-  ADDED=$(grep -c '^>f+++++++++' "$CHANGED" || true)
-  UPDATED=$(grep -c '^>f' "$CHANGED" || true)
-  UPDATED=$(( UPDATED - ADDED > 0 ? UPDATED - ADDED : 0 ))
+  ADDED=$(awk '/^>f\+{9}/{n++} END{print n+0}' "$CHANGED")
+  CHANGED_FILES=$(awk '/^>f/{n++} END{print n+0}' "$CHANGED")
+  UPDATED=$(( CHANGED_FILES - ADDED ))
   show_list="$(grep -E '^>f|^\*deleting' "$CHANGED" | sed -E 's/^>f[.+]+\s+//; s/^\*deleting\s+/删除 /' | head -40 || true)"
 else
   warn "没有 rsync，用 cp 覆盖（不会删除多余文件）"
