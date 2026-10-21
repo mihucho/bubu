@@ -1,0 +1,2125 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>布布的学习小天地 · 前端重设计原型 v2</title>
+<style>
+/* ============ 设计令牌（对齐 DESIGN.md / 最终方案 v2.0） ============ */
+:root{
+  /* 孩子端品牌 */
+  --k-pink:#FF85C1; --k-pink-soft:#FFB3D9; --k-pink-50:#FFD7EC; --k-pink-tint:#FFF5FA;
+  --k-purple:#A855F7; --k-purple-soft:#C4A6F5; --k-purple-50:#EDE0FD;
+  --k-grad-hero:linear-gradient(180deg,#FFB3D9 0%,#C4A6F5 100%);
+  --k-grad-cta:linear-gradient(135deg,#DB2777 0%,#7C3AED 100%);
+  /* 文字 */
+  --k-text:#4A2666; --k-text-strong:#2E1065; --k-text-sub:#7C4FB0;
+  --k-bg:linear-gradient(180deg,#FFF0F5 0%,#F3E8FF 100%);
+  --k-surface:#FFFFFF; --k-surface-2:#FBF7FF; --k-border:#FFD7EC;
+  /* 语义 */
+  --k-gold:#FFD700; --k-gold-text:#A16207; --k-success:#22C55E; --k-success-text:#15803D; --k-success-bg:#F0FDF4;
+  /* 尺寸 — 孩子端 */
+  --tap-primary:72px; --tap-secondary:56px; --tap-gap:16px;
+  --nav-h:72px; --nav-label:12px; --nav-safe-gap:12px;
+  --task-row-h:88px; --chip-plus:56px; --chest-cell:32px; --chest-seg-w:24px; --chest-seg-h:20px;
+  --hero-h:132px; --bubble-h:76px; --world-h:86px;
+  --fs-display:32px; --fs-title:22px; --fs-card:18px; --fs-body:16px; --fs-note:14px; --fs-micro:12px;
+  /* 形 */
+  --r-sm:14px; --r-md:18px; --r-card:24px; --r-lg:30px; --r-pill:999px;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-8:32px;
+  /* clay 双阴影：外层彩色投影（抬升）+ 内层顶部高光（膨胀感） */
+  --clay-card:0 10px 22px rgba(150,90,205,.13), 0 2px 6px rgba(150,90,205,.07),
+              inset 0 2px 0 rgba(255,255,255,.95);
+  --clay-card-press:0 4px 10px rgba(150,90,205,.12), 0 1px 3px rgba(150,90,205,.08),
+              inset 0 2px 0 rgba(255,255,255,.85);
+  --clay-float:0 18px 40px rgba(120,60,170,.22), inset 0 3px 0 rgba(255,255,255,.9);
+  --clay-ico:0 3px 8px rgba(150,90,205,.16), inset 0 1px 0 rgba(255,255,255,.95);
+  --shadow-card:var(--clay-card);
+  --shadow-float:var(--clay-float);
+  /* 家长端 */
+  --p-bg:#F8F9FB; --p-surface:#FFF; --p-border:#E7E5EE;
+  --p-text:#1B1230; --p-text-sub:#6B6480; --p-accent:#7C3AED; --p-accent-weak:#F3E8FF;
+  --p-control:40px; --p-control-sm:36px; --p-fs-body:14px;
+  /* 孩子主色 */
+  --kid-a:#FF85C1; --kid-b:#5AA9E6; --kid-c:#4ADE80; --kid-d:#FBBF24;
+}
+.ic,.av-ic{display:block}
+.hero .name small .ic{display:inline-block;vertical-align:-3px;margin-left:3px}
+.tc,.give,.pmeta,.ws{display:inline-flex;align-items:center;gap:3px}
+.prow .ic,.kv .ic,.pps .ic{display:inline-block;vertical-align:-2px;margin-right:2px}
+.pcard .pav{width:40px;height:40px}
+.pcard .pav .av-ic{width:32px;height:32px}
+.stamp .ic{margin:0}
+.ring .av-ic{width:52px;height:52px}
+.av .av-ic{width:44px;height:44px}
+.pav .av-ic{width:26px;height:26px}
+.cam{display:inline-flex;align-items:center;gap:2px}
+.ws .ic,.mb .ic{display:inline-block;vertical-align:-2px;margin-right:2px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{
+  font-family:"HarmonyOS Sans SC","MiSans","PingFang SC","Noto Sans SC",system-ui,sans-serif;
+  background:#EFEAF6;color:var(--k-text);display:flex;height:100vh;overflow:hidden;
+  font-variant-numeric:tabular-nums;
+}
+button{font-family:inherit;border:0;background:none;cursor:pointer;color:inherit}
+/* ============ 评审台布局 ============ */
+.rail{width:212px;flex:0 0 212px;background:#fff;border-right:1px solid #E7E5EE;padding:16px 12px;overflow:auto}
+.rail h1{font-size:13px;margin:0 0 4px;color:#1B1230}
+.rail .sub{font-size:11px;color:#6B6480;margin-bottom:14px;line-height:1.5}
+.rail .grp{font-size:10px;letter-spacing:.04em;color:#9A93AC;margin:16px 0 6px}
+.rail button{display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;border-radius:10px;font-size:12.5px;color:#1B1230;text-align:left;line-height:1.35}
+.rail button:hover{background:#F6F4FB}
+.rail button.on{background:var(--p-accent-weak);color:#6D28D9;font-weight:600}
+.rail .dot{width:6px;height:6px;border-radius:50%;background:#D6CFE6}
+.rail button.on .dot{background:#7C3AED}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:8px;overflow:auto}
+.notes{width:264px;flex:0 0 264px;background:#fff;border-left:1px solid #E7E5EE;padding:18px 16px;overflow:auto;font-size:12px;line-height:1.65;color:#4B4360}
+.notes h2{font-size:13px;margin:0 0 8px;color:#1B1230}
+.notes h3{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#9A93AC;margin:16px 0 6px}
+.notes ul{margin:0;padding-left:16px}
+.notes code{background:#F3EFFA;padding:1px 5px;border-radius:5px;font-size:11px;color:#6D28D9}
+.notes .tag{display:inline-block;background:#F3E8FF;color:#6D28D9;border-radius:6px;padding:1px 7px;font-size:10.5px;margin:0 4px 4px 0}
+/* ============ 手机壳 ============ */
+.phone{
+  width:375px;height:min(780px,calc(100vh - 16px));border-radius:38px;background:#111;padding:10px;
+  box-shadow:0 24px 60px rgba(40,20,70,.28);flex:0 0 auto;
+}
+.screen{
+  width:100%;height:100%;border-radius:29px;overflow:hidden;position:relative;
+  background:
+    radial-gradient(120% 60% at 12% 0%, #FFE4F1 0%, transparent 55%),
+    radial-gradient(110% 70% at 96% 18%, #EDE0FD 0%, transparent 60%),
+    #F7F2FD;
+  display:flex;flex-direction:column;
+}
+/* 状态条省略（规范：孩子端不显示系统状态栏内容） */
+.body{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
+.body::-webkit-scrollbar{display:none}
+/* ============ 头图 ============ */
+.hero{
+  height:var(--hero-h);background:var(--k-grad-hero);padding:18px 16px 0;
+  display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden;
+}
+.hero .name{font-size:var(--fs-title);font-weight:800;color:var(--k-text-strong);letter-spacing:.2px;
+  text-shadow:0 1px 0 rgba(255,255,255,.55)}
+.hero .name small{font-size:var(--fs-note);font-weight:500;opacity:.75;margin-left:4px}
+.chest{background:rgba(255,255,255,.62);border:1.5px solid rgba(255,255,255,.85);border-radius:var(--r-md);padding:10px 12px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9), 0 4px 12px rgba(120,60,160,.10)}
+.chest .row{display:flex;align-items:center;gap:6px}
+.cell{width:var(--chest-cell);height:var(--chest-cell);border-radius:10px;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.55);border:2px solid rgba(168,85,247,.22);font-size:15px;transition:.35s}
+.cell.open{background:linear-gradient(170deg,#FFEBA8,#FFC53D);border-color:#F2A500;
+  box-shadow:0 3px 10px rgba(240,165,0,.38), inset 0 2px 0 rgba(255,255,255,.8)}
+.chest .left{margin-left:auto;font-size:var(--fs-note);font-weight:600;color:var(--k-text-strong)}
+.chest .bar{height:8px;border-radius:4px;background:rgba(255,255,255,.55);margin-top:8px;overflow:hidden}
+.chest .bar i{display:block;height:100%;width:37.5%;border-radius:4px;background:linear-gradient(90deg,#FF85C1,#A855F7);transition:width .5s}
+/* ============ 布布说 ============ */
+.bubble{
+  height:var(--bubble-h);margin:-12px 12px 0;background:#fff;border-radius:var(--r-card);
+  box-shadow:0 6px 14px rgba(150,90,205,.10), inset 0 2px 0 rgba(255,255,255,.95);border:1.5px solid rgba(255,255,255,.9);display:flex;align-items:center;gap:10px;padding:0 14px;
+  font-size:var(--fs-note);font-weight:500;color:var(--k-text);cursor:pointer;
+}
+.bubble .ava{width:36px;height:36px;border-radius:50%;background:var(--k-purple-50);flex:0 0 36px;
+  display:flex;align-items:center;justify-content:center;font-size:18px}
+.bubble .txt{flex:1;line-height:1.45}
+.bubble .arrow{color:var(--k-text-sub);font-size:16px}
+/* ============ 任务区 ============ */
+.sech{display:flex;align-items:baseline;justify-content:space-between;padding:22px 16px 10px}
+.sech span{font-size:18px;font-weight:800;color:var(--k-text)}
+.sech em{font-style:normal;font-size:12px;font-weight:700;color:var(--k-text-sub)}
+.cyc{font-size:10.5px;font-weight:700;color:#8B7FA8;background:#F4EEFB;border-radius:6px;padding:1px 6px}
+.sec{padding:var(--sp-5) var(--sp-4) var(--sp-2);font-size:var(--fs-card);font-weight:700;color:var(--k-text)}
+.tasks{padding:0 var(--sp-4) 0;display:flex;flex-direction:column;gap:var(--sp-3)}
+.task{
+  height:var(--task-row-h);background:#fff;border:1.5px solid rgba(255,255,255,.9);border-radius:var(--r-card);
+  display:flex;align-items:center;gap:var(--sp-3);padding:0 var(--sp-3) 0 var(--sp-4);
+  box-shadow:var(--clay-card);cursor:pointer;
+  transition:transform .16s cubic-bezier(.34,1.4,.64,1), box-shadow .16s ease, background .2s;
+  position:relative;overflow:visible;
+}
+.task:active{transform:translateY(2px) scale(.985);box-shadow:var(--clay-card-press);background:var(--k-pink-tint)}
+.task.near{border-color:rgba(255,133,193,.55);box-shadow:0 0 0 3px rgba(255,133,193,.18), var(--clay-card)}
+.task.done{background:var(--k-success-bg);border-color:rgba(34,197,94,.5);box-shadow:0 10px 22px rgba(34,197,94,.14), inset 0 2px 0 rgba(255,255,255,.9)}
+.task .ico{position:relative;width:44px;height:44px;border-radius:15px;display:flex;align-items:center;justify-content:center;
+  color:#fff;flex:0 0 44px;
+  background:linear-gradient(180deg,#BE97F2,#8E5BE0);
+  box-shadow:0 5px 12px rgba(142,91,224,.30), inset 0 2px 0 rgba(255,255,255,.45), inset 0 -3px 6px rgba(90,40,150,.18);
+  transition:transform .18s cubic-bezier(.34,1.5,.64,1)}
+.ico.i-book{background:linear-gradient(180deg,#BE97F2,#8E5BE0);box-shadow:0 5px 12px rgba(142,91,224,.30), inset 0 2px 0 rgba(255,255,255,.45)}
+.ico.i-bag{background:linear-gradient(180deg,#FFC98F,#F29434);box-shadow:0 5px 12px rgba(242,148,52,.30), inset 0 2px 0 rgba(255,255,255,.5)}
+.ico.i-broom{background:linear-gradient(180deg,#FFB0D4,#EF5F9E);box-shadow:0 5px 12px rgba(239,95,158,.30), inset 0 2px 0 rgba(255,255,255,.5)}
+.ico.i-calc{background:linear-gradient(180deg,#9AD4FF,#4E9FE8);box-shadow:0 5px 12px rgba(78,159,232,.30), inset 0 2px 0 rgba(255,255,255,.5)}
+.ico.i-egg{background:linear-gradient(180deg,#FFE08A,#F2B21A);box-shadow:0 5px 12px rgba(242,178,26,.30), inset 0 2px 0 rgba(255,255,255,.5)}
+.task:active .ico{transform:scale(.94)}
+.task .ico img{width:100%;height:100%;object-fit:cover;border-radius:12px}
+.task .mid{flex:1;min-width:0}
+.task .ttl{font-size:var(--fs-body);font-weight:700;color:var(--k-text);display:flex;align-items:center;gap:6px;line-height:1.25}
+.task .cam{font-size:11px;background:var(--k-purple-50);color:var(--k-text-sub);border-radius:6px;padding:1px 5px;font-weight:600}
+.task .cam.req{background:#DB2777;color:#fff}
+.task .meta{display:flex;align-items:center;gap:6px;margin-top:5px;white-space:nowrap;overflow:hidden}
+.dots{display:flex;gap:3px;flex:0 0 auto}
+.dots i{width:9px;height:9px;border-radius:50%;background:#EADCF7;display:block}
+.dots i.on{background:var(--k-purple)}
+.task.done .dots i.on{background:var(--k-success)}
+.task.done::after{content:"";position:absolute;left:-6px;top:-6px;width:22px;height:22px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #7DE7A3, #22C55E 70%);
+  box-shadow:0 3px 8px rgba(34,197,94,.45), inset 0 2px 0 rgba(255,255,255,.55);
+  -webkit-mask:radial-gradient(circle, transparent 45%, #000 46%);
+  mask:radial-gradient(circle, transparent 45%, #000 46%)}
+.task.done::before{content:"";position:absolute;left:1px;top:2px;width:8px;height:5px;z-index:2;
+  border-left:2.4px solid #fff;border-bottom:2.4px solid #fff;transform:rotate(-45deg)}
+.give{font-size:var(--fs-micro);font-weight:600;color:var(--k-gold-text)}
+.task.done .give{color:var(--k-success-text)}
+.plus{
+  width:var(--chip-plus);height:var(--chip-plus);border-radius:var(--r-pill);flex:0 0 var(--chip-plus);
+  background:var(--k-grad-cta);color:#fff;font-size:15px;font-weight:800;letter-spacing:.02em;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 14px rgba(219,39,119,.34), inset 0 2px 0 rgba(255,255,255,.45);
+  transition:transform .16s cubic-bezier(.34,1.5,.64,1), box-shadow .16s ease;
+}
+.plus:active{transform:translateY(2px) scale(.94);box-shadow:0 2px 6px rgba(219,39,119,.30), inset 0 2px 0 rgba(255,255,255,.35)}
+.task.done .plus{background:#E7F8EC;color:var(--k-success-text);box-shadow:none;font-size:12px}
+.task .stamp{position:absolute;right:64px;top:50%;transform:translateY(-50%) scale(1.6);opacity:0;
+  font-size:22px;pointer-events:none;transition:.3s}
+.task .stamped .stamp{opacity:1;transform:translateY(-50%) scale(1)}
+.thumb{position:absolute;right:-6px;bottom:-6px;width:22px;height:22px;border-radius:7px;z-index:2;object-fit:cover;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+/* 飞行星星 */
+.fly{position:fixed;width:18px;height:18px;z-index:999;pointer-events:none;font-size:18px}
+/* ============ 我的小世界 ============ */
+.world{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-3);padding:var(--sp-4) var(--sp-4) 88px}
+.wcard{height:var(--world-h);background:#fff;border-radius:var(--r-card);border:1.5px solid rgba(255,255,255,.9);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  box-shadow:0 5px 12px rgba(150,90,205,.10), inset 0 2px 0 rgba(255,255,255,.95);cursor:pointer;
+  transition:transform .16s cubic-bezier(.34,1.4,.64,1), box-shadow .16s}
+.wcard:active{transform:translateY(2px) scale(.98);box-shadow:var(--clay-card-press)}
+.wcard .wi{display:flex;align-items:center;justify-content:center}
+.wcard .wt{font-size:var(--fs-note);font-weight:700;color:var(--k-text)}
+.wcard .ws{font-size:11px;color:var(--k-text-sub)}
+/* ============ 导航 ============ */
+.nav{height:var(--nav-h);background:#fff;border-top:1px solid rgba(255,255,255,.9);
+  box-shadow:0 -6px 18px rgba(150,90,205,.10);display:grid;grid-template-columns:repeat(5,1fr);
+  padding-bottom:env(safe-area-inset-bottom);position:relative}
+.nav::before{content:"";position:absolute;top:-12px;left:0;right:0;height:12px}
+.nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:56px;
+  font-size:var(--nav-label);color:var(--k-text-sub)}
+.nav button.on{color:#DB2777;font-weight:700}
+.nav svg{width:26px;height:26px;stroke-width:2.3;fill:none;stroke:currentColor}
+/* ============ 弹层 ============ */
+.sheet{
+  position:absolute;inset:0;background:rgba(27,18,48,.45);display:none;align-items:flex-end;z-index:60;
+}
+.sheet.on{display:flex}
+.sheet .panel{width:100%;background:#fff;border-radius:var(--r-lg) var(--r-lg) 0 0;padding:18px 18px 26px;
+  animation:up .3s cubic-bezier(.32,.72,0,1)}
+@keyframes up{from{transform:translateY(40px);opacity:.6}to{transform:none;opacity:1}}
+.sheet h3{margin:0 0 4px;font-size:var(--fs-card);color:var(--k-text)}
+.sheet p.hint{margin:0 0 14px;font-size:var(--fs-note);color:var(--k-text-sub);line-height:1.5}
+.sheet .drop{height:220px;border-radius:var(--r-md);border:2px dashed var(--k-pink);background:var(--k-pink-tint);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-size:var(--fs-note);
+  color:var(--k-text-sub);cursor:pointer;overflow:hidden;position:relative}
+.sheet .drop img{width:100%;height:100%;object-fit:contain;background:#fff}
+.sheet .btns{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.btn-l .ic{display:inline-block;vertical-align:-3px;margin-right:6px}
+.btn-l{height:var(--tap-primary);border-radius:var(--r-pill);font-size:var(--fs-body);font-weight:700;
+  display:flex;align-items:center;justify-content:center}
+.btn-primary{background:var(--k-grad-cta);color:#fff;box-shadow:0 6px 18px rgba(219,39,119,.28)}
+.btn-ghost{background:#F4EEFB;color:var(--k-text-sub)}
+.btn-full{grid-column:1/-1}
+/* ============ 选人页 ============ */
+.choose{padding:64px 24px;display:flex;flex-direction:column;align-items:center;gap:10px;height:100%;
+  background:var(--k-grad-hero)}
+.choose h2{font-size:var(--fs-title);color:var(--k-text-strong);margin:0 0 22px;font-weight:700}
+.kids{display:flex;gap:16px}
+.kidcard{width:140px;padding:18px 10px;border-radius:26px;background:rgba(255,255,255,.96);text-align:center;
+  box-shadow:var(--clay-float);cursor:pointer;transition:transform .16s cubic-bezier(.34,1.4,.64,1)}
+.kidcard:active{transform:scale(.97)}
+.kidcard .ring{width:96px;height:96px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;
+  font-size:44px;border:4px solid var(--kid-a);background:#fff}
+.kidcard.b .ring{border-color:var(--kid-b)}
+.kidcard .kn{font-size:var(--fs-card);font-weight:700}
+.kidcard .kw{font-size:var(--fs-micro);color:var(--k-text-sub);margin-top:4px}
+.choose .mem{margin-top:26px;font-size:var(--fs-micro);color:rgba(46,16,101,.62)}
+/* ============ 我的 ============ */
+.me-top{padding:24px 16px 18px;display:flex;align-items:center;gap:14px;background:var(--k-grad-hero)}
+.me-top .av{width:72px;height:72px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:34px;border:3px solid rgba(255,255,255,.9);box-shadow:0 4px 14px rgba(120,60,160,.2)}
+.me-top .mn{font-size:var(--fs-title);font-weight:700;color:var(--k-text-strong)}
+.me-top .mb{font-size:var(--fs-note);color:var(--k-text);opacity:.85;margin-top:4px}
+.ledger{padding:16px}
+.ledger h3{font-size:var(--fs-card);margin:0 0 10px;color:var(--k-text)}
+.lrow{height:64px;display:flex;align-items:center;gap:12px;background:#fff;border-radius:var(--r-md);
+  padding:0 14px;margin-bottom:8px;font-size:var(--fs-note)}
+.lrow .li{width:34px;height:34px;border-radius:10px;background:var(--k-purple-50);display:flex;align-items:center;justify-content:center;font-size:16px}
+.lrow .ln{flex:1;font-weight:600}
+.lrow .lv{font-weight:700}
+.lrow .lv.neg{color:var(--k-text-sub)}
+.lrow .ld{color:#B3A5C9;font-size:var(--fs-micro)}
+.me-btns{padding:0 16px 24px;display:flex;flex-direction:column;gap:12px}
+.gear{position:absolute;right:16px;top:16px;width:var(--tap-secondary);height:var(--tap-secondary);border-radius:50%;
+  background:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;font-size:22px;
+  box-shadow:0 2px 10px rgba(120,60,160,.18)}
+/* ============ 商店 + 心愿 ============ */
+.wishwrap{padding:16px}
+.wish{background:#fff;border-radius:var(--r-card);padding:16px;box-shadow:var(--clay-card);border:1.5px solid rgba(255,255,255,.9);margin-bottom:14px}
+.wish .wt{display:flex;align-items:center;gap:10px;font-size:var(--fs-body);font-weight:700}
+.wish .wt .wi{width:44px;height:44px;border-radius:12px;background:#FFF6DC;display:flex;align-items:center;justify-content:center;font-size:22px}
+.wish .wp{height:12px;border-radius:6px;background:#F0E7FA;margin:12px 0 8px;overflow:hidden}
+.wish .wp i{display:block;height:100%;width:85%;border-radius:6px;background:linear-gradient(90deg,#FF85C1,#A855F7)}
+.wish .wn{font-size:var(--fs-note);color:var(--k-text-sub);display:flex;justify-content:space-between}
+.wish .badge{display:inline-block;margin-top:10px;background:#FFF1F6;color:#DB2777;font-size:var(--fs-micro);
+  font-weight:700;padding:6px 10px;border-radius:8px}
+.newwish{height:76px;border:2px dashed var(--k-purple-soft);border-radius:var(--r-card);display:flex;align-items:center;
+  justify-content:center;gap:8px;color:var(--k-text-sub);font-size:var(--fs-body);font-weight:600;background:rgba(255,255,255,.6)}
+.shopgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px 100px}
+.tile{background:#fff;border-radius:var(--r-card);height:118px;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:5px;border:1.5px solid rgba(255,255,255,.9);box-shadow:var(--clay-card);position:relative;
+  transition:transform .16s cubic-bezier(.34,1.4,.64,1), box-shadow .16s}
+.tile:active{transform:translateY(2px) scale(.985);box-shadow:var(--clay-card-press)}
+.tile .ti{font-size:26px}
+.tile .tn{font-size:var(--fs-note);font-weight:600}
+.tile .tc{font-size:var(--fs-note);font-weight:700;color:var(--k-gold-text)}
+.tile.lack{opacity:.55}
+.tile .lk{position:absolute;bottom:8px;font-size:10px;background:#F1F0F5;color:#6B6480;padding:2px 6px;border-radius:6px}
+/* 家长端设置行 */
+.pset{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:11px 0;border-top:1px solid var(--p-border);font-size:13px}
+.pset:first-of-type{border-top:0}
+.pset b{font-weight:600;color:var(--p-text)}
+.psw{width:44px;height:26px;border-radius:999px;background:#E5E1EE;position:relative;flex:0 0 44px}
+.psw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;
+  box-shadow:0 1px 3px rgba(0,0,0,.16);transition:.18s}
+.psw.on{background:#7C3AED}
+.psw.on::after{left:21px}
+
+/* 账号行 & 登录页脚 */
+.acct{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:12px;font-weight:700;
+  color:var(--k-text-sub);background:#F4EEFB;border-radius:999px;padding:5px 11px}
+.acct .ic{width:12px;height:12px}
+.pin-foot{display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:16px;font-size:12.5px;color:#9A93AC}
+.pin-foot button{color:var(--k-text-sub);font-weight:600}
+
+/* 家长查看孩子页：顶部细条 */
+.kbar{height:36px;flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:0 12px;
+  background:#1B1230;color:#fff;transition:opacity .4s}
+.kbar .kb-dot{width:7px;height:7px;border-radius:50%;background:#4ADE80;box-shadow:0 0 0 3px rgba(74,222,128,.22)}
+.kbar .kb-t{font-size:12px;font-weight:700;letter-spacing:.02em}
+.kbar .kb-back{margin-left:auto;font-size:12px;color:#FFD700;font-weight:700}
+
+/* 家长端账号行 */
+.kv{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--p-border);font-size:13px}
+.kv:first-of-type{border-top:0}
+.kv span{color:var(--p-text-sub)}
+.kv b{flex:1;font-weight:700;font-size:15px;letter-spacing:.02em}
+.kv b.code{letter-spacing:.14em;font-variant-numeric:tabular-nums}
+
+/* ============ 孩子详情：头图 / 进度条 / 时间线 / 账号弹层 ============ */
+.kidhead{margin:0 0 12px;padding:16px;border-radius:16px;
+  background:linear-gradient(180deg,#FFF0F7 0%,#F7EEFF 100%);
+  border:1px solid #F6E3F0}
+.kh-top{display:flex;align-items:center;gap:12px}
+.kh-ava{width:52px;height:52px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 10px rgba(150,90,205,.16);border:2px solid #fff;overflow:hidden}
+.kh-name{font-size:18px;font-weight:800;color:#2E1065;line-height:1.2}
+.kh-meta{font-size:11.5px;color:#6B6480;margin-top:3px}
+.kh-star{display:flex;align-items:center;gap:3px;background:#fff;border-radius:999px;padding:5px 10px;
+  font-size:13px;color:#4A2666;box-shadow:0 2px 6px rgba(150,90,205,.12)}
+.kh-star b{font-weight:800}
+.kh-today{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.kh-today>div{background:rgba(255,255,255,.85);border-radius:10px;padding:8px 6px;text-align:center;
+  display:flex;flex-direction:column;gap:2px}
+.kh-today b{font-size:16px;font-weight:800;color:#2E1065;display:flex;align-items:center;justify-content:center}
+.kh-today span{font-size:10.5px;color:#6B6480}
+.kh-actions{display:flex;gap:8px;margin-top:12px}
+.kh-actions .pbtn{flex:1;justify-content:center}
+
+.pbar{height:9px;border-radius:5px;background:#F0EAF8;overflow:hidden}
+.pbar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,#FF85C1,#A855F7)}
+
+.ptl>div{display:flex;align-items:center;gap:9px;padding:9px 0;border-top:1px solid var(--p-border);font-size:12.5px}
+.ptl>div:first-child{border-top:0}
+.ptl i{width:7px;height:7px;border-radius:50%;flex:0 0 7px}
+.ptl .dot-g{background:#22C55E}.ptl .dot-p{background:#FF85C1}.ptl .dot-b{background:#5AA9E6}
+.ptl span{flex:1;color:var(--p-text)}
+.ptl em{font-style:normal;font-size:11px;color:#9A93AC}
+
+.kv.danger span{color:#B4478F}
+
+/* 家长端底部弹层 */
+.psheet{position:absolute;inset:0;background:rgba(27,18,48,.45);display:flex;align-items:flex-end;z-index:80}
+.psheet .ppanel{width:100%;background:#fff;border-radius:18px 18px 0 0;padding:16px 16px 22px;
+  animation:up .28s cubic-bezier(.32,.72,0,1);max-height:88%;overflow:auto}
+.psheet h3{margin:0 0 4px;font-size:16px;color:var(--p-text)}
+.psheet p.sub{margin:0 0 12px;font-size:12px;color:var(--p-text-sub);line-height:1.6}
+.psheet .x{position:absolute;right:14px;top:12px;width:32px;height:32px;border-radius:50%;background:#F3F0F8;
+  display:flex;align-items:center;justify-content:center;font-size:16px;color:#6B6480}
+
+/* 分段控件 / 标签胶囊 */
+.seg{display:flex;gap:6px;padding:10px 16px 12px;background:transparent}
+.seg button{flex:1;height:34px;border-radius:10px;font-size:12.5px;font-weight:700;color:#7C64A6;
+  background:rgba(255,255,255,.7);border:1px solid rgba(168,85,247,.14)}
+.seg button.on{background:var(--k-grad-cta);color:#fff;border-color:transparent;
+  box-shadow:0 3px 10px rgba(219,39,119,.22)}
+.tagpill{display:inline-flex;align-items:center;height:30px;padding:0 12px;border-radius:999px;
+  background:#F7F1FE;color:#6D3FA0;font-size:12.5px;font-weight:700;border:1px solid rgba(168,85,247,.14)}
+.tagpill.add{background:#fff;border-style:dashed;color:#9A93AC}
+
+/* ============ 家长端底部导航 ============ */
+.pnav{height:64px;flex:0 0 auto;background:#fff;border-top:1px solid var(--p-border);
+  display:grid;grid-template-columns:repeat(5,1fr);padding-bottom:env(safe-area-inset-bottom)}
+.pnav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  font-size:10.5px;font-weight:600;color:#8B84A0}
+.pnav button.on{color:var(--p-accent)}
+.pnav svg{width:22px;height:22px;stroke:currentColor;stroke-width:2;fill:none}
+
+/* ============ 家长端：选孩子 / 二维码 / 设备 ============ */
+.kidchips{display:flex;gap:10px}
+.kchip{display:flex;align-items:center;gap:8px;padding:8px 12px 8px 8px;border-radius:12px;background:#fff;
+  border:1px solid var(--p-border);font-size:13px;font-weight:600;color:var(--p-text)}
+.kchip.on{border-color:var(--p-accent);background:var(--p-accent-weak);color:#6D28D9}
+.kchip svg{width:22px;height:22px}
+.qrwrap{position:relative;display:flex;justify-content:center;padding:10px 0 4px}
+.qrwrap svg{border-radius:14px;box-shadow:0 6px 18px rgba(27,18,48,.10)}
+.qr-ava{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:42px;height:42px;border-radius:12px;
+  background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px #fff, 0 2px 8px rgba(27,18,48,.14)}
+.qrcode-text{text-align:center;font-size:24px;font-weight:800;letter-spacing:.18em;color:var(--p-text);margin:6px 0 4px}
+.pdev{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--p-border);font-size:13px}
+.pdev span:first-child{flex:1;font-weight:600}
+.pdev .pdev-t{font-size:11.5px;color:var(--p-text-sub)}
+
+/* ============ 孩子端预览条 ============ */
+.preview-bar{display:flex;align-items:center;gap:8px;padding:9px 12px;background:#1B1230;color:#fff;flex:0 0 auto}
+.preview-bar .pv-tag{font-size:10.5px;font-weight:800;letter-spacing:.06em;background:#FFD700;color:#3A2A00;
+  border-radius:6px;padding:2px 6px}
+.preview-bar .pv-name{flex:1;font-size:12.5px;opacity:.92}
+.preview-bar .pv-back{font-size:12.5px;font-weight:700;color:#FFD700;padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.12)}
+
+/* ============ 孩子密码 ============ */
+
+.pinpage{height:100%;background:
+    radial-gradient(120% 60% at 15% 0%, #FFE4F1 0%, transparent 55%),
+    radial-gradient(110% 70% at 95% 12%, #EDE0FD 0%, transparent 60%), #FBF7FF;
+  display:flex;flex-direction:column;align-items:center;padding:38px 24px 22px}
+.pin-ava{width:92px;height:92px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--clay-float);border:3px solid #fff}
+.pin-name{font-size:20px;font-weight:800;color:var(--k-text-strong);margin-top:12px}
+.pin-sub{font-size:14px;color:var(--k-text-sub);margin-top:2px}
+.pin-dots{display:flex;gap:14px;margin:24px 0 4px}
+.pin-dots i{width:16px;height:16px;border-radius:50%;background:#EADCF7;transition:.2s}
+.pin-dots i.on{background:linear-gradient(180deg,#BE97F2,#8E5BE0);transform:scale(1.12);
+  box-shadow:0 3px 8px rgba(142,91,224,.35)}
+.pin-err{height:18px;font-size:12px;color:#DB2777;font-weight:700}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;margin-top:8px}
+.keypad button{height:60px;border-radius:20px;background:#fff;font-size:22px;font-weight:800;color:var(--k-text);
+  box-shadow:var(--clay-card);transition:transform .14s cubic-bezier(.34,1.5,.64,1), box-shadow .14s}
+.keypad button:active{transform:translateY(2px) scale(.96);box-shadow:var(--clay-card-press)}
+.keypad .kp-ghost{font-size:14px;font-weight:700;color:var(--k-text-sub);background:#F7F1FE;box-shadow:none}
+.pin-note{margin-top:auto;font-size:12px;color:#B3A5C9;text-align:center;padding-top:14px}
+.kidcard{position:relative}
+.klock{display:inline-flex;align-items:center;gap:3px;margin-top:7px;font-size:11px;font-weight:700;
+  color:var(--k-text-sub);background:#F4EEFB;border-radius:8px;padding:2px 7px}
+
+/* ============ 家长门 ============ */
+.gate{height:100%;background:#fff;padding:56px 24px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.gate h2{font-size:20px;margin:0;color:var(--p-text)}
+.gate p{font-size:13px;color:var(--p-text-sub);margin:0 0 18px;text-align:center;line-height:1.6}
+.gate .q{font-size:17px;font-weight:700;color:var(--p-text);margin-bottom:16px}
+.gate .opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
+.gate .opt{height:80px;border-radius:14px;background:#F7F5FB;border:1px solid #E7E5EE;font-size:22px;font-weight:700;
+  color:var(--p-text);display:flex;align-items:center;justify-content:center}
+.gate .opt:active{background:#EFE9FA}
+.gate .opt.bad{animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+/* 家长密码 —— 与孩子端登录页同一套视觉（仅尺寸略小） */
+.gate{
+  height:100%;position:relative;display:flex;flex-direction:column;align-items:center;
+  padding:38px 24px 22px;
+  background:
+    radial-gradient(120% 60% at 15% 0%, #FFE4F1 0%, transparent 55%),
+    radial-gradient(110% 70% at 95% 12%, #EDE0FD 0%, transparent 60%), #FBF7FF;
+}
+.gate-lock{width:92px;height:92px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;
+  color:#7C3AED;border:3px solid #fff;box-shadow:var(--clay-float)}
+.gate h2{font-size:20px;font-weight:800;color:var(--k-text-strong);margin:12px 0 0}
+.gate p{font-size:14px;color:var(--k-text-sub);margin:3px 0 0;text-align:center;line-height:1.5}
+.gate-dots{display:flex;gap:14px;margin:24px 0 4px}
+.gate-dots i{width:16px;height:16px;border-radius:50%;background:#EADCF7;transition:.2s}
+.gate-dots i.on{background:linear-gradient(180deg,#BE97F2,#8E5BE0);transform:scale(1.12);
+  box-shadow:0 3px 8px rgba(142,91,224,.35)}
+.gate .keypad{width:100%;max-width:340px;gap:12px;margin-top:8px}
+.gate .keypad button{height:60px;border-radius:20px;background:#fff;color:var(--k-text);
+  font-size:22px;font-weight:800;box-shadow:var(--clay-card)}
+.gate .keypad button:active{transform:translateY(2px) scale(.96);box-shadow:var(--clay-card-press)}
+.gate .keypad .kp-ghost{font-size:14px;font-weight:700;color:var(--k-text-sub);background:#F7F1FE;box-shadow:none}
+.gate .pin-err{color:#DB2777}
+.gate-foot{margin-top:auto;padding-top:14px;text-align:center}
+.gate-foot button{font-size:12.5px;color:var(--k-text-sub);font-weight:700}
+.gate .warn{color:#B3A5C9;font-size:11.5px;margin-top:6px}
+
+/* ============ 家长端 ============ */
+.p-app{height:100%;display:flex;flex-direction:column;background:var(--p-bg);font-size:var(--p-fs-body);color:var(--p-text)}
+.p-head{padding:16px 16px 12px;background:#fff;border-bottom:1px solid var(--p-border)}
+.p-head h1{margin:0;font-size:18px;color:var(--p-text)}
+.p-head .d{font-size:12px;color:var(--p-text-sub);margin-top:3px}
+.p-body{flex:1;overflow:auto;padding:14px}
+.pcard{background:#fff;border:1px solid var(--p-border);border-radius:14px;padding:14px;margin-bottom:12px;
+  box-shadow:0 1px 2px rgba(27,18,48,.05), inset 0 1px 0 rgba(255,255,255,.8)}
+.pcard .ph{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.pcard .pav{width:38px;height:38px;border-radius:50%;background:var(--p-accent-weak);display:flex;align-items:center;
+  justify-content:center;font-size:19px;border:2px solid var(--k-pink)}
+.pcard .pnm{font-size:15px;font-weight:700}
+.pcard .pmeta{font-size:12px;color:var(--p-text-sub);margin-left:auto}
+.prow{display:block;font-size:12.5px;color:var(--p-text-sub);line-height:1.8}
+.prow b{color:var(--p-text);font-weight:600}
+.pactions{display:flex;gap:8px;margin-top:12px}
+.pbtn{height:var(--p-control);border-radius:10px;padding:0 14px;font-size:13px;font-weight:600;
+  background:var(--p-accent);color:#fff;display:flex;align-items:center}
+.pbtn.ghost{background:#fff;border:1px solid var(--p-border);color:var(--p-text)}
+.todo{background:#fff;border:1px solid var(--p-border);border-left:3px solid var(--p-accent);border-radius:10px;
+  padding:12px 14px;font-size:13px;display:flex;align-items:center;gap:10px}
+.todo span{flex:1}
+.warn{font-size:11px;color:#9A93AC;margin:10px 2px 0;line-height:1.6}
+/* 小屏适配 */
+@media (max-width:1180px){ .notes{display:none} }
+@media (max-width:860px){ .rail{display:none} }
+/* ============================================================
+   统一风格层：孩子端 / 家长端共用同一套视觉语言
+   —— 统一：色板、圆角、柔和投影、渐变头图、图标砖、按钮质感
+   —— 保留差异：尺寸与信息密度（孩子 72/16px，家长 40/14px）
+   ============================================================ */
+
+/* 1) 家长端页面底：与孩子端同一套浅渐变 + 光斑 */
+.p-app{
+  background:
+    radial-gradient(120% 55% at 10% 0%, #FFF0F7 0%, transparent 58%),
+    radial-gradient(110% 65% at 98% 14%, #F2EAFF 0%, transparent 62%),
+    #FAF7FE;
+}
+
+/* 2) 家长端头图：浅渐变 + 深紫字（与孩子端头图同一语言，只是更矮） */
+.p-head{
+  background:linear-gradient(180deg,#FFE6F2 0%,#EEE1FE 100%);
+  border-bottom:0; padding:14px 16px 16px;
+  border-radius:0 0 18px 18px;
+  box-shadow:0 4px 14px rgba(150,90,205,.08);
+}
+.p-head h1{color:var(--k-text-strong);font-weight:800;font-size:18px;letter-spacing:.2px}
+.p-head .d{color:#7C64A6;font-size:12px}
+.p-head button{color:#7C64A6}
+
+/* 3) 卡片：同一套 clay 质感，半径与孩子端对齐到 20，投影更轻 */
+.pcard{
+  border-radius:20px;border:1.5px solid rgba(255,255,255,.92);
+  background:#fff;
+  box-shadow:0 8px 18px rgba(150,90,205,.11), 0 2px 5px rgba(150,90,205,.06),
+             inset 0 2px 0 rgba(255,255,255,.95);
+  padding:14px;
+}
+.pcard .pnm{color:var(--k-text);font-weight:700;font-size:14px}
+.pcard .pmeta{color:#8B7FA8}
+
+/* 4) 按钮：主按钮用与孩子端相同的渐变，次按钮白底柔和 */
+.pbtn{
+  border-radius:12px;font-weight:700;color:#fff;
+  background:var(--k-grad-cta);
+  box-shadow:0 4px 12px rgba(219,39,119,.22), inset 0 1.5px 0 rgba(255,255,255,.4);
+  transition:transform .14s cubic-bezier(.34,1.5,.64,1), box-shadow .14s;
+}
+.pbtn:active{transform:translateY(1px) scale(.985);box-shadow:0 2px 6px rgba(219,39,119,.2)}
+.pbtn.ghost{
+  background:#fff;border:1.5px solid rgba(168,85,247,.16);color:#6D3FA0;
+  box-shadow:0 3px 8px rgba(150,90,205,.08), inset 0 1.5px 0 rgba(255,255,255,.9);
+}
+
+/* 5) 底部导航：与孩子端同款白底 + 上投影，选中用品牌紫 + 圆点 */
+.pnav{
+  height:64px;border-top:0;background:#fff;
+  box-shadow:0 -6px 18px rgba(150,90,205,.10);
+  border-radius:18px 18px 0 0;padding-top:4px;
+}
+.pnav button{color:#9A93AC;font-weight:700;position:relative}
+.pnav button.on{color:#DB2777}
+.pnav button.on::after{
+  content:"";position:absolute;bottom:5px;width:4px;height:4px;border-radius:50%;
+  background:linear-gradient(135deg,#DB2777,#7C3AED);
+}
+.pnav svg{stroke-width:2.2}
+
+/* 6) 设置行 / 列表行：与孩子端"行卡"同一节奏 */
+.kv{padding:11px 0;border-top:1px solid #F3EDFA;font-size:13px}
+.kv span{color:#6B6480}
+.kv b{color:var(--k-text);font-weight:700}
+.kv:first-of-type{border-top:0}
+.pdev{border-top:1px solid #F3EDFA}
+
+/* 7) 进度条：与孩子端同款渐变 */
+.pbar{height:9px;border-radius:5px;background:#F2EAFB}
+.pbar i{background:linear-gradient(90deg,#FF85C1,#A855F7);
+  box-shadow:0 1px 4px rgba(168,85,247,.28)}
+
+/* 8) 弹层：与孩子端 sheet 同圆角与动效 */
+.psheet .ppanel{border-radius:24px 24px 0 0;
+  box-shadow:0 -10px 30px rgba(120,60,170,.18)}
+
+/* 9) 头像框：两端统一白圈 + 主色描边 */
+.pcard .pav{border:2px solid #FFD7EC;background:#fff;
+  box-shadow:0 3px 8px rgba(150,90,205,.14)}
+
+/* 10) 家长端图标砖（任务配置等）与孩子端同款 */
+.ico{box-shadow:0 4px 10px rgba(142,91,224,.26), inset 0 2px 0 rgba(255,255,255,.45)}
+
+/* 11) 字号统一：正文 14 保持一致，标题层级对齐孩子端比例 */
+.p-app{font-size:14px;color:var(--k-text)}
+
+/* ============ 说说话 ============ */
+.chatwrap{flex:1;display:flex;flex-direction:column;min-height:0;background:
+  radial-gradient(120% 50% at 15% 0%, #FFE4F1 0%, transparent 58%),
+  radial-gradient(110% 60% at 95% 10%, #EDE0FD 0%, transparent 62%), #FAF6FE}
+.chathead{display:flex;align-items:center;gap:10px;padding:14px 16px;background:linear-gradient(180deg,#FFE6F2,#F3E8FE);
+  border-radius:0 0 18px 18px}
+.ch-ava{width:44px;height:44px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--clay-ico)}
+.ch-name{font-size:16px;font-weight:800;color:var(--k-text-strong)}
+.ch-sub{font-size:11.5px;color:var(--k-text-sub)}
+.chatbody{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.reviewbar{background:#FFF9E6;border:1px solid #FFE9A8;color:#7A5B00;font-size:12px;font-weight:600;
+  border-radius:12px;padding:9px 12px;display:flex;align-items:center;gap:6px}
+.msg{display:flex;align-items:flex-end;gap:7px;max-width:86%}
+.msg.kid{align-self:flex-end;flex-direction:row-reverse}
+.b-ava{width:30px;height:30px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--clay-ico);flex:0 0 30px}
+.b-ava .av-ic{width:26px;height:26px}
+.bubble-s{background:#fff;border-radius:16px 16px 16px 6px;padding:11px 13px;font-size:14px;line-height:1.55;
+  color:var(--k-text);box-shadow:var(--clay-card)}
+.msg.kid .bubble-s{background:var(--k-grad-cta);color:#fff;border-radius:16px 16px 6px 16px;
+  box-shadow:0 4px 12px rgba(219,39,119,.24)}
+.bubble-s .ic{display:inline-block;vertical-align:-2px}
+.typing{display:inline-flex;gap:4px;align-items:center;height:16px}
+.typing i{width:6px;height:6px;border-radius:50%;background:#C4A6F5;animation:blink 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes blink{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:8px 14px 4px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips button{flex:0 0 auto;background:#fff;border:1.5px solid rgba(168,85,247,.16);border-radius:999px;
+  padding:9px 14px;font-size:13px;font-weight:600;color:var(--k-text-sub);box-shadow:0 2px 6px rgba(150,90,205,.08)}
+.chatbar{display:flex;align-items:center;gap:10px;padding:10px 14px 14px}
+.textbtn{height:56px;padding:0 16px;border-radius:999px;background:#fff;font-size:14px;font-weight:700;
+  color:var(--k-text-sub);box-shadow:var(--clay-card)}
+.chatbar .mic{flex:1;height:72px;border-radius:999px;background:var(--k-grad-cta);color:#fff;
+  display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;font-weight:800;
+  box-shadow:0 6px 18px rgba(219,39,119,.28), inset 0 2px 0 rgba(255,255,255,.4)}
+
+/* ============ 闯关 ============ */
+.subtabs{display:flex;gap:8px;padding:14px 16px 6px;overflow-x:auto;scrollbar-width:none}
+.subtabs::-webkit-scrollbar{display:none}
+.subtabs button{flex:0 0 auto;padding:8px 14px;border-radius:999px;background:#fff;font-size:13px;font-weight:700;
+  color:var(--k-text-sub);box-shadow:0 2px 6px rgba(150,90,205,.08)}
+.subtabs button.on{background:var(--k-grad-cta);color:#fff;box-shadow:0 4px 12px rgba(219,39,119,.24)}
+.questgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:8px 16px 96px}
+.quest{background:#fff;border-radius:20px;padding:14px;box-shadow:var(--clay-card);
+  border:1.5px solid rgba(255,255,255,.9);display:flex;flex-direction:column;gap:6px}
+.quest.done{background:var(--k-success-bg)}
+.q-top{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--k-text-sub)}
+.quest.done .q-top{color:var(--k-success-text)}
+.q-name{font-size:15px;font-weight:800;color:var(--k-text)}
+.q-st{font-size:11.5px;color:#B3A5C9}
+.q-btn{height:40px;border-radius:12px;background:#F6EEFF;color:#7C3AED;font-size:13px;font-weight:700;margin-top:4px}
+.quest.done .q-btn{background:#E7F8EC;color:var(--k-success-text)}
+
+/* ============ 签到 ============ */
+.egggrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:0 16px}
+.egg{aspect-ratio:1/1;border-radius:20px;background:#fff;box-shadow:var(--clay-card);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  border:1.5px solid rgba(255,255,255,.9)}
+.egg span{font-size:11px;font-weight:700;color:var(--k-text-sub)}
+.egg.opened{background:linear-gradient(180deg,#FFFBEA,#FFF1C9);border-color:#FFE08A}
+.egg.opened span{color:var(--k-gold-text)}
+.moods{display:flex;gap:8px;padding:0 16px;overflow-x:auto;scrollbar-width:none}
+.moods::-webkit-scrollbar{display:none}
+.moods button{flex:0 0 auto;width:68px;height:76px;border-radius:18px;background:#fff;box-shadow:var(--clay-card);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  font-size:11px;font-weight:700;color:var(--k-text-sub);border:1.5px solid rgba(255,255,255,.9)}
+.moods button.on{background:linear-gradient(180deg,#FFF0F7,#F3E8FE);border-color:var(--k-pink);color:#DB2777}
+.writebox{background:#fff;border-radius:16px;padding:14px;font-size:14px;color:var(--k-text);
+  box-shadow:var(--clay-card);min-height:76px;border:1.5px solid rgba(255,255,255,.9)}
+
+/* 迷你柱状图（日报/周期报告） */
+.mini-bars{display:flex;align-items:flex-end;gap:8px;height:64px;margin:12px 0 6px}
+.mini-bars div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px}
+.mini-bars span{width:100%;border-radius:5px 5px 3px 3px;background:linear-gradient(180deg,#FFB3D9,#C4A6F5);min-height:8px}
+.mini-bars em{font-style:normal;font-size:10px;color:#9A93AC}
+
+/* ============ 家长端：日记卡 ============ */
+.diary{margin-top:10px;padding:12px;border-radius:12px;background:#FBF8FF;border:1px solid #F1E9FB}
+.d-head{display:flex;justify-content:space-between;font-size:12px;color:#8B84A0;font-weight:700}
+.d-mood{color:#DB2777}
+.d-body{margin-top:6px;font-size:13px;color:var(--k-text);line-height:1.6}
+
+</style>
+</head>
+<body>
+
+<!-- ================= 左侧：屏幕清单 ================= -->
+<aside class="rail">
+  <h1>前端重设计 v2</h1>
+  <div class="sub">布布的学习小天地<br>按两端导航顺序排列 · 可交互</div>
+
+  <div class="grp">① 进入孩子端</div>
+  <button data-s="choose" class="on"><i class="dot"></i>选人页</button>
+  <button data-s="pin"><i class="dot"></i>孩子登录（账号 + 密码）</button>
+  <button data-s="pinset"><i class="dot"></i>首次改密码</button>
+
+  <div class="grp">② 孩子端 · 底部导航</div>
+  <button data-s="home"><i class="dot"></i>1 本周</button>
+  <button data-s="reading"><i class="dot"></i>2 阅读</button>
+  <button data-s="exercise"><i class="dot"></i>3 动起来</button>
+  <button data-s="chat"><i class="dot"></i>4 说说话</button>
+  <button data-s="me"><i class="dot"></i>5 我的</button>
+
+  <div class="grp">③ 孩子端 · 首页卡片</div>
+  <button data-s="stars"><i class="dot"></i>商店 + 心愿</button>
+  <button data-s="quests"><i class="dot"></i>闯关</button>
+  <button data-s="checkin"><i class="dot"></i>签到</button>
+  <button data-s="photo"><i class="dot"></i>拍照完成（弹层）</button>
+
+  <div class="grp">④ 家长端 · 底部导航</div>
+  <button data-s="gate"><i class="dot"></i>家长密码（进入前）</button>
+  <button data-s="parent"><i class="dot"></i>1 概览</button>
+  <button data-s="tasks"><i class="dot"></i>2 任务 · 任务清单</button>
+  <button data-s="pexercise"><i class="dot"></i>2 任务 · 运动目标</button>
+  <button data-s="pquests"><i class="dot"></i>2 任务 · 闯关</button>
+  <button data-s="wishset"><i class="dot"></i>3 心愿</button>
+  <button data-s="kids"><i class="dot"></i>4 孩子</button>
+  <button data-s="settings"><i class="dot"></i>5 我的</button>
+
+  <div class="grp">⑤ 家长端 · 二级页面</div>
+  <button data-s="child"><i class="dot"></i>孩子详情（含开通）</button>
+  <button data-s="kidview"><i class="dot"></i>进入孩子页面</button>
+  <button data-s="report"><i class="dot"></i>周期报告</button>
+  <button data-s="records"><i class="dot"></i>记录</button>
+</aside>
+
+<!-- ================= 中间：手机 ================= -->
+<main class="stage">
+<div class="phone">
+  <div class="screen" id="screen"></div>
+</div>
+</main>
+
+<!-- ================= 右侧：规格备注 ================= -->
+<aside class="notes" id="notes"></aside>
+
+<script>
+
+/* ===== 图标库：inline SVG，全站禁用 emoji ===== */
+const ICONS = {
+  book:'<path d="M4 5a2 2 0 0 1 2-2h5v18H6a2 2 0 0 1-2-2z"/><path d="M13 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"/>',
+  bag:'<path d="M6 8h12l-1 12H7z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
+  broom:'<path d="M15 4l5 5"/><path d="M3 21l7-7 3 3-7 7z"/><path d="M10 14l3-3"/>',
+  egg:'<path d="M12 3c3 4 5 7 5 10a5 5 0 0 1-10 0c0-3 2-6 5-10z" fill="#FFF6DC" stroke="#E8B23A"/>',
+  gift:'<rect x="3" y="9" width="18" height="12" rx="2"/><path d="M3 13h18M12 9v12"/><path d="M12 9c-3 0-5-1.5-5-3s2-2 3-1 2 4 2 4zm0 0c3 0 5-1.5 5-3s-2-2-3-1-2 4-2 4z"/>',
+  map:'<path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/>',
+  star:'<polygon points="12,2.5 14.9,9 22,9.6 16.8,14.4 18.3,21.5 12,18 5.7,21.5 7.2,14.4 2,9.6 9.1,9" fill="#FFD700" stroke="#F0A500" stroke-width="1.2"/>',
+  camera:'<rect x="3" y="7" width="18" height="13" rx="3"/><circle cx="12" cy="13.5" r="4"/><path d="M8.5 7l1.3-3h4.4L15.5 7"/>',
+  flame:'<path d="M12 2.6c4 5 6 7.6 6 10.2a6 6 0 0 1-12 0c0-2 .8-3.4 2-4.4 0 2 .8 3.2 1.8 3.2 0-3 .6-6 2.2-9z" fill="#FF8A3D" stroke="none"/>',
+  dog:'<circle cx="7" cy="9" r="2.1"/><circle cx="12" cy="6.8" r="2.1"/><circle cx="17" cy="9" r="2.1"/><path d="M12 11.6c-3 0-5.2 2.1-5.2 4.6S9 20.4 12 20.4s5.2-1.7 5.2-4.2S15 11.6 12 11.6z" fill="currentColor" stroke="none"/>',
+  gear:'<path d="M4 7h9M19 7h1M4 17h3M13 17h7"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/>',
+  heart:'<path d="M12 20s-7-4.3-7-9a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 4.7-7 9-7 9z" fill="#FFC2DE" stroke="#DB2777"/>',
+  calc:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M12 12h2M8 16h2M12 16h2M16 16h.01"/>',
+  bike:'<circle cx="6" cy="17" r="3.2"/><circle cx="18" cy="17" r="3.2"/><path d="M9 17l3-6 3 6M12 11L10 8h4"/>',
+  cake:'<path d="M4 20h16v-5.5a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3z"/><path d="M12 11.5V8"/><circle cx="12" cy="6.5" r="1.2" fill="currentColor" stroke="none"/>',
+  ticket:'<path d="M3 8h18v2.5a2.5 2.5 0 0 0 0 5V18H3v-2.5a2.5 2.5 0 0 0 0-5z"/><path d="M12 9.5v5"/>',
+  calm:'<circle cx="12" cy="12" r="9"/><path d="M8.6 14.4h6.8"/><circle cx="9" cy="10" r="1.05" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1.05" fill="currentColor" stroke="none"/>',
+  tired:'<circle cx="12" cy="12" r="9"/><path d="M8.4 15.4h7.2M8 9.6l2 1.2M16 9.6l-2 1.2"/>',
+  sad:'<circle cx="12" cy="12" r="9"/><path d="M8.6 16a4.4 4.4 0 0 1 6.8 0"/><circle cx="9" cy="10" r="1.05" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1.05" fill="currentColor" stroke="none"/>',
+  angry:'<circle cx="12" cy="12" r="9"/><path d="M8.2 16.2h7.6M8.4 8.2l2.4 1.8M15.6 8.2l-2.4 1.8"/>',
+  smile:'<circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1.1" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1.1" fill="currentColor" stroke="none"/><path d="M8.5 14.2a4.5 4.5 0 0 0 7 0"/>',
+  doc:'<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/>',
+  ferris:'<circle cx="12" cy="9" r="7"/><path d="M12 2v14M5 9h14M7.5 4.2l9 9.6M16.5 4.2l-9 9.6M8 21l4-5 4 5"/>',
+  mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"/>',
+  lock:'<rect x="4.5" y="10.5" width="15" height="10" rx="3"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1.4" fill="currentColor" stroke="none"/>',
+  check:'<path d="M5 13l4 4 10-10" stroke-width="2.6"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/>',
+};
+function ico(n, size){
+  const s = size || 20;
+  return '<svg class="ic" viewBox="0 0 24 24" width="'+s+'" height="'+s+'" fill="none" stroke="currentColor" '
+       + 'stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' + (ICONS[n] || ICONS.star) + '</svg>';
+}
+/* 孩子头像：纯 SVG 小动物脸，不用 emoji */
+function avatar(kind, size){
+  const s = size || 48;
+  /* 小尺寸：实心简化版（细线在 26px 以下会消失） */
+  if (s < 32) {
+    const bg = kind === 'fox' ? '#FBCBA4' : '#FFFFFF';
+    const ear = kind === 'fox' ? '#F0A97B' : '#F4EAFB';
+    return '<svg class="av-ic" viewBox="0 0 48 48" width="'+s+'" height="'+s+'">'
+      + '<circle cx="24" cy="24" r="23" fill="'+bg+'" stroke="'+(kind==='fox'?'#E29C6B':'#E6D7F2')+'" stroke-width="2"/>'
+      + '<path d="M11 15l-2-7 7 3z" fill="'+ear+'"/><path d="M37 15l2-7-7 3z" fill="'+ear+'"/>'
+      + '<circle cx="18" cy="24" r="2.8" fill="#3E2A5A"/><circle cx="30" cy="24" r="2.8" fill="#3E2A5A"/>'
+      + '<path d="M24 29l-2.6 2.6h5.2z" fill="'+(kind==='fox'?'#7A4A2E':'#E98BB4')+'"/>'
+      + '<ellipse cx="14" cy="30" rx="3.2" ry="2" fill="#FFD7EC"/><ellipse cx="34" cy="30" rx="3.2" ry="2" fill="#FFD7EC"/>'
+      + '</svg>';
+  }
+  const ears = kind === 'fox'
+    ? '<path d="M8 12L6 3l7 4z" fill="#F0A97B" stroke="#D98352"/><path d="M40 12l2-9-7 4z" fill="#F0A97B" stroke="#D98352"/>'
+    : '<ellipse cx="15" cy="9" rx="4.2" ry="7.5" fill="#fff" stroke="#E6D7F2"/><ellipse cx="33" cy="9" rx="4.2" ry="7.5" fill="#fff" stroke="#E6D7F2"/>';
+  const face = kind === 'fox'
+    ? '<ellipse cx="24" cy="27" rx="15" ry="13" fill="#FBCBA4" stroke="#E29C6B"/>'
+    : '<ellipse cx="24" cy="27" rx="15" ry="13" fill="#fff" stroke="#E6D7F2"/>';
+  const eyes = '<circle cx="18" cy="25" r="2.1" fill="#3E2A5A"/><circle cx="30" cy="25" r="2.1" fill="#3E2A5A"/>';
+  const nose = kind === 'fox'
+    ? '<path d="M24 30l-2.4 2.4h4.8z" fill="#7A4A2E"/><path d="M24 32.4v2.6M24 35q-2.2 1.6-4 .2M24 35q2.2 1.6 4 .2" stroke="#7A4A2E" stroke-width="1.3" fill="none" stroke-linecap="round"/>'
+    : '<path d="M24 31l-2.2 2h4.4z" fill="#E98BB4"/><path d="M24 33v2.4M24 35.4q-2 1.4-3.6.1M24 35.4q2 1.4 3.6.1" stroke="#E98BB4" stroke-width="1.3" fill="none" stroke-linecap="round"/>';
+  const cheeks = '<ellipse cx="14" cy="31" rx="3" ry="1.8" fill="#FFD7EC" opacity=".9"/><ellipse cx="34" cy="31" rx="3" ry="1.8" fill="#FFD7EC" opacity=".9"/>';
+  return '<svg class="av-ic" viewBox="0 0 48 48" width="'+s+'" height="'+s+'">'+ears+face+eyes+nose+cheeks+'</svg>';
+}
+
+/* =========================================================
+   数据（原型用假数据）
+   ========================================================= */
+const state = {
+  kid: '小月亮',
+  tasks: [
+    { id:'t1', icon:'book', name:'叫叫阅读', cur:2, target:5, star:3, visible:true, required:false, media:0, cycle:'daily',  cycleText:'每天' },
+    { id:'t2', icon:'calc', name:'口算',     cur:3, target:3, star:1, visible:false, required:false, media:0, cycle:'daily', cycleText:'每天' },
+    { id:'t3', icon:'bag',  name:'学校作业', cur:6, target:7, star:2, visible:true, required:true,  media:1, cycle:'weekly', cycleText:'每周 7 次' },
+    { id:'t4', icon:'broom',name:'预习课文', cur:1, target:2, star:2, visible:true, required:false, media:0, cycle:'weekly', cycleText:'每周 2 次' },
+  ],
+  ledger:[
+    { i:'book', n:'叫叫阅读', v:'+3', d:'3月12日' },
+    { i:'broom', n:'做家务',   v:'+2', d:'3月12日' },
+    { i:'flame', n:'运动达标', v:'+2', d:'3月11日' },
+    { i:'map',   n:'通关 · 数学第 3 关', v:'+1', d:'3月11日' },
+    { i:'egg', n:'彩蛋',     v:'+1', d:'3月11日' },
+    { i:'ferris', n:'游乐场',   v:'−100', d:'3月10日', neg:true },
+  ],
+};
+
+/* =========================================================
+   屏幕定义
+   ========================================================= */
+const SCREENS = {
+
+  /* ---------- 选人页 ---------- */
+  choose: {
+    title:'选人页 /choose',
+    notes:[
+      ['为什么', '二孩家庭的孩子不会记「上次是谁」，需要一眼认出自己的世界；专属主色是第一识别锚点。'],
+      ['尺寸', '<code>卡片 168×216</code>，圆角 24，头像 140，整卡命中'],
+      ['规则', '只有 1 个孩子时这一页不出现；点中即进，无二次确认'],
+      ['刻意不做', '不显示累计星星（那是二孩比较素材），只显示本周进度'],
+    ],
+    render: () => `
+      <div class="choose">
+        <h2>你要找谁呀？</h2>
+        <div class="kids">
+          <div class="kidcard" onclick="pinStart()"><div class="ring">${avatar("rabbit",52)}</div><div class="kn">小月亮</div><div class="kw">本周 3 / 6</div><div class="klock">${ico("lock",12)} 有密码</div></div>
+          <div class="kidcard b" onclick="go('home')"><div class="ring">${avatar("fox",52)}</div><div class="kn">小米粒</div><div class="kw">本周 1 / 4</div></div>
+        </div>
+        <div class="mem">设备会记住上次选择，下次直达</div>
+      </div>`,
+  },
+
+  /* ---------- 本周首页 ---------- */
+  home: {
+    title:'本周首页 /',
+    notes:[
+      ['层级', '宝箱（目标）→ 任务行（行动）→ 布布说（情绪）→ 小世界（出口）'],
+      ['任务行', '<code>88px</code> 整行可点，<code>+1</code> 胶囊 56：视觉锚点，但不必精确点中'],
+      ['宝箱', '格子数 = 家长设的任务数；1–6 格用方块，7–10 分段，>10 粗条。永不出现「3/8」'],
+      ['拍照', '默认所有任务都显示拍照入口（可选拍照）；必填任务徽标变实心'],
+      ['反馈', '点 +1 → 盖章 80ms → 星星飞入 700ms → 点阵填充 → 宝箱 +1；全程 ≤1.1s 且不阻塞'],
+    ],
+    render: () => kidShell(homeBody(), 'home'),
+  },
+
+  /* ---------- 阅读 ---------- */
+  reading: {
+    title:'阅读 /reading',
+    notes:[
+      ['双进度', '今日 + 本周同屏，孩子能回答「今天够了吗」和「这周稳不稳」'],
+      ['连续天数', '断签<b>不清零</b>，只显示「重新开始第 1 天」——不做损失厌恶'],
+      ['录入', '底部弹层，分钟步进 5 分钟，书名可空'],
+    ],
+    render: () => kidShell(`
+      <div class="hero" style="height:120px">
+        <div class="name">阅读</div>
+        <div class="chest">
+          <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--k-text-strong);font-weight:600">
+            <span>今日 15 / 20 分钟</span><span>本周 72 / 100</span>
+          </div>
+          <div class="bar"><i style="width:75%"></i></div>
+          <div class="bar" style="margin-top:6px"><i style="width:72%;background:linear-gradient(90deg,#C4A6F5,#A855F7)"></i></div>
+        </div>
+      </div>
+      <div class="bubble" style="margin-top:12px"><div class="ava">${ico("flame",20)}</div>
+        <div class="txt">连续阅读 3 天，今天再读 5 分钟就满啦</div></div>
+      <div class="sec">最近 7 天</div>
+      <div style="padding:0 16px">
+        <div style="display:flex;align-items:flex-end;gap:8px;height:96px;background:#fff;border-radius:20px;padding:14px;box-shadow:var(--shadow-card)">
+          ${[18,32,24,40,28,46,30].map(h=>`<div style="flex:1;height:${h}px;border-radius:6px;background:linear-gradient(180deg,#FFB3D9,#C4A6F5)"></div>`).join('')}
+        </div>
+      </div>
+      <div class="world" style="grid-template-columns:1fr;padding-bottom:24px">
+        <div class="wcard"><div class="wi">${ico("dog",22)}</div><div class="wt">小黄油</div><div class="ws">肚子有点饿了</div></div>
+      </div>
+      `, 'reading'),
+  },
+
+  /* ---------- 商店 + 心愿 ---------- */
+  stars: {
+    title:'商店 + 心愿 /stars',
+    notes:[
+      ['顺序', '心愿在上（长期目标），商品在下（即时满足）'],
+      ['定价权', '孩子只能提愿望名，<b>定价只能家长做</b>；未定价显示「等爸爸妈妈定价」'],
+      ['进度', '填充条 + 「再攒 15 颗」，不写 85/100'],
+      ['兑换', '底部弹层一次确认，按钮直接写「花 5 颗星换」，不做二次确认'],
+    ],
+    render: () => kidShell(`
+      <div class="hero" style="height:104px"><div class="name">星星商店</div>
+        <div style="font-size:14px;color:var(--k-text-strong);font-weight:600;margin-top:6px">我有 <b style="font-size:22px">121</b> 颗星星</div>
+      </div>
+      <div class="wishwrap">
+        <div class="wish">
+          <div class="wt"><div class="wi">${ico("ticket",22)}</div><div>去一次游乐场</div></div>
+          <div class="wp"><i></i></div>
+          <div class="wn"><span>再攒 15 颗</span><span>85 / 100</span></div>
+          <div class="badge">快满了！继续加油</div>
+        </div>
+        <div class="newwish">+ 我有一个新愿望</div>
+      </div>
+      <div class="sec">现在可以换</div>
+      <div class="shopgrid">
+        <div class="tile"><div class="ti">${ico("book",26)}</div><div class="tn">选一本绘本</div><div class="tc">${ico("star",13)}5</div></div>
+        <div class="tile"><div class="ti">${ico("bike",26)}</div><div class="tn">户外撒欢</div><div class="tc">${ico("star",13)}10</div></div>
+        <div class="tile"><div class="ti">${ico("cake",26)}</div><div class="tn">一起做美食</div><div class="tc">${ico("star",13)}20</div></div>
+        <div class="tile lack"><div class="ti">${ico("ticket",26)}</div><div class="tn">游乐园通票</div><div class="tc">${ico("star",13)}300</div><div class="lk">还差 179 颗</div></div>
+      </div>
+      ${kidNav('stars')}`),
+  },
+
+  /* ---------- 我的 ---------- */
+  me: {
+    title:'我的 /me',
+    notes:[
+      ['为什么改', '底部最后一格从「家长」改成「我的」——孩子不懂「家长」是什么，但懂「我的」'],
+      ['换人', '已移出本页——<b>换孩子发生在登录页</b>（账号就是身份），「我的」只放孩子自己的东西'],
+      ['齿轮', '56px，<b>不带文字</b>——避免孩子好奇点进去'],
+      ['账本', '数字问题只在这里解释：图标 + 金额 + 日期，负值不用红色'],
+    ],
+    render: () => kidShell(`
+      <div class="body">
+      <div class="me-top">
+        <div class="av">${avatar("rabbit",44)}</div>
+        <div><div class="mn">小月亮</div><div class="mb">连续阅读 3 天 ${ico("flame",14)}</div></div>
+      </div>
+      <button class="gear" onclick="go('gate')">${ico("gear",22)}</button>
+      <div class="ledger">
+        <h3>我的星星 · 怎么来的</h3>
+        ${state.ledger.map(r=>`<div class="lrow"><div class="li">${ico(r.i,18)}</div><div class="ln">${r.n}</div>
+          <div class="lv ${r.neg?'neg':''}">${r.v}</div><div class="ld">${r.d}</div></div>`).join('')}
+      </div>
+      <div class="me-btns">
+        <div class="wcard" style="height:88px;flex-direction:row;gap:10px"><div class="wi">${ico("dog",22)}</div><div class="wt">小黄油</div><div class="ws">${ico("heart",14)} 很开心</div></div>
+        <button class="btn-l btn-ghost" onclick="setStart()">${ico("lock",16)} 我的密码</button>
+      </div>
+      </div>
+      `, 'me'),
+  },
+
+  /* ---------- 孩子端 · 登录（账号 + 密码） ---------- */
+  pin: {
+    title:'孩子端 · 登录（账号 + 密码）',
+    notes:[
+      ['账号从哪来', '家长开通时生成连接标识 <b>BUBU 7K2M9X</b> 作为 account；初始密码是家长生成的那串数字'],
+      ['孩子不用注册', '打开就是自己的账号，通常只需输密码；换设备才需要再扫码'],
+      ['改密码', '首次登录后可改成自己的密码（4–6 位），也可跳过继续用初始密码'],
+      ['和家长门的区别', '孩子密码保护<b>我的数据</b>（可自助修改）；家长门保护<b>设置/导出/支付</b>（家长专用）'],
+      ['出错', '3 次错误 → 冷却 3 秒 +「叫爸爸妈妈帮忙」，不锁死'],
+      ['忘记', '「帮忙」→ 家长门 → 家长端可重置为新初始密码'],
+    ],
+    render: () => `
+      <div class="pinpage">
+        <div class="pin-ava">${avatar('rabbit',64)}</div>
+        <div class="pin-name">小月亮</div>
+        <div class="acct">账号 ${ico('user',12)} BUBU 7K2M9X</div>
+        <div class="pin-sub">输入密码</div>
+        <div class="pin-dots" id="pinDots"><i></i><i></i><i></i><i></i></div>
+        <div class="pin-err" id="pinErr"></div>
+        <div class="keypad">
+          ${[1,2,3,4,5,6,7,8,9].map(n=>`<button onclick="pinKey('${n}')">${n}</button>`).join('')}
+          <button class="kp-ghost" onclick="pinKey('del')">删除</button>
+          <button onclick="pinKey('0')">0</button>
+          <button class="kp-ghost" onclick="pinHelp()">帮忙</button>
+        </div>
+        <div class="pin-foot">
+          <button onclick="go('choose')">换一个孩子</button>
+          <span>·</span>
+          <button onclick="pinHelp()">忘记密码</button>
+        </div>
+      </div>`,
+  },
+
+  /* ---------- 孩子端 · 首次改密码 ---------- */
+  pinset: {
+    title:'孩子端 · 改成自己的密码',
+    notes:[
+      ['时机', '首次登录后自动提示；也可以从「我的 → 我的密码」随时改'],
+      ['两步确认', '输一次 → 再输一次；不一致提示「两次不一样，再来一次」'],
+      ['长度', '4–6 位数字（6 位更安全，孩子自己选）'],
+      ['可跳过', '「先不改，用初始密码」始终可用——不强迫孩子改密码'],
+      ['改完之后', '家长端只知道"已改过"，看不到新密码；忘记只能重置成新的初始密码'],
+    ],
+    render: () => `
+      <div class="pinpage">
+        <div class="pin-ava">${avatar('rabbit',64)}</div>
+        <div class="pin-name">改成你自己的密码</div>
+        <div class="acct">账号 ${ico('user',12)} BUBU 7K2M9X · 首次登录</div>
+        <div class="pin-sub">想一个只有你知道的密码</div>
+        <div class="pin-dots" id="setDots"><i></i><i></i><i></i><i></i></div>
+        <div class="pin-err" id="setErr"></div>
+        <div class="keypad">
+          ${[1,2,3,4,5,6,7,8,9].map(n=>`<button onclick="setKey('${n}')">${n}</button>`).join('')}
+          <button class="kp-ghost" onclick="setKey('del')">删除</button>
+          <button onclick="setKey('0')">0</button>
+          <button class="kp-ghost" onclick="go('me')">先不改</button>
+        </div>
+        <div class="pin-note">忘了也没关系，叫爸爸妈妈帮你重设</div>
+      </div>`,
+  },
+
+  /* ---------- 家长门 ---------- */
+  gate: {
+    title:'家长门 · 家长密码',
+    notes:[
+      ['只有一层', '<b>家长自己设的 6 位密码</b>，不再用认知题——家长不用每次做题，体验更顺'],
+      ['为什么不放认知题', '认知题挡不住"孩子看过家长输入"，反而每次都增加家长的摩擦；改为严格密码 + 限次更实际'],
+      ['防偷看', '默认 6 位（比 4 位安全）；输入时只显示圆点；连续 5 次错误<b>静默退回孩子端</b>，不给试错反馈'],
+      ['免重复输入', '通过后 20 分钟内不再询问；退出家长端或闲置超时后重新输入'],
+      ['忘记', '「忘记密码」→ 手机号验证码重置，不走密保问题'],
+      ['与孩子密码的区别', '家长密码保护<b>设置/导出/支付</b>；孩子密码只保护<b>进入自己的页面</b>'],
+    ],
+    render: () => `
+      <div class="gate">
+        <div class="gate-lock">${ico('lock',26)}</div>
+        <h2>家长密码</h2>
+        <p>输入你设置的 6 位密码，进入家长设置</p>
+        <div class="gate-dots" id="gateDots"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="pin-err" id="gateErr"></div>
+        <div class="keypad" style="margin-top:6px">
+          ${[1,2,3,4,5,6,7,8,9].map(n=>`<button onclick="gateKey('${n}')">${n}</button>`).join('')}
+          <button class="kp-ghost" onclick="gateKey('del')">删除</button>
+          <button onclick="gateKey('0')">0</button>
+          <button class="kp-ghost" onclick="go('me')">取消</button>
+        </div>
+        <div class="gate-foot"><button>忘记密码？用手机号验证</button></div>
+        <div class="warn" style="text-align:center">连续 5 次错误会自动退出家长模式。</div>
+      </div>`,
+  },
+
+  /* ---------- 家长端 · 心愿设置 ---------- */
+  wishset: {
+    title:'心愿设置 /parent/wishes',
+    notes:[
+      ['为什么独立成页', '心愿是唯一"孩子提、家长定价"的双向机制，塞在商店页里家长会漏掉待定价'],
+      ['定价辅助', '给出建议区间 + <b>按最近攒星速度估算需要几周</b>；超过 8 周提示拆成小目标，避免孩子挫败'],
+      ['惊喜模式', '家长可把心愿设为<b>不给孩子看</b>（生日礼物、年底大件），孩子端完全不出现'],
+      ['上限', '同时攒星中的心愿默认最多 3 个——目标太多孩子会失去焦点'],
+      ['拒绝', '不做"驳回"，做<b>温和延后</b>：孩子端显示「这个以后再说」+ 家长写的替代建议'],
+    ],
+    render: () => `
+      <div class="p-app">
+        <div class="p-head"><h1>心愿</h1><div class="d">小月亮 · 待定价 1 · 可兑现 1</div></div>
+        <div class="p-body">
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">待定价</div><div class="pmeta">小月亮 · 1 条</div></div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--p-border)">
+              <div class="ico i-book" style="width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff">${ico('book',18)}</div>
+              <div style="flex:1">
+                <div style="font-size:14px;font-weight:600">去一次天文馆</div>
+                <div style="font-size:11.5px;color:var(--p-text-sub);margin-top:2px">孩子提的 · 建议 80–150 颗星 · 按最近速度约 3 周</div>
+              </div>
+              <button class="pbtn">定价</button>
+            </div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">攒星中</div><div class="pmeta">1 条</div></div>
+            <div style="padding:10px 0;border-top:1px solid var(--p-border)">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div class="ico i-egg" style="width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff">${ico('ticket',18)}</div>
+                <div style="flex:1">
+                  <div style="font-size:14px;font-weight:600">去一次游乐场</div>
+                  <div style="font-size:11.5px;color:var(--p-text-sub);margin-top:2px">定了 100 颗星 · 还差 15 颗（约 2 周）</div>
+                </div>
+                <button class="pbtn ghost" style="height:32px;padding:0 10px">调整</button>
+              </div>
+              <div style="height:8px;border-radius:4px;background:#F0E7FA;margin-top:10px;overflow:hidden">
+                <i style="display:block;height:100%;width:85%;border-radius:4px;background:linear-gradient(90deg,#FF85C1,#A855F7)"></i>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding-top:10px">
+              <span style="font-size:11px;background:#FFF3FA;color:#DB2777;border-radius:6px;padding:2px 7px;font-weight:700">惊喜模式</span>
+              <span style="font-size:11.5px;color:var(--p-text-sub)">孩子端不显示这条</span>
+            </div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">可兑现</div><div class="pmeta">1 条</div></div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--p-border)">
+              <div class="ico i-broom" style="width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff">${ico('heart',18)}</div>
+              <div style="flex:1">
+                <div style="font-size:14px;font-weight:600">换一套恐龙贴纸</div>
+                <div style="font-size:11.5px;color:var(--p-text-sub);margin-top:2px">50 颗星已攒满 · 等家长兑现</div>
+              </div>
+              <button class="pbtn">标记已兑现</button>
+            </div>
+          </div>
+
+          <button class="pbtn ghost" style="width:100%;justify-content:center;height:44px;margin-bottom:12px">+ 代孩子提一个心愿</button>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">规则</div></div>
+            <div class="pset"><span>允许孩子自己提心愿</span><span class="psw on"></span></div>
+            <div class="pset"><span>同时攒星中的心愿上限</span><b>3 个</b></div>
+            <div class="pset"><span>心愿默认有效期</span><b>90 天</b></div>
+            <div class="pset"><span>新心愿默认设为惊喜</span><span class="psw"></span></div>
+          </div>
+
+          <div class="warn">已兑现的心愿会进孩子端「我的星星」账本，孩子能看到"我为它攒过星"。</div>
+        </div>
+        ${pnav('wishset')}
+      </div>`,
+  },
+
+  /* ---------- 家长切到孩子页面（真实页面） ---------- */
+  kidview: {
+    title:'家长切到孩子页面',
+    notes:[
+      ['不是预览', '这就是<b>孩子的真实页面</b>，可打卡、可进商店，与孩子自己看到的一致'],
+      ['顶部细条', '36px「家长查看中 · 点此返回」，5 秒后自动淡出；点屏幕顶部可再唤出'],
+      ['为什么不做只读', '家长切过来通常是为了"帮他点一下"或"看看装扮效果"，只读会让这条路白走'],
+      ['审计', '家长在这台设备上的打卡，流水来源记 <code>parent</code>，家长端可查'],
+      ['孩子看不到', '孩子自己登录时没有这条细条，也不会出现「返回家长端」'],
+    ],
+    render: () => `
+      ${kbar()}
+      ${homeBody()}
+      ${kidNav('home')}`,
+  },
+
+  /* ---------- 家长端 · 孩子管理（列表） ---------- */
+  kids: {
+    title:'家长端 · 孩子管理 /parent/children',
+    notes:[
+      ['层级', '这里是<b>唯一</b>的孩子入口：列表 → 孩子详情 → 详情里才有「给孩子开通」'],
+      ['为什么不做独立菜单', '「开通账号」是孩子的一个属性，不是一级功能；放进详情才符合"一个孩子一套配置"的心智'],
+      ['列表内容', '头像 · 昵称 · 年龄 · 本周进度 · 是否已开通（有账号/未开通）'],
+      ['添加', '「+ 添加孩子」→ 头像/昵称/年龄 → 选模板 → 直接进入孩子详情，提示"现在给孩子开通账号"'],
+    ],
+    render: () => `
+      <div class="p-app">
+        <div class="p-head"><h1>孩子</h1><div class="d">2 个孩子 · 点进去管理</div></div>
+        <div class="p-body">
+          <div class="pcard" onclick="go('child')" style="cursor:pointer">
+            <div class="ph">
+              <div class="pav" style="border-color:var(--k-pink)">${avatar('rabbit',32)}</div>
+              <div class="pnm">小月亮</div>
+              <div class="pmeta">7 岁 · 本周 3/6</div>
+            </div>
+            <div class="prow">账号 <b>BUBU 7K2M9X</b> · 已开通 · 1 台设备</div>
+          </div>
+          <div class="pcard" style="cursor:pointer">
+            <div class="ph">
+              <div class="pav" style="border-color:var(--kid-b)">${avatar('fox',32)}</div>
+              <div class="pnm">小米粒</div>
+              <div class="pmeta">5 岁 · 本周 1/4</div>
+            </div>
+            <div class="prow">账号 <b>未开通</b> · 点进去可以给她开通</div>
+          </div>
+          <button class="pbtn ghost" style="width:100%;justify-content:center;height:44px">+ 添加孩子</button>
+          <div class="warn">最多 4 个孩子；归档孩子不会删除数据，30 天后才会清理。</div>
+        </div>
+        ${pnav('kids')}
+      </div>`,
+  },
+
+  /* ---------- 家长端 · 孩子详情（重做） ---------- */
+  child: {
+    title:'家长端 · 孩子详情 /parent/children/:id',
+    notes:[
+      ['一句话目的', '这是<b>一个孩子的控制台</b>：先看"他现在怎么样"，再去配置，最后才是账号与设备'],
+      ['头图用孩子主色', '每个孩子有专属色（粉/蓝/绿/黄），进来就知道在看谁，也不会和家长端其他孩子混'],
+      ['今日速览放最上', '家长点进来最常见的目的是"孩子今天怎么样"，所以任务/阅读/心情放头部一行'],
+      ['二维码默认折叠', '开通是一次性动作。常驻大二维码会把"孩子详情"变成"开通页"——收进「账号与登录 → 管理」弹层'],
+      ['危险操作单独分组', '归档孩子和其他管理项分开，红色文字 + 二次确认'],
+    ],
+    render: () => `
+      <div class="p-app">
+        <div class="p-head" style="display:flex;align-items:center;gap:10px;padding-bottom:10px">
+          <button onclick="go('kids')" style="font-size:20px;color:var(--p-text-sub);line-height:1">‹</button>
+          <div style="flex:1"><h1 style="font-size:16px">小月亮</h1><div class="d">孩子详情</div></div>
+          <button class="pbtn ghost" style="height:32px;padding:0 10px">编辑</button>
+        </div>
+
+        <div class="p-body" style="padding-top:0">
+
+          <!-- 孩子头图：主色 + 今日速览 -->
+          <div class="kidhead">
+            <div class="kh-top">
+              <div class="kh-ava">${avatar('rabbit',44)}</div>
+              <div style="flex:1">
+                <div class="kh-name">小月亮</div>
+                <div class="kh-meta">7 岁 · 粉色主题 · 本周 3/6</div>
+              </div>
+              <div class="kh-star">${ico('star',13)}<b>29</b></div>
+            </div>
+            <div class="kh-today">
+              <div><b>2/4</b><span>今日任务</span></div>
+              <div><b>20</b><span>阅读分钟</span></div>
+              <div><b>${ico('smile',14)}</b><span>今天开心</span></div>
+            </div>
+            <div class="kh-actions">
+              <button class="pbtn" onclick="go('kidview')">进入她的页面</button>
+              <button class="pbtn ghost" onclick="toggleAcct(true)">账号与登录</button>
+            </div>
+          </div>
+
+          <!-- 本周 -->
+          <div class="pcard" onclick="go('tasks')" style="cursor:pointer">
+            <div class="ph"><div class="pnm">本周进度</div><div class="pmeta">达标目标 6 项</div></div>
+            <div class="pbar"><i style="width:50%"></i></div>
+            <div class="prow" style="margin-top:8px">已达标 <b>3 项</b> · 还差 <b>3 项</b> · 本周得星 <b>29</b></div>
+          </div>
+
+          <!-- 账号与登录（折叠摘要） -->
+          <div class="pcard" onclick="toggleAcct(true)" style="cursor:pointer">
+            <div class="ph"><div class="pnm">账号与登录</div><div class="pmeta">已开通</div></div>
+            <div class="prow">账号 <b>BUBU7K2M9X</b> · 1 台设备已登录</div>
+            <div class="prow" style="color:#8B84A0">孩子首次登录后可改成自己的密码</div>
+            <div class="pactions"><button class="pbtn ghost">管理账号与设备</button></div>
+          </div>
+
+          <!-- 设置分组 -->
+          <div class="pcard">
+            <div class="ph"><div class="pnm">设置</div></div>
+            <div class="kv" onclick="go('tasks')" style="cursor:pointer"><span>任务与奖励</span><b>6 项 ›</b></div>
+            <div class="kv" onclick="go('wishset')" style="cursor:pointer"><span>心愿</span><b>待定价 1 ›</b></div>
+            <div class="kv" style="cursor:pointer"><span>使用时间</span><b>40 分钟/天 ›</b></div>
+            <div class="kv" style="cursor:pointer"><span>内容与隐私</span><b>日记可见 ›</b></div>
+          </div>
+
+          <!-- 最近记录 -->
+          <div class="pcard">
+            <div class="ph"><div class="pnm">最近</div><div class="pmeta">今天</div></div>
+            <div class="ptl">
+              <div><i class="dot-g"></i><span>完成「叫叫阅读」+3⭐</span><em>18:20</em></div>
+              <div><i class="dot-p"></i><span>写了心情：今天数学考了 100</span><em>18:05</em></div>
+              <div><i class="dot-b"></i><span>拍了 1 张作业照片</span><em>17:40</em></div>
+            </div>
+            <div class="pactions"><button class="pbtn ghost">查看全部记录</button></div>
+          </div>
+
+          <!-- 管理（含危险操作） -->
+          <div class="pcard">
+            <div class="ph"><div class="pnm">管理</div></div>
+            <div class="kv"><span>复制配置到另一个孩子</span><b>›</b></div>
+            <div class="kv"><span>重置本周数据</span><b>›</b></div>
+            <div class="kv danger"><span>归档这个孩子</span><b>›</b></div>
+            <div class="warn">归档不会立刻删除数据，30 天内可在「已归档」里恢复。</div>
+          </div>
+        </div>
+        ${pnav('kids')}
+        ${acctOpen ? acctSheet() : ''}
+      </div>`,
+  },
+
+  /* ---------- 家长概览 ---------- */
+  parent: {
+    title:'家长概览 /parent',
+    notes:[
+      ['不是设置页', '家长端首页 = 每个孩子一张今日卡，而不是一堆设置项；设置沉到二级'],
+      ['待处理', '把「需要家长动手的事」聚合：心愿待定价、待兑现、模板未确认'],
+      ['密度', '家长端 40px 控件、14px 正文、白灰底、仅 1px 边框——与孩子端完全两套'],
+      ['一致性', '家长端<b>不做</b>庆祝动画、不做飞星、不用 72px 按钮'],
+    ],
+    render: () => `
+      <div class="p-app">
+        <div class="p-head"><h1>概览</h1><div class="d">3月12日 · 星期四</div></div>
+        <div class="p-body">
+          <div class="pcard">
+            <div class="ph"><div class="pav">${avatar("rabbit",26)}</div><div class="pnm">小月亮</div><div class="pmeta">本周 3 / 6 · ${ico("star",12)}29</div></div>
+            <div class="prow">今日：<b>2 个任务 · 阅读 20 分 · 1 张图</b></div>
+            <div class="prow">心情：${ico("smile",14)} <b>今天数学考了 100</b></div>
+            <div class="prow">布布说：<b>数学作业一次做完，比昨天快了 12 分钟</b></div>
+            <div class="pactions"><button class="pbtn">看报告</button><button class="pbtn ghost">去配置</button></div>
+          </div>
+          <div class="pcard">
+            <div class="ph"><div class="pav" style="border-color:var(--kid-b)">${avatar("fox",26)}</div><div class="pnm">小米粒</div><div class="pmeta">本周 1 / 4 · ${ico("star",12)}12</div></div>
+            <div class="prow">今日：<b>1 个任务 · 还没有阅读</b></div>
+            <div class="prow">布布说：<b>今天还没打开过，可以提醒一下</b></div>
+          </div>
+          <div class="todo"><span>小米粒提了 1 个心愿，等你定价</span><button class="pbtn">去定价</button></div>
+          <div class="warn">家长端不展示任何排行榜，也不跨孩子比较。</div>
+        </div>
+        ${pnav('parent')}
+      </div>`,
+  },
+
+  /* ---------- 家长端 · 运动目标 ---------- */
+  pexercise: {
+    title:'家长端 · 运动目标（任务 tab 第 2 段）',
+    notes:[
+      ['为什么放任务 tab', '运动目标本质是"一周做几次"，和任务同构，放一起家长不用记两个地方'],
+      ['可配项', '周目标次数 · 每次达标得星 · 运动类型（增删排序）· 是否允许孩子自己加类型'],
+      ['给星要能解释', '运动达标写 <code>star_ledger.reason = exercise</code>，孩子账本能看到来源'],
+      ['与任务的区别', '任务按"次数累加到达标"，运动按"每次记录即 1 次"，达标只看本周次数'],
+    ],
+    render: () => `
+      <div class="p-app">
+        <div class="p-head"><h1>任务与目标</h1><div class="d">小月亮 · 本周 3 个任务 · 运动 2/3 次</div></div>
+        <div class="seg">
+          <button onclick="go('tasks')">任务清单</button>
+          <button class="on">运动目标</button>
+          <button onclick="go('pquests')">闯关</button>
+        </div>
+        <div class="p-body" style="padding-top:0">
+          <div class="pcard">
+            <div class="ph"><div class="pnm">本周目标</div><div class="pmeta">已 2 / 3 次</div></div>
+            <div class="kv"><span>每周运动目标</span><b>3 次 ›</b></div>
+            <div class="kv"><span>每次达标得星</span><b>2 颗 ›</b></div>
+            <div class="kv"><span>达标后点亮火苗</span><b class="psw on" style="display:inline-block"></b></div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">运动类型</div><div class="pmeta">4 种 · 可拖动排序</div></div>
+            <div class="prow" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
+              <span class="tagpill">跳绳</span><span class="tagpill">骑车</span>
+              <span class="tagpill">跑步</span><span class="tagpill">羽毛球</span>
+              <span class="tagpill add">+ 添加</span>
+            </div>
+            <div class="kv" style="margin-top:10px"><span>允许孩子自己添加类型</span><b class="psw"></b></div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">记录方式</div></div>
+            <div class="kv"><span>孩子记录</span><b>选类型 + 填分钟 ›</b></div>
+            <div class="kv"><span>需要拍照</span><b class="psw"></b></div>
+            <div class="warn">运动默认不需要拍照；开了会让孩子每次运动都拍照，通常没必要。</div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">最近记录</div><div class="pmeta">本周 2 条</div></div>
+            <div class="kv"><span>跳绳 · 20 分钟</span><b style="color:#8B84A0">昨天</b></div>
+            <div class="kv"><span>骑车 · 30 分钟</span><b style="color:#8B84A0">周二</b></div>
+          </div>
+        </div>
+        ${pnav('tasks')}
+      </div>`,
+  },
+
+  /* ---------- 家长端 · 闯关设置 ---------- */
+  pquests: {
+    title:'家长端 · 闯关设置（任务 tab 第 3 段）',
+    notes:[
+      ['谁能建关卡', '默认<b>只有家长能建</b>（孩子自己加关卡会为了攒星乱建）；可开"允许孩子自己加"'],
+      ['通关给星', '默认每次 1 颗；可设 0（只做记录不给星）'],
+      ['防刷星', '本周新增上限默认 10 关，超过后不再计星'],
+      ['再闯一次', '默认开启：已通关的关卡不锁，允许复习（但不重复给星）'],
+    ],
+    render: () => `
+      <div class="p-app">
+        <div class="p-head"><h1>任务与目标</h1><div class="d">小月亮 · 本周新增 5 关 · 已通关 7 关</div></div>
+        <div class="seg">
+          <button onclick="go('tasks')">任务清单</button>
+          <button onclick="go('pexercise')">运动目标</button>
+          <button class="on">闯关</button>
+        </div>
+        <div class="p-body" style="padding-top:0">
+          <div class="pcard">
+            <div class="ph"><div class="pnm">学科</div><div class="pmeta">3 个</div></div>
+            <div class="prow" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
+              <span class="tagpill">数学</span><span class="tagpill">语文</span><span class="tagpill">英语</span>
+              <span class="tagpill add">+ 添加</span>
+            </div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">奖励</div></div>
+            <div class="kv"><span>每次通关得星</span><b>1 颗 ›</b></div>
+            <div class="kv"><span>本周新增上限</span><b>10 关 ›</b></div>
+            <div class="warn">超过上限后仍可记录关卡，但不再计星，避免为了攒星乱加关。</div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">规则</div></div>
+            <div class="kv"><span>允许孩子自己添加关卡</span><b class="psw"></b></div>
+            <div class="kv"><span>已通关的可以「再闯一次」</span><b class="psw on"></b></div>
+            <div class="kv"><span>再闯一次重复给星</span><b class="psw"></b></div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">快速录一关</div></div>
+            <div class="kv"><span>数学 · 第 13 关</span><b>待闯 ›</b></div>
+            <button class="pbtn ghost" style="width:100%;justify-content:center;height:40px;margin-top:8px">+ 添加关卡</button>
+          </div>
+        </div>
+        ${pnav('tasks')}
+      </div>`,
+  },
+
+  /* ---------- 任务配置 ---------- */
+  tasks: {
+    title:'家长端 · 任务清单 /parent/tasks',
+    notes:[
+      ['效率', '行内步进器直接改，<b>改完自动保存</b>，没有「保存」按钮'],
+      ['拍照', '两个独立字段：<code>photo_visible</code>（显示）与 <code>photo_required</code>（必填）'],
+      ['默认', '所有任务默认<b>显示</b>（=可选拍照），不强制'],
+      ['复制', '复制上周 / 复制到另一个孩子，只复制定义不复制进度'],
+    ],
+    render: () => `
+      <div class="p-app">
+        <div class="p-head"><h1>任务与目标</h1><div class="d">小月亮 · 6 个任务 · 运动 2/3 次 · 闯关待闯 5</div></div>
+        <div class="seg">
+          <button class="on">任务清单</button>
+          <button onclick="go('pexercise')">运动目标</button>
+          <button onclick="go('pquests')">闯关</button>
+        </div>
+        <div class="p-body">
+          ${[
+            ['bag','学校作业','每周 7 次',2,true,true],
+            ['book','叫叫阅读','每天',3,true,false],
+            ['broom','做家务','每周 3 次',2,true,false],
+            ['calc','口算','每天',1,false,false],
+            ['map','预习课文','每周 2 次',2,true,false],
+          ].map(([ic,n,cyc,star,vis,req])=>`
+          <div class="pcard" style="padding:12px 14px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div class="ico i-${ic}" style="width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;color:#fff">${ico(ic,17)}</div>
+              <div style="flex:1">
+                <div style="font-size:14px;font-weight:600">${n}</div>
+                <div style="font-size:11.5px;color:#6B6480;margin-top:2px">
+                  ${cyc} · 得 ${star} 颗星 · 拍照 ${req?'<b style="color:#DB2777">必填</b>':vis?'可选':'不显示'}
+                </div>
+              </div>
+              <button class="pbtn ghost" style="height:32px;padding:0 10px">编辑</button>
+            </div>
+          </div>`).join('')}
+          <button class="pbtn" style="width:100%;justify-content:center;height:44px">+ 添加任务</button>
+          <div class="warn">点「编辑」进入底部弹层：名称 · 图标（系统/上传/豆包画）· <b>周期</b>（每天 / 每周 N 次 / 每周固定几天 / 每月 N 次 / 只做一次）· 次数 · 奖励 · 拍照</div>
+        </div>
+        ${pnav('tasks')}
+      </div>`,
+  },
+
+  /* ---------- 孩子端 · 动起来 ---------- */
+  exercise: {
+    title:'动起来 /exercise',
+    notes:[
+      ['对照', '与阅读同一套结构：周目标 + 记录 + 最好成绩，减少学习成本'],
+      ['只和自己比', '最好成绩永远只显示"我的纪录"，<b>不出现他人数据</b>'],
+      ['录入', '底部弹层：类型 4 选 1 + 分钟步进（5 分钟一档）'],
+    ],
+    render: () => kidShell(`
+      <div class="hero" style="height:126px">
+        <div class="name">动起来</div>
+        <div class="chest">
+          <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--k-text-strong);font-weight:700">
+            <span>本周 2 / 3 次</span><span>共 65 分钟</span>
+          </div>
+          <div class="bar"><i style="width:66%"></i></div>
+          <div style="display:flex;gap:6px;margin-top:10px">
+            ${[1,2,3].map(i=>`<div class="cell ${i<=2?'open':''}">${i<=2?ico('flame',16):''}</div>`).join('')}
+            <span style="font-size:12px;color:#4A2666;margin-left:auto;font-weight:600">达标得 2 颗星</span>
+          </div>
+        </div>
+      </div>
+      <div class="sec">我的最好成绩</div>
+      <div style="padding:0 16px">
+        <div class="wcard" style="height:auto;padding:14px;align-items:stretch">
+          <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700"><span>跳绳</span><span style="color:var(--k-text-sub)">120 个 / 分钟</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700;margin-top:10px"><span>骑车</span><span style="color:var(--k-text-sub)">30 分钟</span></div>
+        </div>
+      </div>
+      <div class="sec">最近</div>
+      <div class="tasks">
+        ${[['跳绳','20 分钟','昨天'],['骑车','30 分钟','周二'],['跳绳','15 分钟','周一']].map(([t,m,d])=>`
+          <div class="task" style="height:72px">
+            <div class="ico i-broom">${ico('bike',22)}</div>
+            <div class="mid"><div class="ttl">${t}</div>
+              <div class="meta"><span class="give" style="color:var(--k-text-sub)">${m}</span></div></div>
+            <div style="font-size:12px;color:#B3A5C9">${d}</div>
+          </div>`).join('')}
+      </div>
+      <div class="me-btns" style="padding-top:16px">
+        <button class="btn-l btn-primary">记录一次运动</button>
+      </div>
+      `, 'exercise'),
+  },
+
+  /* ---------- 孩子端 · 说说话 ---------- */
+  chat: {
+    title:'说说话 /chat',
+    notes:[
+      ['布布先开口', '顶部「今日回顾」由 get_today_snapshot 生成，孩子不用想"说什么"'],
+      ['语音优先', '麦克风 72px 点一下开始/结束；文本是备选'],
+      ['回复短', '每条 ≤40 字 + 1 个表情；不用 markdown、不用列表'],
+      ['快捷气泡', '4 个气泡预绑工具，避免多轮规划，也降低打字量'],
+    ],
+    render: () => `
+      <div class="chatwrap">
+        <div class="chathead">
+          <div class="ch-ava">${avatar('rabbit',30)}</div>
+          <div><div class="ch-name">布布</div><div class="ch-sub">小月亮的好朋友</div></div>
+        </div>
+        <div class="chatbody">
+          <div class="reviewbar">${ico('star',13)} 今天你读了 20 分钟，还差 2 个任务就开宝箱啦</div>
+          <div class="msg bub">
+            <div class="b-ava">${avatar('rabbit',26)}</div>
+            <div class="bubble-s">小月亮，今天想聊什么呀？${ico('smile',13)}</div>
+          </div>
+          <div class="msg kid"><div class="bubble-s">我今天表现怎么样</div></div>
+          <div class="msg bub">
+            <div class="b-ava">${avatar('rabbit',26)}</div>
+            <div class="bubble-s">你完成了 2 个任务，读了 20 分钟书，还写了心情，今天很稳哦 ${ico('star',13)}</div>
+          </div>
+          <div class="msg kid"><div class="bubble-s">那我明天要做什么</div></div>
+          <div class="msg bub">
+            <div class="b-ava">${avatar('rabbit',26)}</div>
+            <div class="bubble-s"><span class="typing"><i></i><i></i><i></i></span></div>
+          </div>
+        </div>
+        <div class="chips">
+          <button>我今天表现怎么样</button>
+          <button>陪我复盘</button>
+          <button>我想许个愿</button>
+          <button>夸夸我</button>
+        </div>
+        <div class="chatbar">
+          <button class="textbtn">输入文字</button>
+          <button class="mic">${ico('mic',24)}<span>按住说话</span></button>
+        </div>
+      </div>
+      ${kidNav('chat')}`,
+  },
+
+  /* ---------- 孩子端 · 闯关 ---------- */
+  quests: {
+    title:'闯关 /quests',
+    notes:[
+      ['术语', '错题 → 关卡、掌握 → 通关、复习 → 再闯一次；孩子看到的是地图不是台账'],
+      ['统计保留', '共 12 关 · 已通关 7 关，但用<b>图形</b>呈现而不是分数'],
+      ['永远可再闯', '已通关的关卡不锁，允许快乐复习'],
+    ],
+    render: () => kidShell(`
+      <div class="hero" style="height:118px">
+        <div class="name">闯关</div>
+        <div class="chest">
+          <div style="font-size:14px;color:var(--k-text-strong);font-weight:700">共 12 关 · 已通关 7 关</div>
+          <div class="bar" style="margin-top:8px"><i style="width:58%"></i></div>
+          <div style="display:flex;gap:5px;margin-top:8px">
+            ${Array.from({length:12}).map((_,i)=>`<span style="flex:1;height:6px;border-radius:3px;background:${i<7?'linear-gradient(90deg,#FF85C1,#A855F7)':'rgba(255,255,255,.6)'}"></span>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="subtabs">
+        <button class="on">全部</button><button>数学</button><button>语文</button><button>英语</button>
+      </div>
+      <div class="questgrid">
+        ${[
+          ['数学','第 3 关','待闯',false],
+          ['语文','第 5 关','已通关',true],
+          ['英语','第 2 关','待闯',false],
+          ['数学','第 1 关','已通关',true],
+        ].map(([s,t,st,done])=>`
+          <div class="quest ${done?'done':''}">
+            <div class="q-top">${ico(done?'check':'map',18)}<span>${s}</span></div>
+            <div class="q-name">${t}</div>
+            <div class="q-st">${st}${done ? '' : ' · 通关得 1 颗星'}</div>
+            <button class="q-btn">${done?'再闯一次':'开始闯关'}</button>
+          </div>`).join('')}
+      </div>
+      `, 'me'),
+  },
+
+  /* ---------- 孩子端 · 签到 ---------- */
+  checkin: {
+    title:'签到 /checkin',
+    notes:[
+      ['彩蛋', '每天 4 个（家长可配），点开有裂壳动效，每个给多少星由家长设'],
+      ['心情', '5 个表情 + 一句话；写心情得星，一天一次'],
+      ['沉淀', '心情攒成小日记，家长端可导出图片（P1）'],
+    ],
+    render: () => kidShell(`
+      <div class="hero" style="height:110px">
+        <div class="name">今天的小惊喜</div>
+        <div style="font-size:13px;color:#4A2666;font-weight:600;margin-top:6px">已开 2 个，还剩 2 个</div>
+      </div>
+      <div class="sec">开彩蛋</div>
+      <div class="egggrid">
+        ${[1,2,3,4].map(i=>`
+          <button class="egg ${i<=2?'opened':''}">
+            ${i<=2 ? ico('check',22) : ico('egg',28)}
+            <span>${i<=2?'+1 颗星':'点我'}</span>
+          </button>`).join('')}
+      </div>
+      <div class="sec">今天心情怎么样</div>
+      <div class="moods">
+        ${['很开心','还行','有点累','有点难过','生气'].map((m,i)=>`
+          <button class="${i===0?'on':''}">${ico(['smile','calm','tired','sad','angry'][i],22)}<span>${m}</span></button>`).join('')}
+      </div>
+      <div style="padding:12px 16px">
+        <div class="writebox">今天数学考了 100 分！</div>
+      </div>
+      <div class="me-btns" style="padding-top:4px">
+        <button class="btn-l btn-primary">保存心情 · 得 2 颗星</button>
+      </div>
+      `, 'me'),
+  },
+
+  /* ---------- 家长端 · 我的 ---------- */
+  settings: {
+    title:'家长端 · 我的 /parent/settings',
+    notes:[
+      ['家长端最后一格', '使用时间、内容与隐私、账号与安全、退出，四组'],
+      ['不是孩子能来的地方', '这一页在家长密码之后；「退出家长端」直接回孩子端'],
+      ['危险操作收尾', '删除孩子数据放在最后，二次确认 + 需要家长密码'],
+    ],
+    render: () => `
+      <div class="p-app">
+        <div class="p-head"><h1>我的</h1><div class="d">妈妈 · 2 个孩子 · 已设置家长密码</div></div>
+        <div class="p-body">
+          <div class="pcard">
+            <div class="ph"><div class="pnm">使用时间</div></div>
+            <div class="kv"><span>每天可以玩</span><b>40 分钟 ›</b></div>
+            <div class="kv"><span>休息间隔</span><b>玩 20 分歇 5 分 ›</b></div>
+            <div class="kv"><span>睡觉时间</span><b>21:00 – 07:00 ›</b></div>
+          </div>
+          <div class="pcard">
+            <div class="ph"><div class="pnm">内容与隐私</div></div>
+            <div class="kv"><span>家长可看小日记</span><b>已开启 ›</b></div>
+            <div class="kv"><span>家长可看完整对话</span><b>已开启 ›</b></div>
+            <div class="kv"><span>允许导出图片</span><b>已开启 ›</b></div>
+            <div class="kv"><span>需要关注的消息</span><b style="color:#DB2777">0 条 ›</b></div>
+          </div>
+          <div class="pcard">
+            <div class="ph"><div class="pnm">账号与安全</div></div>
+            <div class="kv"><span>家长密码</span><b>已设置 · 修改 ›</b></div>
+            <div class="kv"><span>家庭账号</span><b>138****6721 ›</b></div>
+            <div class="kv"><span>监护人同意记录</span><b>2026-03-01 ›</b></div>
+          </div>
+          <div class="pcard">
+            <div class="ph"><div class="pnm">其他</div></div>
+            <div class="kv" style="cursor:pointer"><span>退出家长端</span><b>›</b></div>
+            <div class="kv danger"><span>删除某个孩子的全部数据</span><b>›</b></div>
+            <div class="warn">删除会同时清理任务、记录、照片与对话，30 天后不可恢复。</div>
+          </div>
+        </div>
+        ${pnav('settings')}
+      </div>`,
+  },
+
+  /* ---------- 家长端 · 周报 ---------- */
+  /* ---------- 家长端 · 周期报告 ---------- */
+  report: {
+    title:'家长端 · 周期报告 /parent/reports',
+    notes:[
+      ['为什么不再叫周报', '任务周期可以是每天 / 每周 / 每月 / 一次性，<b>"本周达标 3/6"这种口径已经对不上</b>'],
+      ['两个时间概念', '① <b>报告区间</b>（最近 7 / 30 天，用于阅读·运动·星星·心情的区间统计）② <b>任务周期</b>（每个任务按自己的周期各自计数）'],
+      ['结构', '按周期分组 → 每组给该周期的达标情况 → 再给区间统计 → 最后给建议'],
+      ['数字必须对得上', '任一数字都能在对应页面找到同名同值；不一致视为缺陷'],
+    ],
+    render: () => `
+      <div class="p-app">
+        <div class="p-head" style="display:flex;align-items:center;gap:10px;padding-bottom:12px">
+          <button onclick="go('parent')" style="font-size:19px;color:#7C64A6;line-height:1">‹</button>
+          <div style="flex:1"><h1>小月亮 · 周期报告</h1><div class="d">3月6日 – 3月12日</div></div>
+        </div>
+
+        <div class="seg" style="padding-top:4px">
+          <button class="on">最近 7 天</button>
+          <button>最近 30 天</button>
+          <button>自定义</button>
+        </div>
+
+        <div class="p-body" style="padding-top:0">
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">每天的任务</div><div class="pmeta">2 个 · 7 天完成率 79%</div></div>
+            <div class="pbar"><i style="width:79%"></i></div>
+            <div class="mini-bars">
+              ${[100,83,66,100,100,50,33].map((v,i)=>`<div><span style="height:${Math.max(8,v*0.42)}px"></span><em>${['一','二','三','四','五','六','日'][i]}</em></div>`).join('')}
+            </div>
+            <div class="kv"><span>叫叫阅读</span><b>6 / 7 天达标</b></div>
+            <div class="kv"><span>口算</span><b>5 / 7 天达标</b></div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">每周的任务</div><div class="pmeta">2 个 · 本周 1/2 达标</div></div>
+            <div class="kv"><span>学校作业</span><b>6 / 7 次</b></div>
+            <div class="kv"><span>预习课文</span><b>2 / 2 次 · 已达标</b></div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">每月 / 一次性</div><div class="pmeta">本月 0/1 · 待完成 1</div></div>
+            <div class="kv"><span>读完一本整书</span><b>0 / 1 本</b></div>
+            <div class="kv"><span>春游准备清单</span><b>还差 1 项 · 3月20日截止</b></div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">区间统计</div><div class="pmeta">最近 7 天</div></div>
+            <div class="kv"><span>阅读</span><b>140 分钟 · 比上期多 20%</b></div>
+            <div class="kv"><span>运动</span><b>3 次 · 65 分钟</b></div>
+            <div class="kv"><span>心情</span><b>5 天写了 · 多数是开心</b></div>
+            <div class="kv"><span>星星</span><b><span style="color:#15803D">+29</span> · 用掉 10 · 现有 29</b></div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">布布看到</div></div>
+            <div class="prow">· 每天的任务在周中很稳，<b>周末掉到 50% 以下</b></div>
+            <div class="prow">· 口算比上周多做了 4 次</div>
+          </div>
+
+          <div class="pcard" style="border-left:3px solid var(--k-purple)">
+            <div class="ph"><div class="pnm">接下来可以这样</div></div>
+            <div class="prow">把周末的口算改成"上午做一次"，比晚上更容易完成。</div>
+          </div>
+
+          <button class="pbtn" style="width:100%;justify-content:center;height:44px">保存图片</button>
+        </div>
+        ${pnav('parent')}
+      </div>`,
+  },
+
+  /* ---------- 家长端 · 记录 ---------- */
+  records: {
+    title:'家长端 · 记录 /parent/records',
+    notes:[
+      ['三类', '小日记（按日期）· 对话摘要 + 工具审计 · 需要关注'],
+      ['工具审计', '「布布查了什么」只列工具名与时间，不暴露原始 JSON'],
+      ['危机信令', '命中安全词的消息永久保留，在这里优先展示'],
+    ],
+    render: () => `
+      <div class="p-app">
+        <div class="p-head"><h1>小月亮 · 记录</h1><div class="d">日记 5 篇 · 对话 3 段 · 待关注 0</div></div>
+        <div class="p-body">
+          <div class="pcard">
+            <div class="ph"><div class="pnm">需要关注</div><div class="pmeta">0 条</div></div>
+            <div class="prow" style="color:#8B84A0">最近 30 天没有需要关注的消息。</div>
+          </div>
+          <div class="pcard">
+            <div class="ph"><div class="pnm">小日记</div><div class="pmeta">5 篇</div></div>
+            ${[['3月12日','很开心','今天数学考了 100 分！'],['3月11日','有点累','跳绳跳了 100 个']].map(([d,m,c])=>`
+              <div class="diary">
+                <div class="d-head"><span>${d}</span><span class="d-mood">${m}</span></div>
+                <div class="d-body">${c}</div>
+              </div>`).join('')}
+            <button class="pbtn ghost" style="width:100%;justify-content:center;height:40px;margin-top:10px">导出图片</button>
+          </div>
+          <div class="pcard">
+            <div class="ph"><div class="pnm">对话摘要</div><div class="pmeta">3 段</div></div>
+            <div class="prow">3月12日 · 聊了数学小测，情绪从难过转为被鼓励；答应明天讲恐龙故事。</div>
+            <div class="prow" style="color:#8B84A0;margin-top:6px">布布查了什么：今日快照 · 任务 · 阅读</div>
+            <button class="pbtn ghost" style="width:100%;justify-content:center;height:40px;margin-top:10px">查看完整对话</button>
+          </div>
+        </div>
+        ${pnav('kids')}
+      </div>`,
+  },
+
+  /* ---------- 拍照完成弹层 ---------- */
+  photo: {
+    title:'拍照完成（弹层）',
+    notes:[
+      ['触发', '仅 <code>photo_required = true</code> 的任务：点 +1 → 拍照 → 才算完成'],
+      ['取消', '取消 = <b>不计次数、不给星</b>；不能先完成再补图，否则证据不成立'],
+      ['性能', '系统相机直调（不弹选图框）· 本地压缩 ≤1MB · <b>完成判定不等上传</b>'],
+      ['失败', '上传失败标 <code>media_pending</code>，后台重试 3 次；孩子进度不丢'],
+    ],
+    render: () => kidShell(homeBody(true), 'home', true),
+  },
+};
+
+/* =========================================================
+   组件片段
+   ========================================================= */
+function kidShell(inner, active, withSheet){
+  return `${inner}
+    ${kidNav(active)}
+    ${withSheet ? photoSheet() : ''}`;
+}
+
+function kidNav(active){
+  const items = [
+    ['home','本周','M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'],
+    ['reading','阅读','M4 5a2 2 0 0 1 2-2h5v18H6a2 2 0 0 1-2-2zM13 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5z'],
+    ['exercise','动起来','M12 4a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM6 20l3-6 3 2 3-6 3 4'],
+    ['chat','说说话','M21 12a8 8 0 1 1-3.1-6.3L21 4l-1.3 4.2A8 8 0 0 1 21 12z'],
+    ['me','我的','M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4 3.6-6 8-6s8 2 8 6'],
+  ];
+  return `<nav class="nav">
+    ${items.map(([k,label,d])=>`
+      <button class="${k===active?'on':''}" onclick="go('${k==='home'?'home':k}')">
+        <svg viewBox="0 0 24 24"><path d="${d}" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>${label}</span>
+      </button>`).join('')}
+  </nav>`;
+}
+
+function homeBody(withPhotoSheet){
+  const daily  = state.tasks.filter(t => t.cycle === 'daily');
+  const weekly = state.tasks.filter(t => t.cycle !== 'daily');
+  const doneCount = arr => arr.filter(t => t.cur >= t.target).length;
+
+  const chestTotal = daily.length || 1;
+  const chestOpen  = doneCount(daily);
+  const pct = Math.round(chestOpen / chestTotal * 100);
+  const cells = Array.from({length: chestTotal}).map((_,i)=>
+    `<div class="cell ${i<chestOpen?'open':''}">${i<chestOpen?ico("gift",18):''}</div>`).join('');
+
+  const row = t => {
+    const done = t.cur >= t.target;
+    const near = !done && t.target - t.cur === 1;
+    const dots = Array.from({length:Math.min(t.target,7)}).map((_,i)=>
+      `<i class="${i<t.cur?'on':''}"></i>`).join('');
+    return `<div class="task ${done?'done':''} ${near?'near':''}" id="task-${t.id}"
+              onclick="checkin('${t.id}', event)">
+      <div class="ico i-${t.icon}">${ico(t.icon,24)}</div>
+      <div class="mid">
+        <div class="ttl">${t.name}
+          <span class="cyc">${t.cycleText}</span>
+          ${t.visible?`<span class="cam ${t.required?'req':''}">${ico("camera",12)}${t.required?'必拍':''}</span>`:''}
+        </div>
+        <div class="meta"><div class="dots">${dots}</div>
+          <span class="give">${done?'已完成':'完成得 '+t.star+' 颗星'}${near?'<span style="color:#DB2777;margin-left:4px">· 差 1 次</span>':''}</span>
+        </div>
+      </div>
+      <div class="plus">${done?'已完成':'+1'}</div>
+      <div class="stamp">${ico("check",22)}</div>
+      ${t.media?`<img class="thumb" src="data:image/svg+xml;utf8,${encodeURIComponent(thumbSvg())}" alt="">`:''}
+    </div>`;
+  };
+
+  return `
+  <div class="body">
+    <div class="hero">
+      <div class="name">${state.kid} <small>的星期天 ${ico("sun",15)}</small></div>
+      <div class="chest">
+        <div class="row">${cells}<div class="left">今日还差 ${chestTotal-chestOpen} 个</div></div>
+        <div class="bar"><i style="width:${pct}%"></i></div>
+      </div>
+    </div>
+    <div class="bubble" onclick="go('reading')">
+      <div class="ava">${ico("star",20)}</div>
+      <div class="txt">今天你读了 20 分钟，再完成 1 个任务就开宝箱啦</div>
+      <div class="arrow">›</div>
+    </div>
+
+    <div class="sech"><span>今天要做</span><em>${doneCount(daily)}/${daily.length} 已完成</em></div>
+    <div class="tasks">${daily.map(row).join('')}</div>
+
+    <div class="sech"><span>本周要做</span><em>${doneCount(weekly)}/${weekly.length} 已达标</em></div>
+    <div class="tasks">${weekly.map(row).join('')}</div>
+
+    <div class="world">
+      <div class="wcard" onclick="go('stars')"><div class="wi">${ico("gift",22)}</div><div class="wt">商店</div><div class="ws">心愿 85%</div></div>
+      <div class="wcard" onclick="go('quests')"><div class="wi">${ico("map",22)}</div><div class="wt">闯关</div><div class="ws">待闯 5 关</div></div>
+      <div class="wcard" onclick="go('checkin')"><div class="wi">${ico("egg",22)}</div><div class="wt">签到</div><div class="ws">今天 2/4</div></div>
+    </div>
+  </div>`;
+}
+
+function photoSheet(){
+  return `
+  <div class="sheet on" id="photoSheet">
+    <div class="panel">
+      <h3>拍一张，就算完成啦</h3>
+      <p class="hint">拍作业本或作品就好，不用拍到脸</p>
+      <label class="drop" id="drop">
+        <input type="file" accept="image/*" capture="environment" style="display:none" onchange="pickPhoto(this)">
+        <div>${ico("camera",34)}</div>
+        <div>点这里拍照，或从相册选</div>
+      </label>
+      <div class="btns">
+        <button class="btn-l btn-ghost" onclick="closeSheet('photoSheet')">取消</button>
+        <button class="btn-l btn-primary" onclick="confirmPhoto()">${ico("check",18)} 完成</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function thumbSvg(){
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56">
+    <rect width="56" height="56" rx="10" fill="#EDE0FD"/><g stroke="#7C4FB0" stroke-width="2" fill="none" stroke-linecap="round"><path d="M21 14h9l5 5v18H21z"/><path d="M30 14v5h5"/></g></svg>`;
+}
+
+/* =========================================================
+   交互
+   ========================================================= */
+let picked = null;
+
+function checkin(id, ev){
+  const t = state.tasks.find(x=>x.id===id);
+  if(!t || t.cur>=t.target) return;
+  // 必填拍照 → 走拍照弹层
+  if(t.required && t.media===0){
+    go('photo'); return;
+  }
+  const el = document.getElementById('task-'+id);
+  flyStar(el, ev);
+  t.cur++;
+  render();
+}
+
+function flyStar(el, ev){
+  const r = el.getBoundingClientRect();
+  const star = document.createElement('div');
+  star.className='fly'; star.innerHTML=ico('star',18);
+  star.style.left = (r.right-150)+'px'; star.style.top = (r.top+34)+'px';
+  document.body.appendChild(star);
+  const chest = document.querySelector('.chest');
+  const c = chest ? chest.getBoundingClientRect() : r;
+  requestAnimationFrame(()=>{
+    star.style.transition='transform .7s cubic-bezier(.4,0,.2,1), opacity .7s';
+    star.style.transform = `translate(${(c.left+40)-(r.right-150)}px, ${(c.top+20)-(r.top+34)}px) scale(.7) rotate(180deg)`;
+    star.style.opacity='.2';
+  });
+  setTimeout(()=>star.remove(), 760);
+}
+
+function pickPhoto(input){
+  const f = input.files && input.files[0];
+  if(!f) return;
+  const url = URL.createObjectURL(f);
+  picked = url;
+  const drop = document.getElementById('drop');
+  drop.innerHTML = `<img src="${url}" alt="preview">`;
+}
+
+function confirmPhoto(){
+  const t = state.tasks.find(x=>x.required && x.media===0);
+  if(t){ t.cur = Math.min(t.target, t.cur+1); t.media = 1; }
+  render();
+}
+
+function pnav(active){
+  const items = [
+    ['parent','概览','M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-4v-6H8v6H4a1 1 0 0 1-1-1z'],
+    ['tasks','任务','M4 6h16M4 12h16M4 18h10'],
+    ['wishset','心愿','M12 20s-7-4.3-7-9a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 4.7-7 9-7 9z'],
+    ['kids','孩子','M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4 3.6-6 8-6s8 2 8 6'],
+    ['settings','我的','M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2 2 2 0 1 1-4 0 1.7 1.7 0 0 0-2.9-1.2l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.7 1.7 0 0 0 3 15a2 2 0 1 1 0-4 1.7 1.7 0 0 0 1.2-2.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.7 1.7 0 0 0 10 4.6a2 2 0 1 1 4 0 1.7 1.7 0 0 0 2.9 1.2l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1A1.7 1.7 0 0 0 21 11a2 2 0 1 1 0 4z'],
+  ];
+  return `<nav class="pnav">
+    ${items.map(([k,label,d]) => `
+      <button class="${k===active?'on':''}" onclick="go('${k}')">
+        <svg viewBox="0 0 24 24"><path d="${d}" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>${label}</span>
+      </button>`).join('')}
+  </nav>`;
+}
+
+/* 账号与登录弹层（家长端） */
+let acctOpen = false;
+function toggleAcct(open){ acctOpen = !!open; render(); }
+
+function acctSheet(){
+  return `
+  <div class="psheet" onclick="if(event.target===this) toggleAcct(false)">
+    <div class="ppanel" style="position:relative">
+      <button class="x" onclick="toggleAcct(false)">✕</button>
+      <h3>小月亮的账号与登录</h3>
+      <p class="sub">账号全局唯一，孩子不需要注册；首次登录后可改成自己的密码。</p>
+
+      <div class="kv"><span>账号</span><b>BUBU7K2M9X</b><button class="pbtn ghost" style="height:30px;padding:0 10px">复制</button></div>
+      <div class="kv"><span>初始密码</span><b class="code">482 913</b><button class="pbtn ghost" style="height:30px;padding:0 10px">重置</button></div>
+
+      <div class="qrwrap" style="padding:16px 0 6px">
+        ${qrSvg('bubu://kid-join?account=BUBU7K2M9X&code=482913')}
+        <div class="qr-ava">${avatar('rabbit',32)}</div>
+      </div>
+      <p class="sub" style="text-align:center;margin:0">扫一下自动带出账号与初始密码 · 15 分钟有效 · 一次性</p>
+
+      <div class="ph" style="margin-top:16px"><div class="pnm" style="font-size:13px">已登录的设备</div><div class="pmeta">1 台</div></div>
+      <div class="pdev" style="border-top:0"><span>小月亮的 iPad</span><span class="pdev-t">2 小时前</span><button class="pbtn ghost" style="height:30px;padding:0 9px">退出</button></div>
+
+      <div class="pactions" style="margin-top:14px">
+        <button class="pbtn" style="flex:1;justify-content:center" onclick="toggleAcct(false)">完成</button>
+      </div>
+      <p class="sub" style="margin:10px 0 0">重置初始密码后，所有已登录设备会被退出，需要用新密码重新登录。</p>
+    </div>
+  </div>`;
+}
+
+/* 家长查看细条 */
+function kbar(){
+  return `<div class="kbar" onclick="go('child')">
+    <span class="kb-dot"></span>
+    <span class="kb-t">家长查看中</span>
+    <span class="kb-back">点此返回</span>
+  </div>`;
+}
+
+/* 二维码（原型用确定性方块矩阵模拟，非真实可扫） */
+function qrSvg(text){
+  const N = 21;
+  let h = 2166136261;
+  for (const ch of String(text)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); }
+  const rnd = () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 1000) / 1000; };
+  const inFinder = (x,y) => (x < 8 && y < 8) || (x > N - 9 && y < 8) || (x < 8 && y > N - 9);
+  const cells = [];
+  for (let y = 0; y < N; y++) {
+    for (let x = 0; x < N; x++) {
+      if (inFinder(x,y)) continue;
+      if (rnd() > 0.52) cells.push(`<rect x="${x}" y="${y}" width="1" height="1"/>`);
+    }
+  }
+  const finder = (x,y) => `<rect x="${x}" y="${y}" width="7" height="7" rx="1.8" fill="none" stroke="#1B1230" stroke-width="1"/>
+    <rect x="${x+2}" y="${y+2}" width="3" height="3" rx="0.7"/>`;
+  return `<svg viewBox="-1 -1 ${N+2} ${N+2}" width="168" height="168" aria-label="配对二维码">
+    <rect x="-1" y="-1" width="${N+2}" height="${N+2}" rx="2" fill="#fff"/>
+    <g fill="#1B1230">${cells.join('')}</g>
+    ${finder(0,0)}${finder(N-7,0)}${finder(0,N-7)}
+  </svg>`;
+}
+
+/* 孩子端 · 自己设置密码（两步确认） */
+let setBuf = '', setFirst = '', setStage = 1;
+function setStart(){ setBuf=''; setFirst=''; setStage=1; go('pinset'); }
+function setKey(k){
+  const err = () => document.getElementById('setErr');
+  if(k === 'del'){ setBuf = setBuf.slice(0,-1); setPaint(); return; }
+  if(setBuf.length >= 4) return;
+  setBuf += k; setPaint();
+  if(setBuf.length === 4){
+    if(setStage === 1){
+      setFirst = setBuf; setBuf = ''; setStage = 2;
+      setTimeout(() => {
+        setPaint();
+        if(err()) err().textContent = '再输一次，确认一下';
+        const sub = document.querySelector('.pin-sub'); if(sub) sub.textContent = '再输一次';
+      }, 160);
+    } else {
+      if(setBuf === setFirst){
+        if(err()) err().textContent = '设好啦，记住哦';
+        setTimeout(() => { setBuf=''; setFirst=''; setStage=1; go('me'); }, 700);
+      } else {
+        setBuf=''; setFirst=''; setStage=1;
+        setTimeout(() => {
+          setPaint();
+          if(err()) err().textContent = '两次不一样，再来一次';
+          const sub = document.querySelector('.pin-sub'); if(sub) sub.textContent = '只有你知道的 4 个数字';
+        }, 160);
+      }
+    }
+  }
+}
+function setPaint(){
+  document.querySelectorAll('#setDots i').forEach((el,i) => el.classList.toggle('on', i < setBuf.length));
+}
+
+/* 家长密码 */
+let gateBuf = '', gateTries = 0;
+const GATE_CODE = '123456';
+function gateKey(k){
+  const err = () => document.getElementById('gateErr');
+  if(k === 'del'){ gateBuf = gateBuf.slice(0,-1); gatePaint(); return; }
+  if(gateBuf.length >= 6) return;
+  gateBuf += k; gatePaint();
+  if(gateBuf.length === 6){
+    if(gateBuf === GATE_CODE){
+      if(err()) err().textContent = '欢迎回来';
+      setTimeout(() => { gateBuf=''; gateTries=0; go('parent'); }, 200);
+    } else {
+      gateBuf=''; gateTries++;
+      setTimeout(() => {
+        gatePaint();
+        if(gateTries >= 5){ go('me'); return; }
+        if(err()) err().textContent = gateTries >= 3 ? ('再试一次，或者用手机号重置（还可试 ' + (5-gateTries) + ' 次）') : '密码不对，再试一次';
+      }, 150);
+    }
+  }
+}
+function gatePaint(){
+  document.querySelectorAll('#gateDots i').forEach((el,i) => el.classList.toggle('on', i < gateBuf.length));
+}
+
+/* 孩子密码 */
+let pinBuf = '', pinTries = 0, pinCooling = false;
+const PIN_CODE = '1234';
+function pinStart(){
+  pinBuf = ''; pinTries = 0; pinCooling = false;
+  go('pin');
+}
+function pinKey(k){
+  if(pinCooling) return;
+  const err = () => document.getElementById('pinErr');
+  if(k === 'del'){ pinBuf = pinBuf.slice(0,-1); pinPaint(); return; }
+  if(pinBuf.length >= 4) return;
+  pinBuf += k; pinPaint();
+  if(pinBuf.length === 4){
+    if(pinBuf === PIN_CODE){
+      if(err()) err().textContent = '好的，进去吧';
+      setTimeout(() => { pinBuf = ''; go('home'); }, 220);
+    } else {
+      pinTries++; pinBuf = '';
+      setTimeout(() => {
+        pinPaint();
+        if(pinTries >= 3){
+          pinCooling = true;
+          if(err()) err().textContent = '试了 3 次啦，叫爸爸妈妈帮你吧';
+          setTimeout(() => { pinCooling = false; pinTries = 0; if(err()) err().textContent = ''; }, 3000);
+        } else if(err()) err().textContent = '再想一想哦';
+      }, 160);
+    }
+  }
+}
+function pinPaint(){
+  document.querySelectorAll('#pinDots i').forEach((el,i) => el.classList.toggle('on', i < pinBuf.length));
+}
+function pinHelp(){ go('gate'); }
+
+function toast(msg){
+  const d = document.createElement('div');
+  d.textContent = msg;
+  d.style.cssText = 'position:absolute;left:50%;bottom:104px;transform:translateX(-50%);background:rgba(27,18,48,.9);color:#fff;font-size:12.5px;padding:10px 14px;border-radius:12px;z-index:200;max-width:78%;text-align:center;line-height:1.5';
+  document.getElementById('screen').appendChild(d);
+  setTimeout(()=>d.remove(), 2200);
+}
+
+function closeSheet(id){ const s=document.getElementById(id); if(s) s.classList.remove('on'); }
+
+/* =========================================================
+   路由 / 渲染
+   ========================================================= */
+let current = 'choose';
+function render(){ go(current); }
+function go(name){
+  current = SCREENS[name] ? name : 'home';
+  name = current;
+  const s = SCREENS[name] || SCREENS.home;
+  document.querySelectorAll('.rail button').forEach(b=>b.classList.toggle('on', b.dataset.s===name));
+  const screen = document.getElementById('screen');
+  screen.innerHTML = s.render();
+  const bd = screen.querySelector(".body"); if (bd) bd.scrollTop = 0;
+  const cb = screen.querySelector(".chatbody"); if (cb) cb.scrollTop = cb.scrollHeight;
+  document.getElementById('notes').innerHTML = `
+    <h2>${s.title}</h2>
+    <div style="margin-bottom:10px">
+      <span class="tag">孩子端 72/56px</span><span class="tag">正文 16px</span><span class="tag">家长端 40px</span>
+    </div>
+    ${s.notes.map(([k,v])=>`<h3>${k}</h3><div>${v}</div>`).join('')}
+    <h3>可交互</h3>
+    <div>点任务行 +1 · 点相机徽标走拍照 · 点齿轮进家长门（答「七」）</div>`;
+}
+
+document.querySelectorAll('.rail button').forEach(b=>{
+  b.onclick = ()=>go(b.dataset.s);
+});
+
+go('choose');
+</script>
+</body>
+</html>
