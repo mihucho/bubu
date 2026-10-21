@@ -126,7 +126,7 @@ if [ "$FORCE" = 0 ]; then
   EXCLUDES+=(".env" ".env.local" ".env.*" ".spark_project")
 fi
 
-RSYNC_ARGS=(-a --itemize-changes)
+RSYNC_ARGS=(-a --checksum --itemize-changes)  # --checksum：内容相同就不动，避免无意义覆盖
 for e in "${EXCLUDES[@]}"; do RSYNC_ARGS+=(--exclude "$e"); done
 if [ "$DRY_RUN" = 1 ]; then RSYNC_ARGS+=(--dry-run); fi
 
