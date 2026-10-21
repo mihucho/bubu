@@ -67,7 +67,18 @@ button{font-family:inherit;border:0;background:none;cursor:pointer;color:inherit
 .rail{width:212px;flex:0 0 212px;background:#fff;border-right:1px solid #E7E5EE;padding:16px 12px;overflow:auto}
 .rail h1{font-size:13px;margin:0 0 4px;color:#1B1230}
 .rail .sub{font-size:11px;color:#6B6480;margin-bottom:14px;line-height:1.5}
-.rail .grp{font-size:10px;letter-spacing:.04em;color:#9A93AC;margin:16px 0 6px}
+.rail .grp{font-size:10px;letter-spacing:.04em;color:#6E6684;margin:14px 0 6px;
+  display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none}
+.rail .grp::before{content:"▾";font-size:9px;color:#8C84A0;transition:.15s}
+.rail .grp.closed::before{transform:rotate(-90deg)}
+.rail .grp .cnt{margin-left:auto;font-weight:400;color:#7E7396;font-size:10px}
+.rail .grp.closed + button{display:none}
+.rail .grp.closed ~ *:not(.grp){}
+.railsearch{margin:0 0 4px}
+.railsearch input{width:100%;height:30px;border-radius:9px;border:1px solid #E7E5EE;background:#FAF9FD;
+  padding:0 10px;font-size:12px;color:#1B1230;outline:none}
+.railsearch input:focus{border-color:#C4A6F5;background:#fff}
+.rail .hidden{display:none !important}
 .rail button{display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;border-radius:10px;font-size:12.5px;color:#1B1230;text-align:left;line-height:1.35}
 .rail button:hover{background:#F6F4FB}
 .rail button.on{background:var(--p-accent-weak);color:#6D28D9;font-weight:600}
@@ -76,7 +87,7 @@ button{font-family:inherit;border:0;background:none;cursor:pointer;color:inherit
 .stage{flex:1;display:flex;align-items:center;justify-content:center;padding:8px;overflow:auto}
 .notes{width:264px;flex:0 0 264px;background:#fff;border-left:1px solid #E7E5EE;padding:18px 16px;overflow:auto;font-size:12px;line-height:1.65;color:#4B4360}
 .notes h2{font-size:13px;margin:0 0 8px;color:#1B1230}
-.notes h3{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#9A93AC;margin:16px 0 6px}
+.notes h3{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#6E6684;margin:16px 0 6px}
 .notes ul{margin:0;padding-left:16px}
 .notes code{background:#F3EFFA;padding:1px 5px;border-radius:5px;font-size:11px;color:#6D28D9}
 .notes .tag{display:inline-block;background:#F3E8FF;color:#6D28D9;border-radius:6px;padding:1px 7px;font-size:10.5px;margin:0 4px 4px 0}
@@ -235,6 +246,46 @@ button{font-family:inherit;border:0;background:none;cursor:pointer;color:inherit
 .drag{width:36px;height:36px;border-radius:10px;background:#F7F1FE;display:flex;align-items:center;justify-content:center;color:#9A93AC}
 .coach.big{font-size:13px;padding:11px 15px}
 
+/* 环境切换 */
+.envsw{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin:2px 0 6px}
+.envsw button{height:30px;border-radius:8px;background:#F4EEFB;color:#6D3FA0;font-size:11.5px;font-weight:700}
+.envsw button.on{background:var(--k-grad-cta);color:#fff}
+.envtag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:#6D28D9;
+  background:#F3E8FF;border-radius:6px;padding:3px 8px;margin-bottom:8px}
+
+.offnote{text-align:center;font-size:12.5px;color:#8B7FA0;font-weight:600;padding:4px 0}
+
+.memo{display:flex;gap:10px;align-items:flex-start;margin:0 14px 10px;padding:12px 14px;
+  border-radius:16px;background:#fff;box-shadow:var(--clay-card);border:1.5px solid rgba(255,255,255,.9)}
+.memo-ic{width:28px;height:32px;border-radius:9px;flex:0 0 28px;display:flex;align-items:center;justify-content:center;
+  background:#FFE4F0;color:#DB2777}
+.memo-t{font-size:13.5px;font-weight:800;color:#4A2666}
+.memo-s{font-size:12px;color:#8B7FA0;margin-top:2px}
+
+/* 聊天输入 */
+.chatin{flex:1;height:56px;border-radius:999px;background:#fff;display:flex;align-items:center;padding:0 18px;
+  font-size:14px;color:#7E7396;box-shadow:var(--clay-card);border:1.5px solid rgba(255,255,255,.9)}
+.sendbtn{width:56px;height:56px;border-radius:50%;flex:0 0 56px;background:var(--k-grad-cta);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 16px rgba(219,39,119,.3), inset 0 2px 0 rgba(255,255,255,.4)}
+.sendbtn:active{transform:scale(.94)}
+
+/* 语音录制 */
+.rec-wave{display:flex;align-items:center;justify-content:center;gap:6px;height:72px;margin-bottom:10px}
+.rec-wave i{width:8px;border-radius:4px;background:linear-gradient(180deg,#FF85C1,#A855F7);height:18px;
+  animation:wave 1s ease-in-out infinite}
+@keyframes wave{0%,100%{height:14px;opacity:.55}50%{height:52px;opacity:1}}
+.rec-tip{text-align:center;font-size:13px;color:var(--k-text-sub);font-weight:600;margin-bottom:8px}
+.mic.rec-on{background:linear-gradient(135deg,#DC2626,#DB2777);
+  box-shadow:0 6px 18px rgba(219,39,119,.34), inset 0 2px 0 rgba(255,255,255,.4)}
+
+/* 头像网格 */
+.avg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:6px 0 14px}
+.avg-item{aspect-ratio:1/1;border-radius:20px;background:#F7F1FE;display:flex;align-items:center;justify-content:center;
+  border:2px solid transparent}
+.avg-item.on{border-color:#A855F7;background:linear-gradient(180deg,#FFF0F7,#F3E8FE);
+  box-shadow:0 4px 12px rgba(168,85,247,.18)}
+
 /* 站内消息列表 */
 .mlist{padding:0 16px;display:flex;flex-direction:column;gap:10px}
 .mrow{display:flex;align-items:flex-start;gap:10px;background:#fff;border-radius:16px;padding:13px 14px;
@@ -268,7 +319,7 @@ button{font-family:inherit;border:0;background:none;cursor:pointer;color:inherit
 .ex-top span{font-size:11px;color:#8B7FA8}
 .ex-title{font-size:18px;font-weight:800;color:#2E1065;margin:14px 0 8px}
 .ex-body{font-size:13px;line-height:1.8;color:#4B4360}
-.ex-foot{margin-top:22px;padding-top:12px;border-top:1px dashed #EFE6F9;font-size:11px;color:#B3A5C9;text-align:center;line-height:1.8}
+.ex-foot{margin-top:22px;padding-top:12px;border-top:1px dashed #EFE6F9;font-size:11px;color:#7E7396;text-align:center;line-height:1.8}
 .ex-foot i{display:block;font-style:normal;font-size:10px;color:#C9BEDC;margin-top:2px}
 
 /* 错题照片 */
@@ -278,6 +329,12 @@ button{font-family:inherit;border:0;background:none;cursor:pointer;color:inherit
 .qshot.filled{border-style:solid;border-color:#A855F7;background:linear-gradient(180deg,#FFF,#F5EEFF);color:#6D3FA0}
 .qphoto{height:160px;border-radius:14px;background:linear-gradient(180deg,#FBF8FF,#F3EBFF);border:1.5px solid #E7DAF7;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#8B7FA8;font-size:12px;font-weight:700}
+
+/* 豆包登录 */
+.doubaobtn{width:100%;height:50px;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:9px;
+  background:#1B1230;color:#fff;font-size:15px;font-weight:800;
+  box-shadow:0 6px 18px rgba(27,18,48,.24), inset 0 2px 0 rgba(255,255,255,.14)}
+.db-mark{width:24px;height:24px;border-radius:50%;background:#FFD700;color:#1B1230;display:flex;align-items:center;justify-content:center}
 
 /* 引导：勾选框 */
 .agree{display:flex;gap:10px;align-items:flex-start;margin-top:16px;font-size:13.5px;line-height:1.65;color:#1B1230}
@@ -308,7 +365,7 @@ button{font-family:inherit;border:0;background:none;cursor:pointer;color:inherit
   background:var(--k-purple-50);color:#7C3AED}
 .badge-card.got .bc-ico{background:#fff;color:#A16207;box-shadow:var(--clay-ico)}
 .bc-name{font-size:13px;font-weight:800;color:var(--k-text)}
-.bc-st{font-size:11px;color:#B3A5C9;margin-top:3px}
+.bc-st{font-size:11px;color:#7E7396;margin-top:3px}
 
 /* 空态 */
 .empty-demo{margin:0 16px 16px;padding:26px 18px;background:#fff;border-radius:24px;text-align:center;
@@ -420,7 +477,7 @@ button{font-family:inherit;border:0;background:none;cursor:pointer;color:inherit
 .lrow .ln{flex:1;font-weight:600}
 .lrow .lv{font-weight:700}
 .lrow .lv.neg{color:var(--k-text-sub)}
-.lrow .ld{color:#B3A5C9;font-size:var(--fs-micro)}
+.lrow .ld{color:#7E7396;font-size:var(--fs-micro)}
 .me-btns{padding:0 16px 24px;display:flex;flex-direction:column;gap:12px}
 .gear{position:absolute;right:16px;top:16px;width:var(--tap-secondary);height:var(--tap-secondary);border-radius:50%;
   background:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;font-size:22px;
@@ -456,6 +513,7 @@ button{font-family:inherit;border:0;background:none;cursor:pointer;color:inherit
 .psw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;
   box-shadow:0 1px 3px rgba(0,0,0,.16);transition:.18s}
 .psw.on{background:#7C3AED}
+.kv b.psw,.kv .psw{flex:0 0 44px;width:44px;font-size:0;letter-spacing:0}
 .psw.on::after{left:21px}
 
 /* 账号行 & 登录页脚 */
@@ -580,7 +638,7 @@ button{font-family:inherit;border:0;background:none;cursor:pointer;color:inherit
   box-shadow:var(--clay-card);transition:transform .14s cubic-bezier(.34,1.5,.64,1), box-shadow .14s}
 .keypad button:active{transform:translateY(2px) scale(.96);box-shadow:var(--clay-card-press)}
 .keypad .kp-ghost{font-size:14px;font-weight:700;color:var(--k-text-sub);background:#F7F1FE;box-shadow:none}
-.pin-note{margin-top:auto;font-size:12px;color:#B3A5C9;text-align:center;padding-top:14px}
+.pin-note{margin-top:auto;font-size:12px;color:#7E7396;text-align:center;padding-top:14px}
 .kidcard{position:relative}
 .klock{display:inline-flex;align-items:center;gap:3px;margin-top:7px;font-size:11px;font-weight:700;
   color:var(--k-text-sub);background:#F4EEFB;border-radius:8px;padding:2px 7px}
@@ -620,7 +678,7 @@ button{font-family:inherit;border:0;background:none;cursor:pointer;color:inherit
 .gate .pin-err{color:#DB2777}
 .gate-foot{margin-top:auto;padding-top:14px;text-align:center}
 .gate-foot button{font-size:12.5px;color:var(--k-text-sub);font-weight:700}
-.gate .warn{color:#B3A5C9;font-size:11.5px;margin-top:6px}
+.gate .warn{color:#7E7396;font-size:11.5px;margin-top:6px}
 
 /* ============ 家长端 ============ */
 .p-app{height:100%;display:flex;flex-direction:column;background:var(--p-bg);font-size:var(--p-fs-body);color:var(--p-text)}
@@ -788,7 +846,7 @@ button{font-family:inherit;border:0;background:none;cursor:pointer;color:inherit
 .q-top{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--k-text-sub)}
 .quest.done .q-top{color:var(--k-success-text)}
 .q-name{font-size:15px;font-weight:800;color:var(--k-text)}
-.q-st{font-size:11.5px;color:#B3A5C9}
+.q-st{font-size:11.5px;color:#7E7396}
 .q-btn{height:40px;border-radius:12px;background:#F6EEFF;color:#7C3AED;font-size:13px;font-weight:700;margin-top:4px}
 .quest.done .q-btn{background:#E7F8EC;color:var(--k-success-text)}
 
@@ -827,117 +885,152 @@ button{font-family:inherit;border:0;background:none;cursor:pointer;color:inherit
 
 <!-- ================= 左侧：屏幕清单 ================= -->
 <aside class="rail">
-  <h1>前端重设计 v2</h1>
-  <div class="sub">布布的学习小天地<br>按两端导航顺序排列 · 可交互</div>
+  <h1>布布 · 前端原型</h1>
+  <div class="sub">109 屏 · 按两端结构分组<br>点标题可折叠 · 可搜索</div>
 
-  <div class="grp">① 前置 · 登录与引导</div>
-  <button data-s="login"><i class="dot"></i>家长登录</button>
+  <div class="grp">环境（只判断一件事）</div>
+  <div class="envsw">
+    <button data-env="doubao" class="on">在豆包内</button>
+    <button data-env="other">不在豆包内</button>
+  </div>
+
+  <div class="railsearch">
+    <input id="railq" placeholder="搜页面…" autocomplete="off">
+  </div>
+
+  <div class="grp">A · 前置：登录与引导 <b class="cnt">16</b></div>
+  <button data-s="login"><i class="dot"></i>家长登录（浏览器）</button>
   <button data-s="register"><i class="dot"></i>家长注册</button>
   <button data-s="forgot"><i class="dot"></i>忘记密码</button>
-  <button data-s="consent"><i class="dot"></i>引导 1 监护人同意</button>
-  <button data-s="welcome"><i class="dot"></i>引导 2 欢迎</button>
-  <button data-s="addchild"><i class="dot"></i>引导 3 添加孩子</button>
-  <button data-s="template"><i class="dot"></i>引导 4 选模板</button>
-  <button data-s="tplpreview"><i class="dot"></i>引导 5 预览</button>
-  <button data-s="setgate"><i class="dot"></i>引导 6 设家长密码</button>
-  <button data-s="setusage"><i class="dot"></i>引导 7 使用时间</button>
-  <button data-s="done"><i class="dot"></i>引导 8 完成</button>
+  <button data-s="doubaowelcome"><i class="dot"></i>豆包首登（进入 / 绑定）</button>
+  <button data-s="bind"><i class="dot"></i>绑定豆包（仅豆包内）</button>
+  <button data-s="conflict"><i class="dot"></i>绑定冲突</button>
+  <button data-s="merge"><i class="dot"></i>账号数据合并</button>
+  <button data-s="consent"><i class="dot"></i>引导 1 · 监护人同意</button>
+  <button data-s="welcome"><i class="dot"></i>引导 2 · 欢迎</button>
+  <button data-s="addchild"><i class="dot"></i>引导 3 · 添加孩子</button>
+  <button data-s="template"><i class="dot"></i>引导 4 · 选模板</button>
+  <button data-s="tplpreview"><i class="dot"></i>引导 5 · 预览</button>
+  <button data-s="setgate"><i class="dot"></i>引导 6 · 设家长密码</button>
+  <button data-s="setusage"><i class="dot"></i>引导 7 · 使用时间</button>
+  <button data-s="done"><i class="dot"></i>引导 8 · 完成</button>
+  <button data-s="privacy"><i class="dot"></i>隐私政策正文</button>
 
-  <div class="grp">② 进入孩子端</div>
-  <button data-s="choose" class="on"><i class="dot"></i>选人页</button>
+  <div class="grp">B · 进入孩子端 <b class="cnt">3</b></div>
+  <button data-s="choose"><i class="dot"></i>选人页（最多 6 个）</button>
   <button data-s="pin"><i class="dot"></i>孩子登录（账号 + 密码）</button>
   <button data-s="pinset"><i class="dot"></i>首次改密码</button>
 
-  <div class="grp">② 孩子端 · 底部导航</div>
-  <button data-s="home"><i class="dot"></i>1 首页</button>
-  <button data-s="reading"><i class="dot"></i>2 阅读</button>
-  <button data-s="exercise"><i class="dot"></i>3 动起来</button>
-  <button data-s="chat"><i class="dot"></i>4 说说话</button>
-  <button data-s="me"><i class="dot"></i>5 我的</button>
+  <div class="grp">C · 孩子端 · 5 个 tab <b class="cnt">5</b></div>
+  <button data-s="home"><i class="dot"></i>首页</button>
+  <button data-s="reading"><i class="dot"></i>阅读</button>
+  <button data-s="exercise"><i class="dot"></i>动起来</button>
+  <button data-s="chat"><i class="dot"></i>说说话</button>
+  <button data-s="me"><i class="dot"></i>我的</button>
 
-  <div class="grp">③ 孩子端 · 首页卡片</div>
-  <button data-s="stars"><i class="dot"></i>商店 + 心愿</button>
-  <button data-s="quests"><i class="dot"></i>闯关</button>
-  <button data-s="checkin"><i class="dot"></i>签到</button>
+  <div class="grp">D · 孩子端 · 二级与状态 <b class="cnt">22</b></div>
+  <button data-s="kdetail"><i class="dot"></i>任务详情</button>
+  <button data-s="stars"><i class="dot"></i>星星商店 + 心愿</button>
+  <button data-s="shoplist"><i class="dot"></i>商店物品列表</button>
+  <button data-s="buyconfirm"><i class="dot"></i>兑换确认（弹层）</button>
+  <button data-s="wishdetail"><i class="dot"></i>心愿详情</button>
+  <button data-s="wishclaim"><i class="dot"></i>我拿到啦</button>
+  <button data-s="quests"><i class="dot"></i>闯关地图</button>
+  <button data-s="questdetail"><i class="dot"></i>关卡详情</button>
+  <button data-s="takequest"><i class="dot"></i>关卡答题</button>
+  <button data-s="checkin"><i class="dot"></i>签到彩蛋 + 心情</button>
+  <button data-s="ledger"><i class="dot"></i>星星账本</button>
+  <button data-s="inbox"><i class="dot"></i>小信箱（站内消息）</button>
+  <button data-s="diarydetail"><i class="dot"></i>小日记详情</button>
+  <button data-s="badges"><i class="dot"></i>我的徽章</button>
+  <button data-s="pet"><i class="dot"></i>宠物详情（P1）</button>
+  <button data-s="avatarpick"><i class="dot"></i>换头像（仅预设）</button>
+  <button data-s="firstrun"><i class="dot"></i>首次体验 5 步</button>
+  <button data-s="kidempty"><i class="dot"></i>今天没任务（鼓励态）</button>
+  <button data-s="memocard"><i class="dot"></i>布布记住了（记忆卡）</button>
+  <button data-s="wall"><i class="dot"></i>内容墙（超时 / 睡眠）</button>
+  <button data-s="restwall"><i class="dot"></i>休息墙（5 分钟）</button>
+  <button data-s="voicerecord"><i class="dot"></i>语音录制（存档）</button>
+
+  <div class="grp">E · 孩子端 · 弹层与异常 <b class="cnt">6</b></div>
   <button data-s="photo"><i class="dot"></i>拍照完成（弹层）</button>
   <button data-s="readsheet"><i class="dot"></i>记阅读（弹层）</button>
   <button data-s="exsheet"><i class="dot"></i>记运动（弹层）</button>
-  <button data-s="firstrun"><i class="dot"></i>首次体验 5 步</button>
+  <button data-s="photoviewer"><i class="dot"></i>照片查看</button>
   <button data-s="offline"><i class="dot"></i>离线 / 待同步</button>
   <button data-s="errorpage"><i class="dot"></i>错误兜底页</button>
-  <button data-s="photoviewer"><i class="dot"></i>照片查看</button>
-  <button data-s="wishclaim"><i class="dot"></i>我拿到啦</button>
 
-  <div class="grp">④ 家长端 · 底部导航</div>
+  <div class="grp">F · 家长端 · 5 个 tab <b class="cnt">8</b></div>
   <button data-s="gate"><i class="dot"></i>家长密码（进入前）</button>
-  <button data-s="parent"><i class="dot"></i>1 概览</button>
-  <button data-s="tasks"><i class="dot"></i>2 任务 · 任务清单</button>
-  <button data-s="pexercise"><i class="dot"></i>2 任务 · 运动目标</button>
-  <button data-s="pquests"><i class="dot"></i>2 任务 · 闯关</button>
-  <button data-s="wishset"><i class="dot"></i>3 心愿</button>
-  <button data-s="kids"><i class="dot"></i>4 孩子</button>
-  <button data-s="settings"><i class="dot"></i>5 我的</button>
+  <button data-s="parent"><i class="dot"></i>概览</button>
+  <button data-s="tasks"><i class="dot"></i>任务 · 任务清单</button>
+  <button data-s="pexercise"><i class="dot"></i>任务 · 运动目标</button>
+  <button data-s="pquests"><i class="dot"></i>任务 · 闯关</button>
+  <button data-s="wishset"><i class="dot"></i>心愿</button>
+  <button data-s="kids"><i class="dot"></i>孩子</button>
+  <button data-s="settings"><i class="dot"></i>我的</button>
 
-  <div class="grp">⑤ 详情页 · 孩子端</div>
-  <button data-s="kdetail"><i class="dot"></i>任务详情</button>
-  <button data-s="wishdetail"><i class="dot"></i>心愿详情</button>
-  <button data-s="ledger"><i class="dot"></i>星星账本（全部）</button>
-  <button data-s="inbox"><i class="dot"></i>小信箱（站内消息）</button>
-  <button data-s="pet"><i class="dot"></i>宠物详情（P1）</button>
-  <button data-s="diarydetail"><i class="dot"></i>小日记详情</button>
-
-  <div class="grp">⑥ 编辑页 · 家长端</div>
-  <button data-s="ptaskedit"><i class="dot"></i>任务编辑（全屏）</button>
-  <button data-s="pshopedit"><i class="dot"></i>商店物品编辑</button>
-  <button data-s="pchildedit"><i class="dot"></i>孩子资料编辑</button>
-  <button data-s="pusage"><i class="dot"></i>使用时间设置</button>
+  <div class="grp">G · 家长端 · 问布布（AI） <b class="cnt">5</b></div>
+  <button data-s="pchat"><i class="dot"></i>问布布（跨孩子）</button>
+  <button data-s="paiusage"><i class="dot"></i>问布布用量</button>
   <button data-s="pchatdetail"><i class="dot"></i>对话详情</button>
-  <button data-s="pbackfill"><i class="dot"></i>补登记</button>
+  <button data-s="pmemories"><i class="dot"></i>布布记得什么</button>
+  <button data-s="paudit"><i class="dot"></i>操作记录（工具审计）</button>
 
-  <div class="grp">⑦ 更多详情与合规</div>
-  <button data-s="wall"><i class="dot"></i>内容墙（超时/睡眠）</button>
-  <button data-s="shoplist"><i class="dot"></i>商店物品列表</button>
-  <button data-s="takequest"><i class="dot"></i>关卡答题</button>
+  <div class="grp">H · 家长端 · 报告与记录 <b class="cnt">7</b></div>
+  <button data-s="report"><i class="dot"></i>周期报告</button>
+  <button data-s="preportempty"><i class="dot"></i>报告空态</button>
+  <button data-s="records"><i class="dot"></i>记录</button>
+  <button data-s="pcalendar"><i class="dot"></i>月历</button>
+  <button data-s="pdiarydetail"><i class="dot"></i>日记详情</button>
+  <button data-s="exportpreview"><i class="dot"></i>导出预览</button>
+  <button data-s="pexportpick"><i class="dot"></i>批量导出选择</button>
+
+  <div class="grp">I · 家长端 · 编辑与配置 <b class="cnt">12</b></div>
+  <button data-s="ptaskedit"><i class="dot"></i>任务编辑（全屏）</button>
+  <button data-s="sorttasks"><i class="dot"></i>任务排序</button>
+  <button data-s="tplmgr"><i class="dot"></i>任务模板</button>
+  <button data-s="pshopedit"><i class="dot"></i>商店物品编辑</button>
+  <button data-s="pricesheet"><i class="dot"></i>心愿定价（弹层）</button>
+  <button data-s="deferwish"><i class="dot"></i>心愿延后（非驳回）</button>
   <button data-s="pquestnew"><i class="dot"></i>记录一关（可拍照）</button>
   <button data-s="pquestdetail"><i class="dot"></i>错题详情</button>
-  <button data-s="buyconfirm"><i class="dot"></i>兑换确认（弹层）</button>
-  <button data-s="exportpreview"><i class="dot"></i>导出预览</button>
-  <button data-s="privacy"><i class="dot"></i>隐私政策正文</button>
+  <button data-s="pbackfill"><i class="dot"></i>补登记</button>
+  <button data-s="pbadges"><i class="dot"></i>徽章管理</button>
+  <button data-s="pbadgeedit"><i class="dot"></i>新建徽章</button>
+  <button data-s="pcopy"><i class="dot"></i>复制配置到另一个孩子</button>
+
+  <div class="grp">J · 家长端 · 孩子与家庭 <b class="cnt">6</b></div>
+  <button data-s="child"><i class="dot"></i>孩子详情（含开通账号）</button>
+  <button data-s="pchildedit"><i class="dot"></i>孩子资料编辑</button>
+  <button data-s="addchild2"><i class="dot"></i>添加孩子（第 2 个起）</button>
+  <button data-s="compare"><i class="dot"></i>二孩并排看（折叠）</button>
+  <button data-s="pinvite"><i class="dot"></i>邀请另一位家长</button>
+  <button data-s="account"><i class="dot"></i>家庭账号</button>
+
+  <div class="grp">K · 家长端 · 消息与安全 <b class="cnt">7</b></div>
   <button data-s="notif"><i class="dot"></i>通知中心</button>
   <button data-s="notifdetail"><i class="dot"></i>待确认任务详情</button>
+  <button data-s="confirm"><i class="dot"></i>危险操作确认</button>
   <button data-s="sentmsgs"><i class="dot"></i>我发出的（鼓励）</button>
   <button data-s="safety"><i class="dot"></i>需要关注（安全）</button>
-  <button data-s="compare"><i class="dot"></i>二孩并排看</button>
-  <button data-s="tplmgr"><i class="dot"></i>任务模板</button>
-  <button data-s="account"><i class="dot"></i>家庭账号</button>
+  <button data-s="premind"><i class="dot"></i>提醒设置</button>
+  <button data-s="psearch"><i class="dot"></i>搜索</button>
+  <button data-s="psearchrecent"><i class="dot"></i>搜索（空态）</button>
+
+  <div class="grp">L · 家长端 · 隐私与设备 <b class="cnt">4</b></div>
+  <button data-s="pusage"><i class="dot"></i>使用时间设置</button>
+  <button data-s="pprivacy"><i class="dot"></i>隐私与数据（导出/删除/注销）</button>
   <button data-s="pdevice"><i class="dot"></i>已登录设备</button>
-  <button data-s="confirm"><i class="dot"></i>危险操作确认</button>
-  <button data-s="preportempty"><i class="dot"></i>报告空态</button>
-  <button data-s="pexportpick"><i class="dot"></i>批量导出选择</button>
+  <button data-s="pexchanges"><i class="dot"></i>兑换记录 / 撤销</button>
+
+  <div class="grp">M · 通用与边界 <b class="cnt">7</b></div>
+  <button data-s="empties"><i class="dot"></i>空态</button>
   <button data-s="pempties"><i class="dot"></i>空态四连</button>
   <button data-s="skeletons"><i class="dot"></i>骨架屏</button>
-  <button data-s="questdetail"><i class="dot"></i>关卡详情</button>
-  <button data-s="badges"><i class="dot"></i>成就徽章</button>
-  <button data-s="pdiarydetail"><i class="dot"></i>日记详情</button>
-  <button data-s="pexchanges"><i class="dot"></i>兑换记录 / 撤销</button>
-  <button data-s="paudit"><i class="dot"></i>操作记录</button>
-  <button data-s="pprivacy"><i class="dot"></i>隐私与数据</button>
-  <button data-s="empties"><i class="dot"></i>空态</button>
-  <button data-s="restwall"><i class="dot"></i>休息墙（5 分钟）</button>
   <button data-s="tablet"><i class="dot"></i>平板形态（两栏）</button>
-
-  <div class="grp">⑧ 全量清单</div>
+  <button data-s="kidview"><i class="dot"></i>以孩子视角打开</button>
   <button data-s="sitemap"><i class="dot"></i>全部页面清单</button>
-
-  <div class="grp">家长端 · 其他二级</div>
-  <button data-s="child"><i class="dot"></i>孩子详情（含开通）</button>
-  <button data-s="pcopy"><i class="dot"></i>复制配置到另一个孩子</button>
-  <button data-s="addchild2"><i class="dot"></i>添加第二个孩子</button>
-  <button data-s="sorttasks"><i class="dot"></i>任务排序</button>
-  <button data-s="pricesheet"><i class="dot"></i>心愿定价（弹层）</button>
-  <button data-s="kidview"><i class="dot"></i>进入孩子页面</button>
-  <button data-s="report"><i class="dot"></i>周期报告</button>
-  <button data-s="records"><i class="dot"></i>记录</button>
 </aside>
 
 <!-- ================= 中间：手机 ================= -->
@@ -984,6 +1077,9 @@ const ICONS = {
   back:'<path d="M15 5l-7 7 7 7"/>',
   lock:'<rect x="4.5" y="10.5" width="15" height="10" rx="3"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1.4" fill="currentColor" stroke="none"/>',
   check:'<path d="M5 13l4 4 10-10" stroke-width="2.6"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/>',
+  chat:'<path d="M20 5H4v11h11l5 4z"/><path d="M8 9h8M8 12h5"/>',
+  bell:'<path d="M18 16H6l1.2-2.4A5 5 0 0 1 7 11V9a5 5 0 0 1 10 0v2a5 5 0 0 1-.2 2.6z"/><path d="M10 19a2 2 0 0 0 4 0"/>',
   sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/>',
 };
 function ico(n, size){
@@ -1024,6 +1120,7 @@ function avatar(kind, size){
    数据（原型用假数据）
    ========================================================= */
 const state = {
+  inDoubao: true,   /* 唯一的判断：在不在豆包内 */
   kid: '小月亮',
   parentNote: '今天作业写得很快，妈妈看到了',
   reminds: { confirm:true, wish:true, report:false },
@@ -1162,7 +1259,7 @@ const SCREENS = {
     render: () => kidShell(`
       <div class="body">
       <div class="me-top">
-        <div class="av">${avatar("rabbit",44)}</div>
+        <div class="av" onclick="go('avatarpick')" style="cursor:pointer">${avatar("rabbit",44)}</div>
         <div><div class="mn">小月亮</div><div class="mb" onclick="go('badges')" style="cursor:pointer">连续阅读 3 天 ${ico("flame",14)} · 全部徽章 ›</div></div>
       </div>
       <button class="gear" onclick="go('gate')">${ico("gear",22)}</button>
@@ -1176,6 +1273,7 @@ const SCREENS = {
       </div>
       <div class="me-btns">
         <div class="wcard" style="height:88px;flex-direction:row;gap:10px" onclick="go('pet')"><div class="wi">${ico("dog",22)}</div><div class="wt">小黄油</div><div class="ws">${ico("heart",14)} 很开心</div></div>
+        <button class="btn-l btn-ghost" onclick="go('memocard')">${ico("heart",16)} 布布记得我</button>
         <button class="btn-l btn-ghost" onclick="setStart()">${ico("lock",16)} 我的密码</button>
       </div>
       </div>
@@ -1184,7 +1282,7 @@ const SCREENS = {
 
   /* ---------- 孩子端 · 登录（账号 + 密码） ---------- */
   pin: {
-    title:'孩子端 · 登录（账号 + 密码）',
+    title:'孩子端 · 登录（账号 + 密码）/pin',
     notes:[
       ['账号从哪来', '家长开通时生成连接标识 <b>BUBU 7K2M9X</b> 作为 account；初始密码是家长生成的那串数字'],
       ['孩子不用注册', '打开就是自己的账号，通常只需输密码；换设备才需要再扫码'],
@@ -1217,7 +1315,7 @@ const SCREENS = {
 
   /* ---------- 孩子端 · 首次改密码 ---------- */
   pinset: {
-    title:'孩子端 · 改成自己的密码',
+    title:'孩子端 · 改成自己的密码 /pin/set',
     notes:[
       ['时机', '首次登录后自动提示；也可以从「我的 → 我的密码」随时改'],
       ['两步确认', '输一次 → 再输一次；不一致提示「两次不一样，再来一次」'],
@@ -1313,7 +1411,7 @@ const SCREENS = {
                   <div style="font-size:14px;font-weight:600">去一次游乐场</div>
                   <div style="font-size:11.5px;color:var(--p-text-sub);margin-top:2px">定了 100 颗星 · 还差 15 颗（约 2 周）</div>
                 </div>
-                <button class="pbtn ghost" style="height:32px;padding:0 10px">调整</button>
+                <button class="pbtn ghost" style="height:32px;padding:0 10px" onclick="go('deferwish')">延后</button>
               </div>
               <div style="height:8px;border-radius:4px;background:#F0E7FA;margin-top:10px;overflow:hidden">
                 <i style="display:block;height:100%;width:85%;border-radius:4px;background:linear-gradient(90deg,#FF85C1,#A855F7)"></i>
@@ -1511,9 +1609,14 @@ const SCREENS = {
       <div class="p-app">
         <div class="p-head" style="display:flex;align-items:center;gap:10px">
           <div style="flex:1"><h1>概览</h1><div class="d">3月12日 · 星期四</div></div>
-          <button onclick="go('notif')" style="position:relative;width:38px;height:38px;border-radius:50%;background:#fff;
+          <button onclick="go('pchat')" style="display:flex;align-items:center;gap:5px;height:34px;padding:0 12px;border-radius:17px;
+            background:linear-gradient(135deg,#FF6FB5,#A855F7);color:#fff;font-size:12.5px;font-weight:700;margin-right:8px;
+            box-shadow:0 4px 12px rgba(219,39,119,.22)">
+            ${ico('chat',15)}问布布
+          </button>
+          <button onclick="go('notif')" aria-label="通知" style="position:relative;width:38px;height:38px;border-radius:50%;background:#fff;
             display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(150,90,205,.14);color:#6D3FA0">
-            ${ico('star',18)}
+            ${ico('bell',18)}
             <i style="position:absolute;top:6px;right:7px;width:8px;height:8px;border-radius:50%;background:#DB2777;border:2px solid #fff"></i>
           </button>
         </div>
@@ -1554,7 +1657,7 @@ const SCREENS = {
 
   /* ---------- 家长端 · 运动目标 ---------- */
   pexercise: {
-    title:'家长端 · 运动目标（任务 tab 第 2 段）',
+    title:'家长端 · 运动目标 /parent/tasks?tab=exercise',
     notes:[
       ['为什么放任务 tab', '运动目标本质是"一周做几次"，和任务同构，放一起家长不用记两个地方'],
       ['可配项', '周目标次数 · 每次达标得星 · 运动类型（增删排序）· 是否允许孩子自己加类型'],
@@ -1606,7 +1709,7 @@ const SCREENS = {
 
   /* ---------- 家长端 · 闯关设置 ---------- */
   pquests: {
-    title:'家长端 · 闯关设置（任务 tab 第 3 段）',
+    title:'家长端 · 闯关设置 /parent/tasks?tab=quests',
     notes:[
       ['谁能建关卡', '默认<b>只有家长能建</b>（孩子自己加关卡会为了攒星乱建）；可开"允许孩子自己加"'],
       ['通关给星', '默认每次 1 颗；可设 0（只做记录不给星）'],
@@ -1736,7 +1839,7 @@ const SCREENS = {
             <div class="ico i-broom">${ico('bike',22)}</div>
             <div class="mid"><div class="ttl">${t}</div>
               <div class="meta"><span class="give" style="color:var(--k-text-sub)">${m}</span></div></div>
-            <div style="font-size:12px;color:#B3A5C9">${d}</div>
+            <div style="font-size:12px;color:#7E7396">${d}</div>
           </div>`).join('')}
       </div>
       <div class="me-btns" style="padding-top:16px">
@@ -1750,7 +1853,8 @@ const SCREENS = {
     title:'说说话 /chat',
     notes:[
       ['布布先开口', '顶部「今日回顾」由 get_today_snapshot 生成，孩子不用想"说什么"'],
-      ['语音优先', '麦克风 72px 点一下开始/结束；文本是备选'],
+      ['输入方式', '<b>只有两种</b>：快捷气泡 + 文字。语音<b>暂不做</b>（国内浏览器与 webview 拿不到麦克风）'],
+      ['不在豆包内', 'AI 只读：底部换成「让爸爸妈妈用豆包打开」，<b>不消耗应用额度</b>'],
       ['回复短', '每条 ≤40 字 + 1 个表情；不用 markdown、不用列表'],
       ['快捷气泡', '4 个气泡预绑工具，避免多轮规划，也降低打字量'],
     ],
@@ -1759,6 +1863,7 @@ const SCREENS = {
         <div class="chathead">
           <div class="ch-ava">${avatar('rabbit',30)}</div>
           <div><div class="ch-name">布布</div><div class="ch-sub">小月亮的好朋友</div></div>
+          ${state.inDoubao ? '' : '<span class="envtag" style="margin:0 0 0 auto">只读</span>'}
         </div>
         <div class="chatbody">
           <div class="reviewbar">${ico('star',13)} 今天你读了 20 分钟，还差 2 个任务就开宝箱啦</div>
@@ -1783,10 +1888,17 @@ const SCREENS = {
           <button onclick="chatSend('我想许个愿')">我想许个愿</button>
           <button onclick="chatSend('夸夸我')">夸夸我</button>
         </div>
-        <div class="chatbar">
-          <button class="textbtn" onclick="toast('切到文字输入（语音为主要方式）')">输入文字</button>
-          <button class="mic">${ico('mic',24)}<span>按住说话</span></button>
-        </div>
+        ${state.inDoubao ? ''
+          : `<div class="coach" style="margin:0 14px 8px">布布要去豆包里才能陪你聊天，让爸爸妈妈用豆包打开就好啦</div>`}
+        ${state.inDoubao
+          ? `<div class="chatbar">
+               <div class="chatin">想说什么就打在这里…</div>
+               <button class="sendbtn" onclick="toast('发给布布（文字）')">${ico('check',20)}</button>
+             </div>`
+          : `<div class="chatbar" style="flex-direction:column;align-items:stretch;gap:8px">
+               <div class="offnote">布布只在豆包里陪你聊天</div>
+               <button class="btn-l btn-primary" onclick="toast('让爸爸妈妈在豆包里打开布布')">让爸爸妈妈用豆包打开</button>
+             </div>`}
       </div>
       ${kidNav('chat')}`,
   },
@@ -1890,23 +2002,28 @@ const SCREENS = {
             <div class="kv"><span>家长可看完整对话</span><b>已开启 ›</b></div>
             <div class="kv"><span>允许导出图片</span><b>已开启 ›</b></div>
             <div class="kv" onclick="go('safety')" style="cursor:pointer"><span>需要关注的消息</span><b style="color:#DB2777">1 条 ›</b></div>
+            <div class="kv" onclick="go('pmemories')" style="cursor:pointer"><span>布布记得什么</span><b>6 条 ›</b></div>
           </div>
           <div class="pcard">
             <div class="ph"><div class="pnm">快捷入口</div></div>
             <div class="kv" onclick="go('report')" style="cursor:pointer"><span>周期报告</span><b>›</b></div>
             <div class="kv" onclick="go('compare')" style="cursor:pointer"><span>两个孩子并排看</span><b>›</b></div>
             <div class="kv" onclick="go('tplmgr')" style="cursor:pointer"><span>任务模板</span><b>›</b></div>
+            <div class="kv" onclick="go('pbadges')" style="cursor:pointer"><span>徽章</span><b>系统 8 · 自己建 2 ›</b></div>
             <div class="kv" onclick="go('notif')" style="cursor:pointer"><span>通知中心</span><b>2 条待处理 ›</b></div>
+            <div class="kv" onclick="go('psearchrecent')" style="cursor:pointer"><span>搜索</span><b>›</b></div>
           </div>
           <div class="pcard">
             <div class="ph"><div class="pnm">提醒</div><div class="pmeta">仅应用内</div></div>
             <div class="kv"><span>有任务等我确认</span><b class="psw on"></b></div>
             <div class="kv"><span>有心愿等我定价 / 兑现</span><b class="psw on"></b></div>
             <div class="kv"><span>报告生成时提醒</span><b class="psw"></b></div>
+            <div class="kv" onclick="go('premind')" style="cursor:pointer"><span>提醒时间与免打扰</span><b>20:00 · 22:00–07:00 ›</b></div>
             <div class="warn">只做站内消息：提醒出现在应用内通知中心（铃铛红点），不推送飞书/微信/短信。</div>
           </div>
           <div class="pcard">
             <div class="ph"><div class="pnm">账号与安全</div></div>
+            <div class="kv" onclick="go('pinvite')" style="cursor:pointer"><span>一起管的人</span><b>1 / 4 位 ›</b></div>
             <div class="kv"><span>家长密码</span><b>已设置 · 修改 ›</b></div>
             <div class="kv" onclick="go('account')" style="cursor:pointer"><span>家庭账号</span><b>138****6721 ›</b></div>
             <div class="kv" onclick="go('account')" style="cursor:pointer"><span>家庭账号</span><b>138****6721 ›</b></div>
@@ -1926,6 +2043,66 @@ const SCREENS = {
 
   /* ---------- 家长端 · 周报 ---------- */
   /* ---------- 家长端 · 周期报告 ---------- */
+  pchat: {
+    title:'家长端 · 问布布（跨孩子）/parent/chat',
+    notes:[
+      ['谁能用', '只有家长模式下可用；家长端 5 个 tab 不变，入口在<b>概览右上角</b>与<b>报告页底部</b>'],
+      ['默认范围', '<b>全部孩子</b>。切到单个孩子则只答这一个；范围随时可切，历史消息不混'],
+      ['零比较铁律', '可以<b>并列数字</b>，不做排名、不下结论、不用"更好/落后"这类词。家长主动问"谁更..."→ 只给并列 + 一句"两个孩子的节奏不一样"'],
+      ['不替你做决定', '只陈述数据与趋势，建议一律写成"可以先试试…"，不写"你应该…"'],
+      ['额度', '家长端 AI <b>不在豆包内也可用</b>（限 30 轮/天/家庭）；孩子端仍只读'],
+      ['工具', 'parent scope：list_children / get_child_snapshot / get_family_range / get_pending_confirm / get_task_templates'],
+      ['数字来源', '与各页面同源，能做到"数字都能点回原页面"'],
+    ],
+    render: () => `
+      <div class="p-app" style="display:flex;flex-direction:column;height:100%">
+        <div class="p-head" style="display:flex;align-items:center;gap:10px;padding-bottom:10px">
+          <button onclick="go('parent')" style="font-size:19px;color:#7C64A6;line-height:1">‹</button>
+          <div style="flex:1"><h1>问布布</h1><div class="d">可以问两个孩子的数据</div></div>
+          <button onclick="go('paiusage')" class="envtag" style="margin:0;border:0;cursor:pointer">今天还能问 18 次 ›</button>
+        </div>
+
+        <div class="p-body" style="padding-top:0;flex:1;overflow:auto">
+          <div class="seg" style="margin-bottom:10px">
+            <button class="on" onclick="toast('范围：全部孩子')">全部孩子</button>
+            <button onclick="toast('范围：小月亮')">小月亮</button>
+            <button onclick="toast('范围：小米粒')">小米粒</button>
+          </div>
+
+          <div class="pcard" style="margin-bottom:10px">
+            <div style="font-size:12.5px;color:#8B7FA0;font-weight:700;margin-bottom:6px">这周两个孩子各做了什么</div>
+            <div style="font-size:13.5px;line-height:1.75;color:#3D2B57">
+              <b>小月亮</b>：读完 3 本（《小猪变形记》《春天在哪里》《小黑鱼》），运动 4 次共 95 分钟，得 26 ⭐<br>
+              <b>小米粒</b>：读完 1 本（《好饿的毛毛虫》读了 3 遍），运动 2 次共 40 分钟，得 12 ⭐
+            </div>
+            <div style="font-size:12px;color:#8B7FA0;margin-top:8px;padding-top:8px;border-top:1px dashed #EADCF5">
+              两个孩子的节奏不一样，先按各自的节奏来就挺好。
+            </div>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button class="pbtn ghost" style="height:32px;font-size:12px;flex:1;justify-content:center" onclick="toast('跳到小月亮的阅读页')">小月亮 · 阅读</button>
+              <button class="pbtn ghost" style="height:32px;font-size:12px;flex:1;justify-content:center" onclick="toast('跳到小米粒的阅读页')">小米粒 · 阅读</button>
+            </div>
+          </div>
+
+          <div style="font-size:12px;color:#7E7396;text-align:center;margin:10px 0">可以接着问</div>
+          <div class="chips" style="margin-bottom:10px;flex-wrap:wrap;overflow:visible;padding:0">
+            <button class="chip" onclick="toast('问：谁需要我多陪一会')">谁需要我多陪一会</button>
+            <button class="chip" onclick="toast('问：下周可以怎么调整')">下周可以怎么调整</button>
+            <button class="chip" onclick="toast('问：这周有什么我漏掉的')">这周有什么我漏掉的</button>
+          </div>
+          <div class="chips" style="flex-wrap:wrap;overflow:visible;padding:0">
+            <button class="chip" onclick="toast('问：小米粒的错题集中在哪')">错题集中在哪</button>
+            <button class="chip" onclick="toast('问：待我确认的有几件')">待我确认几件</button>
+          </div>
+        </div>
+
+        <div class="chatbar" style="padding:10px 14px 14px">
+          <div class="chatin">想问什么就打在这里…</div>
+          <button class="sendbtn" onclick="toast('问布布')">${ico('check',20)}</button>
+        </div>
+      </div>`,
+  },
+
   report: {
     title:'家长端 · 周期报告 /parent/reports',
     notes:[
@@ -1990,6 +2167,7 @@ const SCREENS = {
             <div class="prow">把周末的口算改成"上午做一次"，比晚上更容易完成。</div>
           </div>
 
+          <button class="pbtn ghost" style="width:100%;justify-content:center;height:44px;margin-bottom:8px" onclick="go('pchat')">就这份报告问布布</button>
           <button class="pbtn" style="width:100%;justify-content:center;height:44px" onclick="go('exportpreview')">保存图片</button>
         </div>
         ${pnav('parent')}
@@ -2011,6 +2189,10 @@ const SCREENS = {
           <div class="pcard" onclick="go('safety')" style="cursor:pointer;border-left:3px solid #DB2777">
             <div class="ph"><div class="pnm">需要关注</div><div class="pmeta">1 条</div></div>
             <div class="prow">3月11日 · 孩子提到被同学说「不合群」</div>
+          </div>
+          <div class="pcard" onclick="go('pcalendar')" style="cursor:pointer;display:flex;align-items:center;gap:10px">
+            <div style="flex:1"><div class="pnm">月历</div><div class="pmeta" style="margin-top:2px">这个月哪天做了什么</div></div>
+            <b style="color:#8B5FBF">›</b>
           </div>
           <div class="pcard">
             <div class="ph"><div class="pnm">小日记</div><div class="pmeta">5 篇</div></div>
@@ -2432,7 +2614,7 @@ const SCREENS = {
             <div class="pcard">
               <div class="ph"><div class="pnm">${grp}</div></div>
               ${rows.map(([st,txt])=>`<div class="prow" style="display:flex;gap:8px;align-items:flex-start">
-                <span style="flex:0 0 34px;font-size:11px;font-weight:700;color:${st==='已画'?'#15803D':'#B3A5C9'}">${st}</span><span style="flex:1">${txt}</span></div>`).join('')}
+                <span style="flex:0 0 34px;font-size:11px;font-weight:700;color:${st==='已画'?'#15803D':'#7E7396'}">${st}</span><span style="flex:1">${txt}</span></div>`).join('')}
             </div>`).join('')}
         </div>
         ${pnav('settings')}
@@ -2525,6 +2707,7 @@ const SCREENS = {
       ['入口', '「我的」头像下方那行「连续阅读 3 天 · 查看全部徽章」'],
       ['只和自己比', '徽章全是"个人里程碑"，没有任何与他人比较的排序'],
       ['文案', '未获得显示灰色 + 进度，不显示"失败"'],
+      ['家长建的', '排在最后，标注「妈妈给你的」；默认不给星，只是纪念'],
     ],
     render: () => kidShell(`
       <div class="dhead">
@@ -2546,6 +2729,7 @@ const SCREENS = {
             ['gift','攒到 100 颗星','还差 0 颗',false],
             ['sun','连续 7 天都来了','还差 3 天',false],
             ['bike','试试 3 种运动','还差 1 种',false],
+            ['cake','自己系鞋带','妈妈给你的',true],
           ].map(([ic,n,s,got])=>`
             <div class="badge-card ${got?'got':''}">
               <div class="bc-ico">${ico(ic,26)}</div>
@@ -2727,11 +2911,13 @@ const SCREENS = {
 
   /* ---------- 前置 · 家长登录 ---------- */
   login: {
-    title:'家长登录 /auth/login',
+    title:'家长登录 /auth/login（不在豆包内时）',
     notes:[
-      ['谁用', '<b>只有家长</b>。孩子端没有登录入口——孩子是"账号 + 密码"，由家长开通'],
-      ['两种来源', '豆包内用 SSO 静默登录；浏览器/独立环境用手机号 + 密码'],
-      ['不做', '不做第三方登录（Kids 类审核麻烦）'],
+      ['只判断一件事', '<b>在不在豆包内</b>。不做微信/浏览器/其它 WebView 的细分判断'],
+      ['在豆包内', '平台 SSO 自动登录 → 这一页<b>不出现</b>；首登走「进入 / 绑定」页'],
+      ['不在豆包内', '（微信扫码 / 浏览器 / 其他）→ 手机号登录，没有豆包按钮'],
+      ['绑定入口', '不在登录页——在「我的 → 家庭账号」（仅豆包内可见）'],
+      ['不做', '不做微信授权登录（需公众号资质，P2 再评估）'],
     ],
     render: () => `
       <div class="p-app" style="background:linear-gradient(180deg,#FFF0F7,#F2E9FF)">
@@ -2750,7 +2936,125 @@ const SCREENS = {
               <button onclick="go('forgot')">忘记密码</button>
             </div>
           </div>
-          <div class="warn" style="text-align:center">孩子不需要注册账号，账号由你在「孩子」里开通。</div>
+          ${state.inDoubao ? `<div class="warn" style="text-align:center;margin-top:14px">在豆包里打开会自动登录，这一页不会出现</div>` : ''}
+        </div>
+      </div>`,
+  },
+
+  /* ---------- 豆包首次进入：进入 / 绑定已有账号 ---------- */
+  doubaowelcome: {
+    title:'豆包内首登 /auth/doubao（进入 or 绑定）',
+    notes:[
+      ['什么时候出现', '在豆包里打开 & 平台身份<b>还没绑家庭</b> → 出现这一页'],
+      ['主路径', '「进入」→ 以豆包身份新建家庭 → 走引导（加孩子 / 选模板 / 家长密码 / 使用时间）'],
+      ['次要路径', '「绑定已有账号」→ 输手机号 + 密码 → 并进原有家庭（不会出现两个家）'],
+      ['已绑定时', '这一页<b>不出现</b>，直接进孩子端'],
+      ['绑在主按钮下面', '是文本按钮不是第二个主按钮 —— 已有账号的是少数，别抢"进入"的注意力'],
+    ],
+    render: () => `
+      <div class="p-app" style="background:linear-gradient(180deg,#FFF0F7,#F2E9FF)">
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 28px;text-align:center">
+          <div style="width:96px;height:96px;border-radius:30px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:var(--clay-float)">${avatar('rabbit',60)}</div>
+          <div style="font-size:21px;font-weight:800;color:#2E1065;margin-top:18px">欢迎来到布布的学习小天地</div>
+          <div style="font-size:13.5px;color:#6B6480;line-height:1.7;margin-top:10px">
+            已通过豆包账号识别到你的身份<br>点「进入」就开始用啦
+          </div>
+        </div>
+        <div style="padding:0 24px 34px">
+          <button class="pbtn" style="width:100%;justify-content:center;height:50px;font-size:16px" onclick="go('consent')">进入</button>
+          <button style="display:block;width:100%;text-align:center;background:none;margin-top:14px;font-size:13px;color:#7C64A6;font-weight:600"
+                  onclick="go('bind')">已有账号？绑定账号</button>
+          <div class="warn" style="text-align:center;margin-top:10px">
+            绑定后孩子和星星都在原来的账号里
+          </div>
+        </div>
+      </div>`,
+  },
+
+  /* ---------- 绑定 / 合并豆包账号 ---------- */
+  bind: {
+    title:'家长端 · 绑定豆包账号 /parent/settings/account/doubao',
+    notes:[
+      ['什么时候出现', '在豆包里打开 & 平台身份<b>还没绑任何家庭</b> → 「我的 → 家庭账号」出现这一行'],
+      ['怎么绑', '<b>输入手机号 + 密码</b>，验证通过即绑定；不做跳转授权（身份已在平台会话里）'],
+      ['绑完发现是另一个家庭', '平台给了 phone_number，优先自动匹配；匹配不到就走「数据合并」把新家庭并进来'],
+      ['冲突', '该豆包已绑别的家庭 → 明确报错，不静默合并'],
+      ['解绑', '解绑后只能用手机号登录，孩子数据不变'],
+    ],
+    render: () => `
+      <div class="p-app">
+        <div class="p-head" style="display:flex;align-items:center;gap:10px;padding-bottom:10px">
+          <button onclick="go('account')" style="font-size:19px;color:#7C64A6">‹</button>
+          <div style="flex:1"><h1>绑定豆包账号</h1><div class="d">绑完在这台设备打开豆包免登录</div></div>
+        </div>
+        <div class="p-body" style="padding-top:0">
+          <div class="pcard" style="border-left:3px solid #A855F7">
+            <div class="prow"><b>正在绑定的豆包身份</b></div>
+            <div class="prow" style="color:#8B7FA0">豆包用户 · 来自平台会话 · 尚未绑定任何家庭</div>
+          </div>
+          <div class="pcard">
+            <div class="ph"><div class="pnm">输入你的手机号账号</div><div class="pmeta">确认是你本人</div></div>
+            <div class="noteinput" style="margin-bottom:10px">138 0000 6721</div>
+            <div class="noteinput">密码（6 位以上）</div>
+          </div>
+          <div class="pcard">
+            <div class="ph"><div class="pnm">绑定后</div></div>
+            <div class="kv" style="border-top:0"><span>在豆包里打开</span><b>自动登录</b></div>
+            <div class="kv"><span>孩子数据</span><b>不变</b></div>
+            <div class="kv"><span>一个豆包账号</span><b>只能绑一个家庭</b></div>
+          </div>
+          <button class="pbtn" style="width:100%;justify-content:center;height:46px" onclick="toast('绑定成功，下次在豆包里打开会直接进');go('account')">确认绑定</button>
+          <div class="warn" style="text-align:center;margin-top:12px"><button onclick="go('account')">先不绑</button></div>
+        </div>
+      </div>`,
+  },
+
+  /* ---------- 账号数据合并 ---------- */
+  merge: {
+    title:'家长端 · 账号数据合并 /parent/settings/account/merge',
+    notes:[
+      ['什么时候出现', '豆包身份已建了新家庭（空的），但家长其实已有手机号家庭 → 把新家庭并进旧家庭'],
+      ['合并方向', '永远<b>把内容并进"有数据的那个家庭"</b>，空家庭归档；不合并成一个新家庭'],
+      ['孩子怎么处理', '按 child 维度整体迁移（任务/星星/日记/对话/心愿都挂在 child 上，天然跟随）'],
+      ['重复孩子', '同名同年龄的两个孩子 → 不自动合并，只提示"看起来是同一个孩子"，让家长选'],
+      ['上限', '目标家庭合并后孩子数 ≤ 6；超过要求先归档'],
+      ['不可合并', '两个豆包绑同一家庭 · 跨租户 → 拒绝并说明原因'],
+      ['留痕', '写 audit_logs（family.merge），源家庭 merged_into_id 指向目标，30 天内可查'],
+    ],
+    render: () => `
+      <div class="p-app">
+        <div class="p-head" style="display:flex;align-items:center;gap:10px;padding-bottom:10px">
+          <button onclick="go('account')" style="font-size:19px;color:#7C64A6">‹</button>
+          <div style="flex:1"><h1>合并两个家庭</h1><div class="d">把豆包里新建的家庭并进你原来的账号</div></div>
+        </div>
+        <div class="p-body" style="padding-top:0">
+          <div class="pcard">
+            <div class="ph"><div class="pnm">两边的现状</div></div>
+            <div class="kv" style="border-top:0"><span>手机号家庭（保留）</span><b>138****6721 · 2 个孩子</b></div>
+            <div class="kv"><span>豆包新建家庭（并入后归档）</span><b>1 个孩子 · 0 条记录</b></div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">会并过去的孩子</div><div class="pmeta">按孩子整体迁移</div></div>
+            <div class="kv" style="border-top:0"><span>${avatar('fox',18)} 小米粒（豆包新建）</span><b>并进手机号家庭</b></div>
+            <div class="prow" style="color:#8B7FA0">她的任务、星星、日记、对话会一起过去，login_id 不变。</div>
+          </div>
+
+          <div class="pcard" style="border-left:3px solid #F0B429;background:#FFFCF2">
+            <div class="ph"><div class="pnm">发现可能是重复的孩子</div></div>
+            <div class="kv" style="border-top:0"><span>小米粒（5 岁 · 手机号家庭）</span><b class="psw on"></b></div>
+            <div class="kv"><span>小米粒（5 岁 · 豆包家庭）</span><b class="psw"></b></div>
+            <div class="warn">同名同岁，但<b>不会自动合并</b>：勾掉的那个会被归档，数据保留 30 天可恢复。</div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">合并后</div></div>
+            <div class="kv" style="border-top:0"><span>孩子总数</span><b>3 个（上限 6）</b></div>
+            <div class="kv"><span>星星</span><b>各孩子余额不变</b></div>
+            <div class="kv"><span>豆包登录</span><b>直接进保留的家庭</b></div>
+          </div>
+          <button class="pbtn" style="width:100%;justify-content:center;height:46px" onclick="toast('已合并，孩子与记录都在手机号家庭里了');go('account')">确认合并</button>
+          <div class="warn" style="text-align:center;margin-top:12px"><button onclick="go('account')">先不合并</button></div>
         </div>
       </div>`,
   },
@@ -3005,7 +3309,7 @@ const SCREENS = {
 
   /* ---------- 孩子端 · 内容墙 ---------- */
   wall: {
-    title:'孩子端 · 内容墙（超时/休息/睡眠）',
+    title:'孩子端 · 内容墙（超时 / 睡眠）/wall/timeout',
     notes:[
       ['三种触发', '今日时长用完 · 连续使用到休息点 · 进入睡眠时段'],
       ['不惩罚', '文案是「眼睛要休息啦」，不是「时间到了不能再玩」'],
@@ -3235,7 +3539,7 @@ const SCREENS = {
         <div class="p-body" style="padding-top:0">
           <div class="pcard">
             <div class="kv" style="border-top:0"><span>手机号</span><b>138 0000 6721</b></div>
-            <div class="kv"><span>验证码</span><b style="display:flex;gap:10px;align-items:center">•••• <button class="pbtn ghost" style="height:28px;padding:0 10px" onclick="toast('60 秒后可重发')">获取</button></b></div>
+            <div class="kv"><span>验证码</span><b style="display:flex;gap:10px;align-items:center">•••• <button class="pbtn ghost" style="height:32px;padding:0 10px" onclick="toast('60 秒后可重发')">获取</button></b></div>
             <div class="kv"><span>设置密码</span><b>••••••••</b></div>
           </div>
           <button class="pbtn" style="width:100%;justify-content:center;height:46px" onclick="go('consent')">注册并继续</button>
@@ -3261,7 +3565,7 @@ const SCREENS = {
         <div class="p-body" style="padding-top:0">
           <div class="pcard">
             <div class="kv" style="border-top:0"><span>手机号</span><b>138 0000 6721</b></div>
-            <div class="kv"><span>验证码</span><b style="display:flex;gap:10px;align-items:center">•••• <button class="pbtn ghost" style="height:28px;padding:0 10px" onclick="toast('60 秒后可重发')">获取</button></b></div>
+            <div class="kv"><span>验证码</span><b style="display:flex;gap:10px;align-items:center">•••• <button class="pbtn ghost" style="height:32px;padding:0 10px" onclick="toast('60 秒后可重发')">获取</button></b></div>
             <div class="kv"><span>新密码</span><b>••••••••</b></div>
           </div>
           <button class="pbtn" style="width:100%;justify-content:center;height:46px" onclick="toast('密码已重置，请用新密码登录');go('login')">确认重置</button>
@@ -3298,7 +3602,7 @@ const SCREENS = {
 
   /* ---------- 导出图片预览 ---------- */
   exportpreview: {
-    title:'导出预览（家长端）',
+    title:'导出预览 /parent/records/export',
     notes:[
       ['先看再存', '导出前给一张等比预览，避免"存下来才发现难看"'],
       ['三种画布', '小日记 3:4 · AI 日报 3:4 · 周期报告 16:9'],
@@ -3320,8 +3624,8 @@ const SCREENS = {
           </div>
         </div>
         <div style="padding:0 24px 24px;display:flex;flex-direction:column;gap:10px">
-          <button class="pbtn" style="height:46px;justify-content:center" onclick="toast('已保存到相册')">保存到相册</button>
-          <button class="pbtn ghost" style="height:44px;justify-content:center" onclick="toast('调起系统分享')">分享</button>
+          <button class="pbtn" style="height:46px;justify-content:center" onclick="toast('已保存到相册')">保存图片</button>
+          <div class="warn" style="text-align:center;color:#7C64A6">在微信或豆包里，也可以长按图片保存到相册</div>
         </div>
       </div>`,
   },
@@ -3371,7 +3675,7 @@ const SCREENS = {
 
   /* ---------- 孩子端 · 休息墙（5 分钟） ---------- */
   restwall: {
-    title:'孩子端 · 休息墙（连续使用 20 分钟）',
+    title:'孩子端 · 休息墙（连续使用 20 分钟）/wall/rest',
     notes:[
       ['与超时墙的区别', '超时墙是"明天见"；休息墙是"歇 5 分钟还能继续"'],
       ['体验', '不做倒计时数字（孩子会盯数字），用呼吸圆环 + 一句提示'],
@@ -3456,7 +3760,7 @@ const SCREENS = {
 
   /* ---------- 通知单条详情 ---------- */
   notifdetail: {
-    title:'家长端 · 待确认任务详情',
+    title:'家长端 · 待确认任务详情 /parent/notifications/:id',
     notes:[
       ['入口', '通知中心 → 「小月亮提交了学校作业」'],
       ['内容', '任务 + 照片 + 提交时间 + 孩子备注 + 确认/退回'],
@@ -3563,7 +3867,7 @@ const SCREENS = {
             <div class="prow" style="color:#8B84A0">发给小米粒 · 昨天 19:10</div>
           </div>
           <div class="pcard">
-            <div class="kv" style="border-top:0"><span>今天先歇一下，明天再来</span><b style="color:#B3A5C9">未读</b></div>
+            <div class="kv" style="border-top:0"><span>今天先歇一下，明天再来</span><b style="color:#7E7396">未读</b></div>
             <div class="prow" style="color:#8B84A0">发给小米粒 · 昨天 20:02</div>
           </div>
           <div class="pcard">
@@ -3622,7 +3926,7 @@ const SCREENS = {
 
   /* ---------- 家长端 · 二孩对比（折叠） ---------- */
   compare: {
-    title:'家长端 · 二孩对比（默认折叠）',
+    title:'家长端 · 二孩对比 /parent/compare',
     notes:[
       ['默认不展示', '只在家长主动展开时出现；不做排行、不做"谁更好"'],
       ['比什么', '并列展示同一维度的绝对值（达标、阅读、运动、星星），不做差值高亮'],
@@ -3637,13 +3941,13 @@ const SCREENS = {
         <div class="p-body" style="padding-top:0">
           <div class="pcard">
             <div style="display:flex;gap:10px">
-              ${[['rabbit','小月亮','#FF85C1','3/6','140','3','29'],['fox','小米粒','#5AA9E6','1/4','40','1','12']].map(([k,n,c,a,r,s,st])=>`
+              ${[['rabbit','小月亮','#FF85C1','5','140','3','29'],['fox','小米粒','#5AA9E6','2','40','1','12']].map(([k,n,c,a,r,s,st])=>`
                 <div style="flex:1;background:#fff;border:1.5px solid rgba(255,255,255,.9);border-radius:16px;padding:12px;box-shadow:var(--clay-card)">
                   <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
                     <div style="width:34px;height:34px;border-radius:50%;background:#fff;border:2px solid ${c};display:flex;align-items:center;justify-content:center">${avatar(k,26)}</div>
                     <div style="font-size:13px;font-weight:800;color:var(--k-text)">${n}</div>
                   </div>
-                  <div class="kv" style="border-top:0;padding:6px 0"><span>本周达标</span><b>${a}</b></div>
+                  <div class="kv" style="border-top:0;padding:6px 0"><span>近 7 天达标</span><b>${a} 项</b></div>
                   <div class="kv" style="padding:6px 0"><span>阅读分钟</span><b>${r}</b></div>
                   <div class="kv" style="padding:6px 0"><span>运动次数</span><b>${s}</b></div>
                   <div class="kv" style="padding:6px 0"><span>获得星星</span><b>${st}</b></div>
@@ -3734,6 +4038,524 @@ const SCREENS = {
   },
 
   /* ---------- 家长端 · 家庭账号 ---------- */
+  pinvite: {
+    title:'家长端 · 邀请另一位家长 /parent/settings/members',
+    notes:[
+      ['为什么要有', '一个家庭常常是妈妈 + 爸爸（或奶奶）一起管；不能靠"共用一个手机号"'],
+      ['怎么做', '<b>不发短信、不走微信授权</b>：生成 6 位邀请码 + 二维码，对方在自己手机上登录后输入即可加入'],
+      ['加入后能做什么', '默认「共同管理」：看数据、配任务、定价、确认。只有<b>注销账号</b>和<b>撤回监护人同意</b>必须由创建人操作'],
+      ['上限', '一个家庭最多 <b>4 位家长</b>；创建人不能退出，只能转让'],
+      ['孩子端无关', '孩子看不到这一页，也感知不到有几个家长'],
+    ],
+    render: () => `
+      <div class="p-app">
+        <div class="p-head" style="display:flex;align-items:center;gap:10px;padding-bottom:10px">
+          <button onclick="go('settings')" style="font-size:19px;color:#7C64A6">‹</button>
+          <div style="flex:1"><h1>一起管的人</h1><div class="d">1 / 4 位家长</div></div>
+        </div>
+        <div class="p-body" style="padding-top:0">
+          <div class="pcard">
+            <div class="ph"><div class="pnm">已经在的</div><div class="pmeta">创建人</div></div>
+            <div class="kv"><span>妈妈 · 138****6721</span><b>创建人 ›</b></div>
+          </div>
+
+          <div class="pcard" style="border-left:3px solid var(--k-purple)">
+            <div class="ph"><div class="pnm">邀请另一位家长</div></div>
+            <div style="font-size:13px;color:#6B5A85;line-height:1.7;margin:2px 0 10px">
+              让 TA 在自己手机上打开布布，登录后输入这串码：
+            </div>
+            <div style="font-size:26px;font-weight:800;letter-spacing:.16em;color:#6D28D9;text-align:center;
+              background:#FAF5FF;border-radius:14px;padding:14px 0;border:1.5px dashed #E9D5FF">K7M2X9</div>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button class="pbtn ghost" style="flex:1;justify-content:center;height:38px" onclick="toast('已复制邀请码')">复制</button>
+              <button class="pbtn ghost" style="flex:1;justify-content:center;height:38px" onclick="toast('显示二维码')">二维码</button>
+            </div>
+            <div class="warn">码 24 小时内有效，用过一次就失效。对方加入后你会收到一条站内消息。</div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">TA 能做什么</div></div>
+            <div class="kv"><span>看孩子的任务、阅读、运动、心情</span><b class="psw on"></b></div>
+            <div class="kv"><span>配置任务 · 给心愿定价 · 确认打卡</span><b class="psw on"></b></div>
+            <div class="kv"><span>问布布（跨孩子问答）</span><b class="psw on"></b></div>
+            <div class="kv"><span>注销账号 / 撤回监护人同意</span><b style="color:#B4478F">仅创建人</b></div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">不在这个家庭了</div></div>
+            <div class="kv" onclick="toast('退出后不再能看任何孩子数据；孩子的数据不受影响')" style="cursor:pointer">
+              <span style="color:#B4478F">退出这个家庭</span><b>›</b></div>
+          </div>
+        </div>
+        ${pnav('settings')}
+      </div>`,
+  },
+
+  paiusage: {
+    title:'家长端 · 问布布用量 /parent/chat/usage',
+    notes:[
+      ['为什么要给家长看', '额度是<b>应用自己的</b>，家长不必看到成本，但需要知道"今天还能问几次"'],
+      ['不吓人', '不出现"额度""计费""token"这类词，只说「今天还能问 X 次」'],
+      ['到顶怎么办', '到顶后按钮置灰并写明「明天再来」，不中途打断正在进行的对话'],
+      ['孩子端不显示', '孩子端 AI 只读时也不会出现用量数字，避免把"次数"变成可争夺的资源'],
+    ],
+    render: () => `
+      <div class="p-app">
+        <div class="p-head" style="display:flex;align-items:center;gap:10px;padding-bottom:10px">
+          <button onclick="go('pchat')" style="font-size:19px;color:#7C64A6">‹</button>
+          <div style="flex:1"><h1>今天还能问几次</h1><div class="d">3月12日 · 每天 0 点重置</div></div>
+        </div>
+        <div class="p-body" style="padding-top:0">
+          <div class="p-card" style="background:#fff;border-radius:20px;padding:16px">
+            <div style="display:flex;align-items:baseline;gap:8px">
+              <div style="font-size:28px;font-weight:800;color:#4A2666">12</div>
+              <div style="font-size:13px;color:#8B7FA0">已问 · 还能问 18 次</div>
+            </div>
+            <div style="height:8px;border-radius:4px;background:#F3E8FF;overflow:hidden;margin-top:10px">
+              <div style="width:40%;height:100%;border-radius:4px;background:linear-gradient(90deg,#FF85C1,#A855F7)"></div>
+            </div>
+            <div class="warn" style="margin-top:10px">每天最多 30 次，问得多的那天也不会额外收费。</div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">最近问了什么</div><div class="pmeta">今天</div></div>
+            <div class="prow">· 这周两个孩子各做了什么</div>
+            <div class="prow">· 小米粒的错题集中在哪</div>
+            <div class="prow">· 下周可以怎么调整</div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">孩子端的说话</div></div>
+            <div class="prow">小月亮今天和布布聊了 <b>6 轮</b>（上限 20 轮）</div>
+            <div class="prow">小米粒今天还没有聊</div>
+            <div class="warn">孩子端只看自己的数据；这里只显示轮数，不显示内容——内容在「记录 · 对话摘要」里。</div>
+          </div>
+        </div>
+        ${pnav('settings')}
+      </div>`,
+  },
+
+  psearch: {
+    title:'家长端 · 搜索 /parent/search',
+    notes:[
+      ['为什么需要', '任务、心愿、记录一多就翻不到；家长找的是"那件事"，不是"那个页面"'],
+      ['搜什么', '孩子名 · 任务名 · 心愿 · 小日记正文 · 对话摘要 · 错题（关卡）'],
+      ['怎么出结果', '分组列出、每组最多 3 条 + 「查看全部」；<b>不排序不分页</b>，家长要的是"一眼看到"'],
+      ['没结果', '不空着：给两条出口（新建任务 / 去看孩子的记录）'],
+      ['隐私', '只搜自己家庭的数据；对话摘要命中时只显示片段，点进去才看全文'],
+    ],
+    render: () => `
+      <div class="p-app">
+        <div class="p-head" style="display:flex;align-items:center;gap:10px;padding-bottom:10px">
+          <button onclick="go('settings')" style="font-size:19px;color:#7C64A6">‹</button>
+          <div style="flex:1;display:flex;align-items:center;gap:8px;height:38px;background:#fff;border-radius:12px;
+            padding:0 12px;box-shadow:0 2px 8px rgba(150,90,205,.12);color:#6D3FA0">
+            ${ico('search',16)}
+            <span style="font-size:14px;font-weight:600">跳绳</span>
+          </div>
+        </div>
+        <div class="p-body" style="padding-top:0">
+          <div class="pcard">
+            <div class="ph"><div class="pnm">任务</div><div class="pmeta">2 条</div></div>
+            <div class="prow" onclick="go('ptaskedit')" style="cursor:pointer">每天跳绳 100 个 · 小月亮 ›</div>
+            <div class="prow" onclick="go('ptaskedit')" style="cursor:pointer">每天跳绳 50 个 · 小米粒 ›</div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">记录</div><div class="pmeta">3 条</div></div>
+            <div class="prow" onclick="go('pdiarydetail')" style="cursor:pointer">3月11日 · 有点累 ·「<b>跳绳</b>跳了 100 个」›</div>
+            <div class="prow" onclick="go('pchatdetail')" style="cursor:pointer">3月10日 · 对话摘要 ·「今天<b>跳绳</b>比赛拿了第三名」›</div>
+            <div class="prow" onclick="go('pquestdetail')" style="cursor:pointer">3月9日 · 错题 ·「一分钟<b>跳绳</b>个数」›</div>
+            <button class="pbtn ghost" style="width:100%;justify-content:center;height:36px;margin-top:8px" onclick="toast('查看全部 3 条记录')">查看全部</button>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">心愿</div><div class="pmeta">1 条</div></div>
+            <div class="prow" onclick="go('wishdetail')" style="cursor:pointer">一根新<b>跳绳</b> · 小月亮 · 待定价 ›</div>
+          </div>
+
+          <div class="warn" style="margin-top:4px">只搜自己家的数据。对话摘要只显示片段，点进去才看全文。</div>
+        </div>
+        ${pnav('settings')}
+      </div>`,
+  },
+
+  premind: {
+    title:'家长端 · 提醒设置 /parent/settings/reminders',
+    notes:[
+      ['先明确一件事', '这里<b>全是站内消息</b>：提醒只出现在应用内（家长端铃铛 / 孩子端小信箱），不推送飞书、微信、短信'],
+      ['两种提醒', '① <b>有事等你处理</b>（待确认、心愿待定价）——即时 ② <b>每日汇总</b>——固定时间一条'],
+      ['免打扰', '22:00–07:00 不产生新消息（攒到早上一起给），孩子睡眠时段更不能弹'],
+      ['不催', '同一件事 24 小时内只提醒一次；孩子端的小信箱不标红点，只放一个小信封'],
+    ],
+    render: () => `
+      <div class="p-app">
+        <div class="p-head" style="display:flex;align-items:center;gap:10px;padding-bottom:10px">
+          <button onclick="go('settings')" style="font-size:19px;color:#7C64A6">‹</button>
+          <div style="flex:1"><h1>提醒</h1><div class="d">只在应用内，不发微信短信</div></div>
+        </div>
+        <div class="p-body" style="padding-top:0">
+          <div class="pcard">
+            <div class="ph"><div class="pnm">有事等你处理</div><div class="pmeta">即时</div></div>
+            <div class="kv"><span>有任务等我确认</span><b class="psw on"></b></div>
+            <div class="kv"><span>有心愿等我定价 / 兑现</span><b class="psw on"></b></div>
+            <div class="kv"><span>孩子说了需要关注的话</span><b class="psw on"></b></div>
+            <div class="warn">这类消息一条一件，处理完就消失，不重复提醒。</div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">每日汇总</div><div class="pmeta">固定时间一条</div></div>
+            <div class="kv"><span>每天汇总一次</span><b class="psw on"></b></div>
+            <div class="kv"><span>发送时间</span><b>20:00 ›</b></div>
+            <div class="kv"><span>内容</span><b>两个孩子的完成情况 ›</b></div>
+            <div class="warn">汇总只写做了什么、还差几个，不做排名，也不写"谁更努力"。</div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">免打扰</div></div>
+            <div class="kv"><span>开启</span><b class="psw on"></b></div>
+            <div class="kv"><span>时段</span><b>22:00 – 07:00 ›</b></div>
+            <div class="warn">这段时间产生的消息会攒到早上 07:00 一起给，不会半夜出现。</div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">孩子端</div><div class="pmeta">小信箱</div></div>
+            <div class="kv"><span>让孩子收到小信封</span><b class="psw on"></b></div>
+            <div class="kv"><span>红点数字</span><b style="color:#8B7FA0">不显示</b></div>
+            <div class="warn">孩子端不弹窗、不推送、不响铃；只有一个小信封图案，点开才看到内容。</div>
+          </div>
+        </div>
+        ${pnav('settings')}
+      </div>`,
+  },
+
+  pcalendar: {
+    title:'家长端 · 月历 /parent/records/calendar',
+    notes:[
+      ['解决什么', '补登记是"补一条"，月历是"这个月整体什么样子"——家长做判断时看的是后者'],
+      ['一天一格', '格子里只放 <b>1 个标记</b>：达标（实心）· 有记录（浅色）· 空白（无记录）'],
+      ['点进去', '点任意一天 → 那天的小日记 + 任务完成情况；不在这里堆信息'],
+      ['零比较', '月历不做"谁的颜色更多"的并排对比；切孩子用顶部切换，一次只看一个'],
+    ],
+    render: () => `
+      <div class="p-app">
+        <div class="p-head" style="display:flex;align-items:center;gap:10px;padding-bottom:10px">
+          <button onclick="go('records')" style="font-size:19px;color:#7C64A6">‹</button>
+          <div style="flex:1"><h1>月历</h1><div class="d">小月亮 · 3 月</div></div>
+          <button onclick="toast('切换到小米粒')" style="height:30px;padding:0 10px;border-radius:15px;background:#fff;
+            font-size:12px;font-weight:700;color:#6D28D9;box-shadow:0 2px 8px rgba(150,90,205,.12)">小米粒</button>
+        </div>
+        <div class="p-body" style="padding-top:0">
+          <div class="pcard">
+            <div class="ph"><div class="pnm">2026 年 3 月</div><div class="pmeta">达标 18 天</div></div>
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:6px;text-align:center">
+              ${['一','二','三','四','五','六','日'].map(d=>`<div style="font-size:11px;color:#A99BBE;font-weight:700">${d}</div>`).join('')}
+              ${Array.from({length:31},(_,i)=>{
+                const day=i+1;
+                const full=[3,4,5,6,7,10,11,12,13,14,17,18,19,20,21,24,25,26].includes(day);
+                const light=[1,2,8,9,15,16].includes(day);
+                const today=day===12;
+                return `<div onclick="toast('3月'+${day}+'日的记录')" style="cursor:pointer;height:34px;border-radius:9px;
+                  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;
+                  ${full?'background:linear-gradient(135deg,#FF85C1,#A855F7);color:#fff':
+                    light?'background:#F7EDFF;color:#8B5FBF':'color:#8C84A0'}
+                  ${today?';outline:2px solid #6D28D9;outline-offset:1px':''}">${day}</div>`;
+              }).join('')}
+            </div>
+            <div style="display:flex;gap:14px;margin-top:12px;font-size:11.5px;color:#8B7FA0">
+              <span style="display:flex;align-items:center;gap:5px"><i style="width:10px;height:10px;border-radius:3px;background:linear-gradient(135deg,#FF85C1,#A855F7)"></i>达标</span>
+              <span style="display:flex;align-items:center;gap:5px"><i style="width:10px;height:10px;border-radius:3px;background:#F7EDFF"></i>有记录</span>
+              <span style="display:flex;align-items:center;gap:5px"><i style="width:10px;height:10px;border-radius:3px;background:#F2ECF7"></i>没有记录</span>
+            </div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">这个月</div></div>
+            <div class="kv"><span>达标</span><b>18 天</b></div>
+            <div class="kv"><span>最长连续</span><b>6 天（3月10–15日）</b></div>
+            <div class="kv"><span>断在</span><b>周末居多</b></div>
+            <div class="prow" style="margin-top:6px">周末的任务可以调成"上午做"，比晚上更容易完成。</div>
+          </div>
+        </div>
+        ${pnav('records')}
+      </div>`,
+  },
+
+  kidempty: {
+    title:'孩子端 · 今天没有任务（鼓励态）/empty-today',
+    notes:[
+      ['什么时候', '家长还没配任务 / 任务今天刚好都做完了 / 新手第一天'],
+      ['不能说"没有任务"', '对孩子来说这是一句冷话——要换成「今天的事情都做完啦」'],
+      ['一定给出路', '三个入口按"最容易做"排序：读一会儿 · 动一动 · 和布布说说话'],
+      ['不制造焦虑', '不写"明天再来"这种空承诺，也不催家长配任务（那是家长端的事）'],
+    ],
+    render: () => kidShell(`
+      <div class="body" style="padding:10px 0 18px">
+        <div class="empty-demo" style="margin-top:6px">
+          <div class="emo-ico">${avatar('rabbit',60)}</div>
+          <div class="emo-t">今天的事情都做完啦</div>
+          <div class="emo-s">现在是自由时间，想做点什么都可以</div>
+        </div>
+        <div class="empty-demo" style="gap:10px;text-align:left;align-items:stretch">
+          <div style="font-size:13px;font-weight:800;color:#4A2666">想做点什么？</div>
+          <button class="btn-l" style="justify-content:flex-start;gap:10px;height:54px;border-radius:16px;background:#FFF4FA;color:#4A2666;font-weight:700" onclick="go('reading')">
+            ${ico('book',20)} 读一会儿
+          </button>
+          <button class="btn-l" style="justify-content:flex-start;gap:10px;height:54px;border-radius:16px;background:#F3FBF6;color:#4A2666;font-weight:700" onclick="go('exercise')">
+            ${ico('bike',20)} 动一动
+          </button>
+          <button class="btn-l" style="justify-content:flex-start;gap:10px;height:54px;border-radius:16px;background:#F6F0FF;color:#4A2666;font-weight:700" onclick="go('chat')">
+            ${ico('chat',20)} 和布布说说话
+          </button>
+        </div>
+        <div style="text-align:center;font-size:12.5px;color:#8B7FA8;padding:14px 20px 0;line-height:1.6">今天的星星已经放好啦，明天还会有新的</div>
+      </div>`, 'home'),
+  },
+
+  memocard: {
+    title:'孩子端 · 布布记住了（记忆确认）',
+    notes:[
+      ['为什么要有', '孩子说"我喜欢恐龙"，如果布布只是点头、下次却忘了——信任就掉了；说出来比默默存更好'],
+      ['只说一句', '不超过 12 字，不用"已录入""已保存"这类系统词'],
+      ['可以改', '点「不对哦」→ 布布重问一次，旧事实标记 deleted'],
+      ['孩子能看全部', '「我的 → 布布记得」列出所有条目，孩子可以逐条删'],
+      ['不进家长视野', '这是孩子的私事，不主动出现在家长端；<b>家长可查但不推送</b>'],
+    ],
+    render: () => kidShell(`
+      <div class="chathead" style="background:linear-gradient(180deg,#FFE6F2,#F3E8FE)">
+        <div class="ch-ava">${avatar('rabbit',30)}</div>
+        <div><div class="ch-name">布布</div><div class="ch-sub">小月亮的好朋友</div></div>
+      </div>
+      <div class="body" style="padding:6px 0 18px">
+        <div class="chatbody" style="padding-bottom:0;overflow:visible">
+          <div class="msg kid"><div class="bubble-s">我最喜欢恐龙了</div></div>
+          <div class="msg bub">
+            <div class="b-ava">${avatar('rabbit',26)}</div>
+            <div class="bubble-s">恐龙！那你一定知道霸王龙吧</div>
+          </div>
+        </div>
+        <div class="memo">
+          <div class="memo-ic">${ico('heart',16)}</div>
+          <div style="flex:1">
+            <div class="memo-t">布布记住了：你喜欢恐龙</div>
+            <div class="memo-s">以后讲恐龙的故事给你听</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;padding:0 14px">
+          <button class="btn-l" style="flex:1;height:44px;border-radius:22px;background:#fff;color:#8B5FBF;font-size:13px;font-weight:700;box-shadow:var(--clay-card)" onclick="toast('布布：那我们说点别的')">说点别的</button>
+          <button class="btn-l" style="flex:0 0 auto;padding:0 16px;height:44px;border-radius:22px;background:#fff;color:#7E7396;font-size:13px;font-weight:700" onclick="toast('布布：那是什么？告诉我嘛')">不对哦</button>
+        </div>
+        <div style="text-align:center;font-size:12.5px;color:#8B7FA8;padding:14px 20px 0;line-height:1.6">布布只记住你喜欢什么，不会记住你说过的话</div>
+      </div>`, 'chat'),
+  },
+
+  pmemories: {
+    title:'家长端 · 布布记得什么 /parent/settings/memories',
+    notes:[
+      ['透明', '孩子和布布之间的"记忆"要能被家长看到——这是信任，不是监控'],
+      ['是什么', '只存<b>偏好与事实</b>（喜欢恐龙、怕黑、在学钢琴），不存聊天原文'],
+      ['能不能删', '能，逐条删或全删；删除后布布不再提'],
+      ['不主动推给家长', '被动查看页，不生成提醒、不进每日汇总'],
+    ],
+    render: () => `
+      <div class="p-app">
+        <div class="p-head" style="display:flex;align-items:center;gap:10px;padding-bottom:10px">
+          <button onclick="go('settings')" style="font-size:19px;color:#7C64A6">‹</button>
+          <div style="flex:1"><h1>布布记得什么</h1><div class="d">小月亮 · 6 条</div></div>
+          <button onclick="toast('已切换到小米粒')" style="height:30px;padding:0 10px;border-radius:15px;background:#fff;
+            font-size:12px;font-weight:700;color:#6D28D9;box-shadow:0 2px 8px rgba(150,90,205,.12)">小米粒</button>
+        </div>
+        <div class="p-body" style="padding-top:0">
+          <div class="pcard">
+            <div class="ph"><div class="pnm">偏好</div><div class="pmeta">4 条</div></div>
+            <div class="kv"><span>喜欢恐龙</span><b>3月12日 ›</b></div>
+            <div class="kv"><span>喜欢草莓味</span><b>3月8日 ›</b></div>
+            <div class="kv"><span>不喜欢大声的地方</span><b>3月5日 ›</b></div>
+            <div class="kv"><span>在学钢琴</span><b>3月2日 ›</b></div>
+          </div>
+          <div class="pcard">
+            <div class="ph"><div class="pnm">情绪线索</div><div class="pmeta">2 条</div></div>
+            <div class="kv"><span>数学考试前会紧张</span><b>3月9日 ›</b></div>
+            <div class="kv"><span>晚上一个人睡会怕黑</span><b>3月6日 ›</b></div>
+            <div class="warn">只用于布布说话时更贴心，不会出现在报告里，也不会生成提醒。</div>
+          </div>
+          <div class="pcard">
+            <div class="ph"><div class="pnm">全部清空</div></div>
+            <div class="kv" onclick="toast('清空后布布不再提这些；聊天记录不受影响')" style="cursor:pointer">
+              <span style="color:#B4478F">清空小月亮的全部记忆</span><b>›</b></div>
+          </div>
+        </div>
+        ${pnav('settings')}
+      </div>`,
+  },
+
+  psearchrecent: {
+    title:'家长端 · 搜索（还没输入）',
+    notes:[
+      ['第一屏是什么', '不是空白框——是<b>最近搜过的</b>和<b>常找的</b>'],
+      ['最近 3 条', '存本地，可清空'],
+      ['常找的', '按使用频率给快捷词：待确认 · 本周任务 · 错题 · 心愿 · 小日记'],
+      ['不做热搜', '这不是内容平台，不把别人的搜索塞进家长手机'],
+    ],
+    render: () => `
+      <div class="p-app">
+        <div class="p-head" style="display:flex;align-items:center;gap:10px;padding-bottom:10px">
+          <button onclick="go('settings')" style="font-size:19px;color:#7C64A6">‹</button>
+          <div style="flex:1;display:flex;align-items:center;gap:8px;height:38px;background:#fff;border-radius:12px;
+            padding:0 12px;box-shadow:0 2px 8px rgba(150,90,205,.12);color:#7E7396">
+            ${ico('search',16)}
+            <span style="font-size:14px;font-weight:600">搜孩子、任务、记录…</span>
+          </div>
+        </div>
+        <div class="p-body" style="padding-top:0">
+          <div class="pcard">
+            <div class="ph"><div class="pnm">最近搜过</div><div class="pmeta" onclick="toast('已清空最近搜索')" style="cursor:pointer;color:#8B5FBF">清空</div></div>
+            <div class="kv" onclick="toast('再搜：跳绳')" style="cursor:pointer"><span>跳绳</span><b style="color:#8C84A0">3月11日</b></div>
+            <div class="kv" onclick="toast('再搜：口算')" style="cursor:pointer"><span>口算</span><b style="color:#8C84A0">3月9日</b></div>
+            <div class="kv" onclick="toast('再搜：春游')" style="cursor:pointer"><span>春游</span><b style="color:#8C84A0">3月7日</b></div>
+          </div>
+          <div class="pcard">
+            <div class="ph"><div class="pnm">常找的</div></div>
+            <div class="chips" style="flex-wrap:wrap;overflow:visible;padding:4px 0 0">
+              <button class="chip" onclick="go('confirm')">等我确认</button>
+              <button class="chip" onclick="go('tasks')">本周任务</button>
+              <button class="chip" onclick="go('pquestdetail')">错题</button>
+              <button class="chip" onclick="go('wishset')">心愿</button>
+              <button class="chip" onclick="go('records')">小日记</button>
+            </div>
+          </div>
+          <div class="warn">只搜自己家的数据，搜索记录只存在这台设备上。</div>
+        </div>
+        ${pnav('settings')}
+      </div>`,
+  },
+
+  pbadges: {
+    title:'家长端 · 徽章 /parent/badges',
+    notes:[
+      ['两种', '<b>系统徽章</b>（8 个，固定的里程碑，不能改）· <b>自己建的徽章</b>（每个孩子最多 6 个）'],
+      ['为什么要能自己建', '系统徽章只覆盖"通用成就"；「第一次自己系鞋带」「连续一周自己收书包」这种只有家长知道'],
+      ['不滥用', '自定义徽章<b>默认 0 颗星</b>（纯纪念）——想给星就自己调，避免徽章变成刷星通道'],
+      ['谁能看到', '孩子端「我的徽章」里排在系统徽章下面，标注「妈妈给你的」'],
+      ['不发就不发', '手工颁发的徽章只有在家长点了「颁发」之后才出现，不做自动补发'],
+    ],
+    render: () => `
+      <div class="p-app">
+        <div class="p-head" style="display:flex;align-items:center;gap:10px;padding-bottom:10px">
+          <button onclick="go('settings')" style="font-size:19px;color:#7C64A6">‹</button>
+          <div style="flex:1"><h1>徽章</h1><div class="d">系统 8 个 · 自己建的 2 个</div></div>
+          <button onclick="go('pbadgeedit')" style="height:32px;padding:0 12px;border-radius:16px;
+            background:linear-gradient(135deg,#FF6FB5,#A855F7);color:#fff;font-size:12.5px;font-weight:700">新建</button>
+        </div>
+        <div class="p-body" style="padding-top:0">
+          <div class="pcard">
+            <div class="ph"><div class="pnm">自己建的</div><div class="pmeta">2 / 6</div></div>
+            <div class="kv" onclick="go('pbadgeedit')" style="cursor:pointer">
+              <span>${ico('cake',16)} 第一次自己系鞋带</span><b>已颁发 ›</b></div>
+            <div class="kv" onclick="go('pbadgeedit')" style="cursor:pointer">
+              <span>${ico('book',16)} 自己收书包一周</span><b style="color:#B45309">待颁发 ›</b></div>
+            <button class="pbtn ghost" style="width:100%;justify-content:center;height:38px;margin-top:10px" onclick="go('pbadgeedit')">再建一个</button>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">系统徽章</div><div class="pmeta">不能修改</div></div>
+            <div class="kv"><span>${ico('star',16)} 第一次开宝箱</span><b>已获得</b></div>
+            <div class="kv"><span>${ico('book',16)} 连续阅读 3 天</span><b>已获得</b></div>
+            <div class="kv"><span>${ico('flame',16)} 运动周达标</span><b>已获得</b></div>
+            <div class="kv"><span>${ico('heart',16)} 写完 10 篇心情</span><b>已获得</b></div>
+            <div class="kv"><span>${ico('map',16)} 通关 10 关</span><b style="color:#8B7FA0">还差 3 关</b></div>
+            <div class="kv"><span>${ico('sun',16)} 连续 7 天都来了</span><b style="color:#8B7FA0">还差 3 天</b></div>
+            <div class="warn">系统徽章只和自己比，永远不会出现"比别人多"这类话。</div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">规则</div></div>
+            <div class="kv"><span>自定义徽章上限</span><b>每个孩子 6 个</b></div>
+            <div class="kv"><span>默认奖励</span><b>0 颗星（纯纪念）</b></div>
+            <div class="kv"><span>删除徽章</span><b>已颁发的不能删</b></div>
+          </div>
+        </div>
+        ${pnav('settings')}
+      </div>`,
+  },
+
+  pbadgeedit: {
+    title:'家长端 · 新建徽章 /parent/badges/new',
+    notes:[
+      ['四步就够', '起个名字 → 选个图 → 定条件 → 写一句话'],
+      ['名字要短', '≤8 个字，孩子一眼看完；长了在徽章卡上会折成两行'],
+      ['条件四选一', '<b>累计星星</b> · <b>连续天数</b> · <b>某任务做满 N 次</b> · <b>家长手工颁发</b>'],
+      ['奖励默认 0 星', '想要星星就把滑块往右拨；上限 3 颗，防止徽章变成刷星通道'],
+      ['预览', '右侧就是孩子看到的样子，改一个字都会跟着变'],
+    ],
+    render: () => `
+      <div class="p-app">
+        <div class="p-head" style="display:flex;align-items:center;gap:10px;padding-bottom:10px">
+          <button onclick="go('pbadges')" style="font-size:19px;color:#7C64A6">‹</button>
+          <div style="flex:1"><h1>新建徽章</h1><div class="d">小月亮 · 第 3 个</div></div>
+          <button onclick="toast('已保存');go('pbadges')" style="height:32px;padding:0 12px;border-radius:16px;
+            background:linear-gradient(135deg,#FF6FB5,#A855F7);color:#fff;font-size:12.5px;font-weight:700">保存</button>
+        </div>
+        <div class="p-body" style="padding-top:0">
+          <div class="pcard">
+            <div class="ph"><div class="pnm">叫什么</div><div class="pmeta">4 / 8 字</div></div>
+            <div class="noteinput" style="min-height:44px;display:flex;align-items:center;font-size:14px;font-weight:700">自己系鞋带</div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">选个图</div></div>
+            <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:4px">
+              ${['star','book','flame','heart','cake','bike','sun','gift','dog','map','bag','egg'].map((k,i)=>`
+                <button style="height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                  ${i===4?'background:linear-gradient(135deg,#FF85C1,#A855F7);color:#fff':'background:#F7F0FE;color:#8B5FBF'}">${ico(k,20)}</button>`).join('')}
+            </div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">什么条件拿到</div></div>
+            <div class="seg" style="margin-bottom:10px">
+              <button onclick="toast('条件：累计星星')">星星数</button>
+              <button onclick="toast('条件：连续天数')">连续天</button>
+              <button onclick="toast('条件：任务次数')">做几次</button>
+              <button class="on">手工发</button>
+            </div>
+            <div class="kv"><span>什么时候颁发</span><b>由我点「颁发」 ›</b></div>
+            <div class="warn" style="margin-top:8px">手工颁发的徽章不会自动发出；你点了「颁发」孩子才会看到。</div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">奖励</div><div class="pmeta">默认 0 颗</div></div>
+            <div class="chips" style="padding:2px 0 0">
+              <button class="chip on">不给星</button>
+              <button class="chip" onclick="toast('奖励 1 颗星')">1 颗</button>
+              <button class="chip" onclick="toast('奖励 2 颗星')">2 颗</button>
+              <button class="chip" onclick="toast('奖励 3 颗星')">3 颗</button>
+            </div>
+            <div class="warn">徽章主要是纪念，星星给多了会变成刷星通道。</div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">颁奖时说一句</div><div class="pmeta">不填也行</div></div>
+            <div class="noteinput" style="min-height:60px;font-size:13.5px;color:#4A2666">你自己系的鞋带，妈妈看到了。</div>
+          </div>
+
+          <div class="pcard" style="border-left:3px solid var(--k-purple)">
+            <div class="ph"><div class="pnm">孩子看到的样子</div></div>
+            <div style="display:flex;align-items:center;gap:12px;padding:6px 0">
+              <div style="width:58px;height:58px;border-radius:18px;background:linear-gradient(180deg,#FFF0F7,#F3E8FE);
+                display:flex;align-items:center;justify-content:center;color:#A855F7">${ico('cake',26)}</div>
+              <div>
+                <div style="font-size:14px;font-weight:800;color:#4A2666">自己系鞋带</div>
+                <div style="font-size:12px;color:#8B7FA0;margin-top:2px">妈妈给你的 · 3月12日</div>
+                <div style="font-size:12.5px;color:#8B5FBF;margin-top:4px">「你自己系的鞋带，妈妈看到了。」</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        ${pnav('settings')}
+      </div>`,
+  },
+
   account: {
     title:'家长端 · 家庭账号 /parent/settings/account',
     notes:[
@@ -3752,7 +4574,13 @@ const SCREENS = {
             <div class="ph"><div class="pnm">登录</div></div>
             <div class="kv" onclick="toast('换绑手机号需验证原号与新号')" style="cursor:pointer"><span>手机号</span><b>138****6721 ›</b></div>
             <div class="kv" onclick="toast('修改登录密码')" style="cursor:pointer"><span>登录密码</span><b>•••••••• ›</b></div>
-            <div class="kv"><span>登录方式</span><b>豆包内 SSO / 手机号</b></div>
+            <div class="kv" onclick="go('bind')" style="cursor:pointer">
+              <span>豆包账号 <span style="font-size:10.5px;background:#F3E8FF;color:#6D28D9;border-radius:5px;padding:1px 5px">仅豆包内可见</span></span>
+              <b style="color:#B4478F">未绑定 ›</b>
+            </div>
+            <div class="kv" onclick="go('merge')" style="cursor:pointer">
+              <span>合并另一个家庭</span><b>›</b>
+            </div>
           </div>
           <div class="pcard">
             <div class="ph"><div class="pnm">家长</div></div>
@@ -3873,7 +4701,7 @@ const SCREENS = {
 
   /* ---------- 家长端 · 添加第二个孩子 ---------- */
   addchild2: {
-    title:'家长端 · 添加第二个孩子',
+    title:'家长端 · 添加第二个孩子 /parent/children/new',
     notes:[
       ['为什么单独一版', '第二个孩子不需要重走引导：继承家庭设置（家长密码 / 使用时间 / 边界）'],
       ['省事', '可以直接「复制老大的任务和商店」，或从模板重选，或空白开始'],
@@ -3957,7 +4785,7 @@ const SCREENS = {
 
   /* ---------- 孩子端 · 首次体验 5 步 ---------- */
   firstrun: {
-    title:'孩子端 · 首次体验（5 步）',
+    title:'孩子端 · 首次体验（5 步）/first-run',
     notes:[
       ['什么时候', '孩子第一次进入首页 / 新建孩子后首次进入'],
       ['同时只一个气泡', '点掉一个才出下一个；关掉就永不再现（按 child 记）'],
@@ -4039,7 +4867,7 @@ const SCREENS = {
 
   /* ---------- 孩子端 · 错误兜底页 ---------- */
   errorpage: {
-    title:'孩子端 · 错误兜底页',
+    title:'孩子端 · 错误兜底页 /error',
     notes:[
       ['什么时候', '页面崩溃 / 数据加载失败 / 未知错误'],
       ['文案', '不说"系统错误"，说"页面走丢了"'],
@@ -4051,9 +4879,9 @@ const SCREENS = {
         <div class="pin-name">页面走丢了</div>
         <div class="pin-sub" style="text-align:center;line-height:1.7;margin-top:8px">没关系，先回首页<br>今天要做的事都还在</div>
         <div style="margin-top:26px;width:100%">
-          <button class="btn-l btn-primary" style="width:100%" onclick="toast('回首页')">回首页</button>
+          <button class="btn-l btn-primary" style="width:100%" onclick="go('home')">回首页</button>
         </div>
-        <div class="pin-note"><button onclick="toast('再试一次')">再试一次</button></div>
+        <div class="pin-note"><button onclick="location.reload()">再试一次</button></div>
       </div>`,
   },
 
@@ -4183,7 +5011,7 @@ const SCREENS = {
 
   /* ---------- 孩子端 · 心愿兑现确认 ---------- */
   wishclaim: {
-    title:'孩子端 · 「我拿到啦」',
+    title:'孩子端 · 「我拿到啦」/stars/wish/:id/claim',
     notes:[
       ['闭环最后一步', '家长标记已兑现后，孩子点「我拿到啦」，家长端才显示"已完成"'],
       ['为什么', '避免"说兑现了但孩子没收到"——这一步是给孩子的确认权'],
@@ -4326,6 +5154,136 @@ const SCREENS = {
               <div class="sk" style="width:60%;height:14px;margin-bottom:8px"></div>
               <div class="sk" style="width:85%;height:10px"></div>
             </div>`).join('')}
+        </div>
+      </div>`,
+  },
+
+  /* ---------- 孩子端 · 语音录制中 ---------- */
+  voicerecord: {
+    title:'孩子端 · 语音录制中（暂不做 · 仅存档）',
+    notes:[
+      ['交互', '<b>点一下开始 / 再点结束</b>（不用按住，6–8 岁按不住）'],
+      ['反馈', '波纹 + 计时点（不显示秒数，避免孩子盯数字）'],
+      ['取消', '左侧「取消」随时可退，不惩罚'],
+      ['失败', '识别不出时不报错，说「布布没听清，再说一次好不好」'],
+      ['状态', '<b>暂不做</b>（2026-10 决定）：平台无 ASR 插件；Web Speech 在国内 Chrome 不可用（依赖 Google 服务），豆包 webview 大概率拿不到麦克风'],
+      ['现在怎么做', '说说话只保留<b>快捷气泡 + 文字输入</b> —— 这两条本来就是 6–8 岁最顺手的输入'],
+      ['以后要做', '平台有语音插件时再接（本页保留作设计存档）'],
+      ['降级', '麦克风旁永远保留 4 个快捷气泡；无麦克风或权限被拒时按钮隐藏/置灰'],
+    ],
+    render: () => kidShell(`
+      <div class="chatwrap" style="background:linear-gradient(180deg,#F3E8FF,#FFF0F7)">
+        <div class="chathead" style="background:linear-gradient(180deg,#FFE6F2,#F3E8FE)">
+          <div class="ch-ava">${avatar('rabbit',30)}</div>
+          <div><div class="ch-name">布布</div><div class="ch-sub">正在听你说</div></div>
+        </div>
+        <div class="chatbody" style="justify-content:flex-end">
+          <div class="rec-wave">
+            ${Array.from({length:9}).map((_,i)=>`<i style="animation-delay:${i*0.09}s"></i>`).join('')}
+          </div>
+          <div class="rec-tip">说完点一下这个按钮</div>
+        </div>
+        <div class="chatbar" style="gap:10px">
+          <button class="textbtn" onclick="go('chat')">取消</button>
+          <button class="mic rec-on" onclick="toast('正在识别…然后发给布布');go('chat')">
+            ${ico('mic',24)}<span>说完了</span>
+          </button>
+        </div>
+      </div>`, 'chat'),
+  },
+
+  /* ---------- 家长端 · 心愿延后 ---------- */
+  deferwish: {
+    title:'家长端 · 心愿延后（不是驳回）',
+    notes:[
+      ['不做"驳回"', '驳回会让孩子觉得"我的愿望被否定"；改成「以后再实现」'],
+      ['必须给替代', '延后时给一个温和的替代建议（如换成周末去天文馆）'],
+      ['孩子端看到', '「这个以后再说」+ 家长写的替代建议，不出现"被拒绝"字样'],
+    ],
+    render: () => `
+      <div class="p-app" style="opacity:.35"><div class="p-head"><h1>心愿</h1></div></div>
+      <div class="psheet">
+        <div class="ppanel" style="position:relative">
+          <button class="x" onclick="go('wishset')">${ico('close',16)}</button>
+          <h3>「去迪士尼」先放一放？</h3>
+          <p class="sub">这个愿望有点远。给小米粒一个替代的小目标，她会更容易理解。</p>
+
+          <div class="kv" style="border-top:0"><span>孩子提的</span><b>去迪士尼（未定价）</b></div>
+          <div class="kv"><span>现在有</span><b>43 颗星</b></div>
+
+          <div class="ph" style="margin-top:14px"><div class="pnm" style="font-size:13px">给她一个替代</div></div>
+          <div class="noteinput" style="min-height:64px">这个周末我们先去科技馆看恐龙，好不好？</div>
+          <div class="prow" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">
+            <span class="tagpill">周末去公园</span><span class="tagpill">换一本绘本</span><span class="tagpill">一起做蛋糕</span>
+          </div>
+
+          <div class="pactions" style="margin-top:16px">
+            <button class="pbtn ghost" style="flex:1;justify-content:center;height:44px" onclick="go('wishset')">还是现在定价</button>
+            <button class="pbtn" style="flex:1;justify-content:center;height:44px" onclick="toast('已延后，孩子会看到你的替代建议');go('wishset')">以后再说</button>
+          </div>
+          <p class="sub" style="margin-top:10px">孩子端显示：「这个以后再说」+ 你写的那句话。</p>
+        </div>
+      </div>`,
+  },
+
+  /* ---------- 家长端 · 合并冲突 / 豆包已绑别的家庭 ---------- */
+  conflict: {
+    title:'家长端 · 绑定冲突',
+    notes:[
+      ['什么时候', '这个豆包账号已经绑了另一个家庭；或跨租户（不同企业/组织）'],
+      ['原则', '明确说明原因 + 给下一步，<b>绝不静默合并两份数据</b>'],
+      ['用户能做什么', '换手机号登录原来的账号 / 联系客服解绑 / 先用当前账号'],
+    ],
+    render: () => `
+      <div class="p-app" style="background:linear-gradient(180deg,#FFF0F7,#F2E9FF)">
+        <div class="p-head" style="background:transparent;box-shadow:none;display:flex;align-items:center;gap:10px">
+          <button onclick="go('bind')" style="font-size:19px;color:#7C64A6">‹</button>
+          <div style="flex:1"><h1>无法绑定</h1></div>
+        </div>
+        <div class="p-body" style="padding-top:0">
+          <div class="pcard" style="text-align:center;padding:26px 18px;border-left:3px solid #DC2626">
+            <div style="width:72px;height:72px;border-radius:24px;margin:0 auto 10px;background:#FEF2F2;display:flex;align-items:center;justify-content:center;color:#DC2626">${ico('lock',30)}</div>
+            <div class="pnm" style="font-size:15px">这个豆包账号已经绑了别的家庭</div>
+            <div class="prow" style="text-align:center;color:#8B7FA8;margin-top:6px">
+              绑定的家庭：<b>139****8821</b> · 1 个孩子<br>
+              一个豆包账号只能绑一个家庭
+            </div>
+          </div>
+          <div class="pcard">
+            <div class="ph"><div class="pnm">你可以</div></div>
+            <div class="kv" style="border-top:0" onclick="go('login')" style="cursor:pointer"><span>用那个手机号登录看看</span><b>›</b></div>
+            <div class="kv" onclick="toast('联系客服解绑原家庭后即可绑定')"><span>联系客服解绑</span><b>›</b></div>
+            <div class="kv" onclick="go('consent')"><span>先不管，直接进入</span><b>›</b></div>
+          </div>
+          <div class="warn">我们不会把两份数据自动合并——那会把别人的孩子并进你的账号。</div>
+        </div>
+      </div>`,
+  },
+
+  /* ---------- 孩子端 · 换头像（只用预设） ---------- */
+  avatarpick: {
+    title:'孩子端 · 换头像（仅预设）',
+    notes:[
+      ['为什么孩子端不能上传', '拍照上传有风险（拍到家人/不适当内容），上传统一由家长在家长端做'],
+      ['孩子能做的', '从 8 个预设里挑一个，立即生效'],
+      ['家长上传后', '孩子端显示那张图，孩子仍可换回预设'],
+    ],
+    render: () => `
+      <div class="body" style="opacity:.35">
+        <div class="me-top"><div class="av">${avatar('rabbit',44)}</div><div><div class="mn">小月亮</div><div class="mb">连续阅读 3 天</div></div></div>
+      </div>
+      <div class="sheet on">
+        <div class="panel">
+          <h3>换一个头像</h3>
+          <p class="hint">挑一个你喜欢的</p>
+          <div class="avg">
+            ${['rabbit','fox','bear','cat','dog','unicorn'].map((k,i)=>`
+              <button class="avg-item ${i===0?'on':''}" onclick="toast('换成这个头像')">${avatar(k,34)}</button>`).join('')}
+          </div>
+          <div class="btns" style="grid-template-columns:1fr">
+            <button class="btn-l btn-primary" onclick="toast('换好啦');go('me')">就这个</button>
+          </div>
+          <div class="warn" style="text-align:center">想要自己的照片？让爸爸妈妈在家长端帮你换。</div>
         </div>
       </div>`,
   },
@@ -4742,10 +5700,12 @@ function closeSheet(id){ const s=document.getElementById(id); if(s) s.classList.
 let current = 'choose';
 function render(){ go(current); }
 function go(name){
+  const rq = document.getElementById('railq');
+  if (rq && rq.value) { rq.value = ''; rq.dispatchEvent(new Event('input')); }
   current = SCREENS[name] ? name : 'home';
   name = current;
   const s = SCREENS[name] || SCREENS.home;
-  document.querySelectorAll('.rail button').forEach(b=>b.classList.toggle('on', b.dataset.s===name));
+  document.querySelectorAll('.rail button[data-s]').forEach(b=>b.classList.toggle('on', b.dataset.s===name));
   const screen = document.getElementById('screen');
   document.querySelector('.phone').classList.toggle('wide', !!s.wide);
   screen.innerHTML = s.render();
@@ -4769,7 +5729,53 @@ document.getElementById('screen').addEventListener('click', (e) => {
   toast(label + ' · 原型未接具体页面');
 });
 
-document.querySelectorAll('.rail button').forEach(b=>{
+document.querySelectorAll('.envsw button').forEach(b=>{
+  b.onclick = () => {
+    state.inDoubao = b.dataset.env === 'doubao';
+    document.querySelectorAll('.envsw button').forEach(x => x.classList.toggle('on', x === b));
+    render();
+  };
+});
+
+
+/* ---------- 侧栏：折叠 + 搜索 ---------- */
+(() => {
+  document.querySelectorAll('.rail .grp').forEach(g => {
+    const cnt = g.querySelector('.cnt');
+    if (cnt) g.dataset.total = cnt.textContent.trim();
+    const btns = [];
+    let n = g.nextElementSibling;
+    while (n && !n.classList.contains('grp')) {
+      if (n.matches && n.matches('button[data-s]')) btns.push(n);
+      n = n.nextElementSibling;
+    }
+    g._btns = btns;
+    if (cnt) { g.dataset.total = btns.length; cnt.textContent = btns.length; }
+    g.addEventListener('click', () => {
+      const closed = g.classList.toggle('closed');
+      btns.forEach(b => b.classList.toggle('hidden', closed));
+    });
+  });
+
+  const q = document.getElementById('railq');
+  if (q) q.addEventListener('input', () => {
+    const v = q.value.trim().toLowerCase();
+    document.querySelectorAll('.rail .grp').forEach(g => {
+      let shown = 0;
+      (g._btns || []).forEach(b => {
+        const hit = !v || b.textContent.toLowerCase().includes(v);
+        b.classList.toggle('hidden', !hit);
+        if (hit) shown++;
+      });
+      g.style.display = (!v || shown) ? '' : 'none';
+      if (v) g.classList.remove('closed');
+      const cnt = g.querySelector('.cnt');
+      if (cnt) cnt.textContent = v ? shown : (g.dataset.total || '');
+    });
+  });
+})();
+
+document.querySelectorAll('.rail button[data-s]').forEach(b=>{
   b.onclick = ()=>go(b.dataset.s);
 });
 

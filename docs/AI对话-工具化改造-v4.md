@@ -383,3 +383,18 @@ chat_messages(
 
 > 如果一段代码需要"把所有数据查出来再给模型"，它就是这次要删掉的代码；
 > 如果模型能回答出一个**没有经过工具**的数字，这就是缺陷，不是巧合。
+
+
+---
+
+## 附：parent scope 工具（家长端「问布布」）
+
+| 工具 | 入参 | 返回 | 备注 |
+| --- | --- | --- | --- |
+| `list_children` | — | `[{child_id, name, avatar}]` | 家庭内全部孩子 |
+| `get_child_snapshot` | `{child_id}` | 该孩子当日快照 | 与孩子端同源，数字一致 |
+| `get_family_range` | `{from, to, child_ids?}` | 区间统计（每孩子一行并列） | **并列不下结论** |
+| `get_pending_confirm` | `{child_id?}` | 待确认任务列表 | |
+| `get_task_templates` | `{child_id?}` | 当前启用的任务模板 | |
+
+约束：全部只读；`get_family_range` 返回结构里**不含排序字段**（防止模型顺手排榜）；所有数字带 `source_route`，前端可点回原页面。

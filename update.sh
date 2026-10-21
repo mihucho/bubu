@@ -148,9 +148,7 @@ CHANGED="$TMP/changed.log"
 if [ "$COPYER" = "rsync" ]; then
   rsync "${RSYNC_ARGS[@]}" "$TOP"/ "$ROOT"/ > "$CHANGED" 2>&1 || die "覆盖失败"
   # itemize 输出：>f 新增/更新，*deleting 删除
-  ADDED=$(awk '/^>f\+{9}/{n++} END{print n+0}' "$CHANGED")
-  CHANGED_FILES=$(awk '/^>f/{n++} END{print n+0}' "$CHANGED")
-  UPDATED=$(( CHANGED_FILES - ADDED ))
+  read -r ADDED UPDATED <<<"$(awk '/^>f/{ if (index($0, ">f+++++++++") == 1) a++; else b++ } END{ print a+0, b+0 }' "$CHANGED")"
   show_list="$(grep -E '^>f|^\*deleting' "$CHANGED" | sed -E 's/^>f[.+]+\s+//; s/^\*deleting\s+/删除 /' | head -40 || true)"
 else
   warn "没有 rsync，用 cp 覆盖（不会删除多余文件）"

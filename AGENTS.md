@@ -122,6 +122,14 @@
 
 ---
 
+## 二·五、根目录脚本
+
+| 脚本 | 作用 |
+| --- | --- |
+| `update.sh` | 从 GitHub（gh-proxy 加速）拉取 main 并覆盖到当前目录。`--dry-run` 只看变更，`--no-backup` 不备份，`--force` 连 `.env` 一起覆盖 |
+
+默认不覆盖：`.env*` · `node_modules/` · `dist/` · `.git/` · `.spark*`。被覆盖的旧文件默认备份到 `.update-backup/<时间戳>/`。
+
 ## 三、技术栈
 
 - 后端：NestJS 10 + `@lark-apaas/fullstack-nestjs-core`（平台鉴权 / DB 注入 / 统一配置）
