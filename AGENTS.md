@@ -3,7 +3,8 @@
 > 本文件是 AI / 新人的唯一入口。
 > - 第一~二节：**产品与设计规范**，描述的是**当前已实现**的形态。
 > - 第三~八节：**工程约定**，含 lark-apaas（spark）框架的专有语法，**改代码前必须逐条对照**。
-> - 产品演进方向见 `docs/产品设计-v3.md`（家庭账号 / 二孩 / 孩子端独立 / 家长端控制台），迁移路径见 `docs/产品优化方案-v2.md`。这两份是**目标**，本文件是**现状**；冲突时产品方向以 v3 为准，工程约束以本文件为准。
+> - **现行文档**：`docs/README.md` 是索引；`docs/最终方案-v2.0.md` 是产品与技术唯一现行方案；建表看 `docs/数据模型设计-v2.md`；页面与路由看 `docs/页面清单与链路-v1.md` + `docs/页面结构设计-v2.md`；视觉看 `DESIGN.md`。
+> - 本文件描述的是**当前已实现**的形态；与上述文档冲突时，产品与结构以文档为准，工程约束（lark-apaas 专有语法）以本文件为准。
 
 ## 应用概述
 儿童学习激励应用，移动端优先（手机竖屏），粉紫色渐变儿童友好风格。
@@ -64,29 +65,60 @@
 | `chat_messages` | 说说话聊天 |
 | `shop_items` | 星星商店物品 |
 | `exchange_records` | 兑换记录 |
-| `wrong_questions` | 错题本 |
+| `wrong_questions` | 闯关（原错题本） |
+| `star_ledger` | 星星流水（唯一真相） |
+| `task_checkins` | 打卡事件（计数可重建） |
+| `wish_items` | 心愿单 |
+| `kid_devices` | 孩子已登录设备 |
+| `chat_summaries` `chat_memory_facts` | AI 记忆（L1 摘要 / L2 画像） |
 
-### 页面路由（`client/src/app.tsx`）
+### 页面路由（目标形态见 `docs/最终方案-v2.0.md` §3.2）
+
+**孩子端（底部 5 tab）**
 | 路由 | 页面 |
 | --- | --- |
-| `/setup` | 首次初始化档案（`pages/Setup`） |
-| `/` | 本周首页 |
+| `/auth/login` `/auth/register` | 家庭账号登录（豆包 SSO 或自有账号） |
+| `/setup/*` | 引导：同意 → 孩子信息 → 模板 → 预览 → 家长密码 → 使用时间 |
+| `/choose` | 选人页（≥2 个孩子时；家庭最多 6 个孩子） |
+| `/pin` | 孩子登录（账号 + 密码） |
+| `/` | **首页**（今日宝箱 / 今天要做 / 本周要做） |
 | `/reading` | 阅读 |
 | `/exercise` | 动起来 |
 | `/chat` | 说说话 |
-| `/wrong-questions` | 错题本 |
-| `/stars` | 星星商店 |
-| `/parent` | 家长 |
-| `/checkin` | 签到彩蛋与心情 |
-| `*` | 404 |
+| `/me` | 我的（星星账本 / 宠物 / 我的密码 / 齿轮） |
+| `/stars` `/quests` `/checkin` | 商店+心愿 / 闯关 / 签到（从首页卡片进入） |
+| `/tasks/:id` · `/stars/wish/:id` · `/me/ledger` · `/me/badges` | 任务详情 · 心愿详情 · 星星账本 · 徽章 |
+| `/quests/:id` · `/quests/:id/play` · `/checkin/diary/:date` | 关卡详情 · 答题 · 小日记 |
+| `/wall/timeout` · `/wall/rest` | 内容墙（超时/睡眠 · 休息 5 分钟） |
 
-底部导航 7 格在 `client/src/components/Layout.tsx`。
+**家长端（底部 5 tab，家长密码后）**
+| 路由 | 页面 |
+| --- | --- |
+| `/parent` | 概览（每个孩子一张今日卡 + 待处理） |
+| `/parent/tasks` | 任务清单 / 运动目标 / 闯关（同页三段） |
+| `/parent/wishes` | 心愿（待定价 / 攒星中 / 可兑现 / 已兑现 + 规则） |
+| `/parent/children` | 孩子列表 → `/parent/children/:id` 孩子详情（含账号开通） |
+| `/parent/settings` | 我的（使用时间 / 内容隐私 / 账号安全） |
+| `/parent/reports` | **周期报告**（按任务周期分组 + 区间统计） |
+| `/parent/records` | 记录（日记 / 对话摘要 / 需要关注） |
+| `/parent/notifications` | 通知中心（待处理 / 动态 / 系统） |
+| `/parent/quests/new` · `/parent/quests/:id` | 记录一关（拍照）· 错题详情 |
+| `/parent/shop` · `/parent/shop/exchanges` | 商店物品 · 兑换记录与撤销 |
+| `/parent/children/:id/edit` · `/parent/children/copy` | 孩子资料编辑 · 复制配置 |
+| `/parent/settings/usage` · `/audit` · `/privacy` | 使用时间 · 操作记录 · 隐私与数据 |
+| `/parent/children/:id/backfill` | 补登记 |
+
+**导航位置**：孩子端 5 tab（首页 · 阅读 · 动起来 · 说说话 · 我的）在 `KidShell`；家长端 5 tab 在 `ParentShell`。两端共用一套视觉、两套密度（见 `DESIGN.md` §1）。
 
 ### 核心规则
-- 星星：打卡任务 + 彩蛋 + 心情记录 获得；商店兑换消耗
-- 阅读积分：1分钟=1积分，只涨不跌
-- 本周达标：已达标任务数 / 8
-- 数据联动：所有页面顶部四个数据卡片（`components/StatsHeader.tsx`）保持一致
+- **星星只有一份真相**：`star_ledger`；`available_stars` / `total_stars` 只是事务内缓存，业务模块**不得**直接改余额
+- **星星来源**（数值全由家长配置）：任务达标 / 彩蛋 / 心情 / 阅读达标 / 运动周达标 / 闯关通关；消耗：商店兑换、心愿兑付
+- **一次达标只入账一次**，靠 `star_ledger.ref_id` 唯一性 + `idempotency_key`
+- **任务周期可配**：每天 / 每周 N 次 / 每周固定几天 / 每月 N 次 / 一次性 / 自定义区间。**不存在"所有任务都按本周算"的口径**
+- **首页宝箱 = 今日宝箱**：分母是"今天要做的任务数"，不是"本周任务数 / 8"
+- **本周星星、达标数按派生计算**（流水求和 + 任务行状态），**不做每周重置任务**
+- **周期报告**替代周报：按任务周期分组 + 区间统计（最近 7/30 天）
+- **数据联动**：孩子端不再有"顶部四数据卡"，数字只在「我的 → 星星账本」解释；家长端各页数字必须与报告一致
 
 ---
 

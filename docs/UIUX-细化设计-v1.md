@@ -178,7 +178,7 @@
 | StarChip | 图标·图标+数值·负数·入账动画 |
 | PrimaryButton | 默认·按下·disabled(.45)·loading(三点) |
 | Sheet | 打开·关闭·拖拽把手（仅家长端） |
-| ParentGate | 认知题·答错抖动·PIN·5 次退出 |
+| ParentGate | 6 位家长密码 · 5 次错误静默退回 |
 | Empty | 孩子端（插图+鼓励+按钮）·家长端（说明+按钮） |
 
 ---
