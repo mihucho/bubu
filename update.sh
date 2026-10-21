@@ -8,6 +8,7 @@
 #   ./update.sh              # 更新代码与文档，保留本地配置
 #   ./update.sh --force      # 连 .env 一起覆盖（慎用）
 #   ./update.sh --dry-run    # 只显示会更新哪些文件，不落盘
+#   ./update.sh --no-backup  # 不备份被覆盖的旧文件（默认会备份）
 #   ./update.sh --help
 #
 # 默认**不会**被覆盖（本地资产）：
@@ -18,7 +19,9 @@
 #   .spark/ .spark_project         平台私有配置
 #   .DS_Store
 #
-# 依赖：curl 或 wget；unzip 或 python3；rsync 或 cp
+# 被覆盖的旧文件默认备份到 .update-backup/<时间戳>/，可用 --no-backup 关闭。
+#
+# 依赖：curl 或 wget；python3 或 ditto 或 unzip；rsync 或 cp
 # ============================================================================
 set -euo pipefail
 
@@ -26,12 +29,14 @@ REPO_ZIP="https://gh-proxy.org/https://github.com/mihucho/bubu/archive/refs/head
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FORCE=0
 DRY_RUN=0
+BACKUP=1
 
 # ---------- 参数 ----------
 for arg in "$@"; do
   case "$arg" in
-    --force)   FORCE=1 ;;
-    --dry-run) DRY_RUN=1 ;;
+    --force)     FORCE=1 ;;
+    --dry-run)   DRY_RUN=1 ;;
+    --no-backup) BACKUP=0 ;;
     --help|-h)
       sed -n '2,26p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
       exit 0 ;;
@@ -120,13 +125,20 @@ EXCLUDES=(
   "node_modules/"
   "dist/"
   ".spark/"
+  ".update-backup/"
   ".DS_Store"
 )
 if [ "$FORCE" = 0 ]; then
   EXCLUDES+=(".env" ".env.local" ".env.*" ".spark_project")
 fi
 
-RSYNC_ARGS=(-a --checksum --itemize-changes)  # --checksum：内容相同就不动，避免无意义覆盖
+# --checksum：内容相同不动；-8：中文文件名不转义
+RSYNC_ARGS=(-a --checksum --itemize-changes --8-bit-output)
+if [ "$BACKUP" = 1 ] && [ "$DRY_RUN" = 0 ]; then
+  BACKUP_DIR="$ROOT/.update-backup/$(date +%Y%m%d-%H%M%S)"
+  mkdir -p "$BACKUP_DIR"
+  RSYNC_ARGS+=(--backup --backup-dir "$BACKUP_DIR")
+fi
 for e in "${EXCLUDES[@]}"; do RSYNC_ARGS+=(--exclude "$e"); done
 if [ "$DRY_RUN" = 1 ]; then RSYNC_ARGS+=(--dry-run); fi
 
@@ -180,6 +192,14 @@ if [ -f "$ROOT/package-lock.json" ]; then
   fi
 fi
 
+if [ "$BACKUP" = 1 ] && [ "$DRY_RUN" = 0 ] && [ -n "${BACKUP_DIR:-}" ] && [ -d "$BACKUP_DIR" ]; then
+  BN=$(find "$BACKUP_DIR" -type f | wc -l | tr -d " ")
+  if [ "$BN" -gt 0 ]; then
+    warn "旧文件已备份到 $BACKUP_DIR（$BN 个）"
+  else
+    rmdir "$BACKUP_DIR" 2>/dev/null || true
+  fi
+fi
 say ""
 say "${G}${B}更新完成。${N} 如果只是文档/原型变了，直接刷新页面即可。"
 if [ "$DRY_RUN" = 1 ]; then
