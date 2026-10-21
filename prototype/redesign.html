@@ -948,6 +948,7 @@ button{font-family:inherit;border:0;background:none;cursor:pointer;color:inherit
   <button data-s="firstrun"><i class="dot"></i>首次体验 5 步</button>
   <button data-s="kidempty"><i class="dot"></i>今天没任务（鼓励态）</button>
   <button data-s="memocard"><i class="dot"></i>布布记住了（记忆卡）</button>
+  <button data-s="kidaifail"><i class="dot"></i>布布看不到的时候</button>
   <button data-s="wall"><i class="dot"></i>内容墙（超时 / 睡眠）</button>
   <button data-s="restwall"><i class="dot"></i>休息墙（5 分钟）</button>
   <button data-s="voicerecord"><i class="dot"></i>语音录制（存档）</button>
@@ -978,6 +979,7 @@ button{font-family:inherit;border:0;background:none;cursor:pointer;color:inherit
   <button data-s="paudit"><i class="dot"></i>操作记录（工具审计）</button>
   <button data-s="paitools"><i class="dot"></i>布布能做什么（34）</button>
   <button data-s="pchatpropose"><i class="dot"></i>草稿确认卡（提议类）</button>
+  <button data-s="paifail"><i class="dot"></i>降级：工具失败 / 次数用完</button>
 
   <div class="grp">H · 家长端 · 报告与记录 <b class="cnt">7</b></div>
   <button data-s="report"><i class="dot"></i>周期报告</button>
@@ -4704,6 +4706,112 @@ const SCREENS = {
           <button class="sendbtn" onclick="toast('问布布')">${ico('check',20)}</button>
         </div>
       </div>`,
+  },
+
+  paifail: {
+    title:'家长端 · 问布布降级 /parent/chat/degraded',
+    notes:[
+      ['三种降级', '① 数据服务取不到 ② 工具超时 ③ 今日次数用完'],
+      ['永远给出口', '每一句道歉后面必须跟一个"现在能做的事"按钮，不允许只道歉'],
+      ['不中断', '次数用完发生在**下一轮**，当前这一轮不打断，答完再提示'],
+      ['话术白名单', '只用四句：这个我暂时看不到 / 还没有记录 / 要问爸爸妈妈才知道 / 我记不清了，你再说一次'],
+      ['说清原因', '不甩技术词（超时、500、token），只说"数据服务忙"或"今天问满了"'],
+    ],
+    render: () => `
+      <div class="p-app" style="display:flex;flex-direction:column;height:100%">
+        <div class="p-head" style="display:flex;align-items:center;gap:10px;padding-bottom:10px">
+          <button onclick="go('pchat')" style="font-size:19px;color:#7C64A6;line-height:1">‹</button>
+          <div style="flex:1"><h1>问布布</h1><div class="d">两个孩子的数据</div></div>
+          <button onclick="go('paiusage')" class="envtag" style="margin:0;border:0;cursor:pointer">今天还能问 0 次 ›</button>
+        </div>
+
+        <div class="p-body" style="padding-top:0;flex:1;min-height:0;overflow:auto">
+          <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+            <div style="max-width:78%;background:linear-gradient(135deg,#FF6FB5,#A855F7);color:#fff;
+              padding:10px 13px;border-radius:14px 14px 4px 14px;font-size:13.5px;line-height:1.6">
+              小月亮这周读了多久
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-bottom:10px">
+            <div style="width:26px;height:26px;border-radius:9px;background:#F3E8FF;flex:0 0 26px;
+              display:flex;align-items:center;justify-content:center">${avatar('rabbit',20)}</div>
+            <div style="max-width:82%;background:#fff;padding:10px 13px;border-radius:14px 14px 14px 4px;
+              font-size:13.5px;line-height:1.65;color:#3D2B57;box-shadow:0 2px 8px rgba(150,90,205,.10)">
+              这个我暂时看不到，数据服务有点忙
+            </div>
+          </div>
+
+          <div class="pcard" style="border-left:3px solid #F59E0B">
+            <div class="ph"><div class="pnm">现在可以</div></div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <button class="pbtn ghost" style="justify-content:flex-start;height:44px" onclick="toast('重试这一问')">再问一次</button>
+              <button class="pbtn ghost" style="justify-content:flex-start;height:44px" onclick="go('report')">直接看周期报告</button>
+              <button class="pbtn ghost" style="justify-content:flex-start;height:44px" onclick="go('records')">看记录里的小日记</button>
+            </div>
+            <div class="warn" style="margin-top:10px">数字都在页面里，不用等布布。</div>
+          </div>
+
+          <div class="pcard" style="border-left:3px solid #8B7FA0">
+            <div class="ph"><div class="pnm">今天问满了</div><div class="pmeta">30 / 30</div></div>
+            <div class="prow">这一问答完就到期了；明天 0 点恢复 30 次。</div>
+            <div class="prow">问得多的那天不会额外收费。</div>
+            <button class="pbtn" style="width:100%;justify-content:center;height:44px;margin-top:10px;opacity:.55" onclick="toast('明天再来')">明天再来</button>
+            <div class="warn">当前这一轮不会被打断，答完才提示。</div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">布布不会做什么</div></div>
+            <div class="prow">· 不会猜数字</div>
+            <div class="prow">· 不会说"应该是 140 分钟左右吧"</div>
+            <div class="prow">· 不会拿上一次的数字当这一次</div>
+          </div>
+        </div>
+
+        <div class="chatbar" style="padding:10px 14px 14px">
+          <div class="chatin" style="opacity:.6">明天 0 点后再问…</div>
+          <button class="sendbtn" style="opacity:.45" onclick="toast('今天问满了')">${ico('check',20)}</button>
+        </div>
+      </div>`,
+  },
+
+  kidaifail: {
+    title:'孩子端 · 布布看不到的时候 /chat/degraded',
+    notes:[
+      ['三种情况', '数据取不到 · 没听懂 · 不在豆包内'],
+      ['一句就够', '≤20 字，不用"抱歉""系统错误"这类词'],
+      ['必须给出路', '低于 8 岁的孩子如果只看到"看不到"，会反复试；必须给一个能点的按钮'],
+      ['不装懂', '宁可说"我不确定"，也不猜数字——孩子对数字的信任一旦破了就找不回来'],
+      ['不连累别处', '任务、阅读、运动、商店照常可用，只有对话降级'],
+    ],
+    render: () => kidShell(`
+      <div class="chathead" style="background:linear-gradient(180deg,#FFE6F2,#F3E8FE)">
+        <div class="ch-ava">${avatar('rabbit',30)}</div>
+        <div><div class="ch-name">布布</div><div class="ch-sub">小月亮的好朋友</div></div>
+      </div>
+      <div class="body" style="padding:8px 0 18px">
+        <div class="chatbody" style="padding-bottom:0;overflow:visible">
+          <div class="msg kid"><div class="bubble-s">我今天读了几分钟</div></div>
+          <div class="msg bub">
+            <div class="b-ava">${avatar('rabbit',26)}</div>
+            <div class="bubble-s">这个我暂时看不到</div>
+          </div>
+          <div class="msg kid"><div class="bubble-s">那你猜猜嘛</div></div>
+          <div class="msg bub">
+            <div class="b-ava">${avatar('rabbit',26)}</div>
+            <div class="bubble-s">我猜不准，怕说错了骗到你</div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:8px;padding:6px 14px">
+          <button class="btn-l btn-primary" style="height:52px" onclick="toast('再问一次')">再问一次</button>
+          <button class="btn-l" style="height:52px;background:#fff;color:#8B5FBF;box-shadow:var(--clay-card)" onclick="go('reading')">去看我的阅读</button>
+        </div>
+
+        <div style="text-align:center;font-size:12.5px;color:#7E7396;padding:14px 24px 0;line-height:1.6">
+          布布看不到的时候不会乱猜，其他都还能用
+        </div>
+      </div>`, 'chat'),
   },
 
   account: {
