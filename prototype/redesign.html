@@ -886,7 +886,7 @@ button{font-family:inherit;border:0;background:none;cursor:pointer;color:inherit
 <!-- ================= 左侧：屏幕清单 ================= -->
 <aside class="rail">
   <h1>布布 · 前端原型</h1>
-  <div class="sub">109 屏 · 按两端结构分组<br>点标题可折叠 · 可搜索</div>
+  <div class="sub"><span id="screencount">—</span> 屏 · 按两端结构分组<br>点标题可折叠 · 可搜索</div>
 
   <div class="grp">环境（只判断一件事）</div>
   <div class="envsw">
@@ -976,6 +976,8 @@ button{font-family:inherit;border:0;background:none;cursor:pointer;color:inherit
   <button data-s="pchatdetail"><i class="dot"></i>对话详情</button>
   <button data-s="pmemories"><i class="dot"></i>布布记得什么</button>
   <button data-s="paudit"><i class="dot"></i>操作记录（工具审计）</button>
+  <button data-s="paitools"><i class="dot"></i>布布能做什么（34）</button>
+  <button data-s="pchatpropose"><i class="dot"></i>草稿确认卡（提议类）</button>
 
   <div class="grp">H · 家长端 · 报告与记录 <b class="cnt">7</b></div>
   <button data-s="report"><i class="dot"></i>周期报告</button>
@@ -2003,6 +2005,7 @@ const SCREENS = {
             <div class="kv"><span>允许导出图片</span><b>已开启 ›</b></div>
             <div class="kv" onclick="go('safety')" style="cursor:pointer"><span>需要关注的消息</span><b style="color:#DB2777">1 条 ›</b></div>
             <div class="kv" onclick="go('pmemories')" style="cursor:pointer"><span>布布记得什么</span><b>6 条 ›</b></div>
+            <div class="kv" onclick="go('paitools')" style="cursor:pointer"><span>布布能做什么</span><b>34 个能力 ›</b></div>
           </div>
           <div class="pcard">
             <div class="ph"><div class="pnm">快捷入口</div></div>
@@ -2062,7 +2065,7 @@ const SCREENS = {
           <button onclick="go('paiusage')" class="envtag" style="margin:0;border:0;cursor:pointer">今天还能问 18 次 ›</button>
         </div>
 
-        <div class="p-body" style="padding-top:0;flex:1;overflow:auto">
+        <div class="p-body" style="padding-top:0;flex:1;min-height:0;overflow:auto">
           <div class="seg" style="margin-bottom:10px">
             <button class="on" onclick="toast('范围：全部孩子')">全部孩子</button>
             <button onclick="toast('范围：小月亮')">小月亮</button>
@@ -2093,6 +2096,7 @@ const SCREENS = {
           <div class="chips" style="flex-wrap:wrap;overflow:visible;padding:0">
             <button class="chip" onclick="toast('问：小米粒的错题集中在哪')">错题集中在哪</button>
             <button class="chip" onclick="toast('问：待我确认的有几件')">待我确认几件</button>
+            <button class="chip" onclick="go('pchatpropose')">帮我建个跳绳任务</button>
           </div>
         </div>
 
@@ -4556,6 +4560,152 @@ const SCREENS = {
       </div>`,
   },
 
+  paitools: {
+    title:'家长端 · 布布能做什么 /parent/settings/ai-tools',
+    notes:[
+      ['为什么要有', 'AI 的能力边界是家长最焦虑的地方；写清楚比解释一百句"我们很安全"有用'],
+      ['34 个工具分四类', '孩子端 18（只读自己）· 家长端 11（跨孩子，只并列）· 系统 3 · 提议 4（必须你确认）'],
+      ['写死一条', '<b>布布不能改任何数据</b>：建任务、定心愿价、发鼓励，都只出一张确认卡，点了才生效'],
+      ['可以关', '家长可以逐个关掉某类工具（比如"不让布布看我的小日记"）'],
+    ],
+    render: () => `
+      <div class="p-app">
+        <div class="p-head" style="display:flex;align-items:center;gap:10px;padding-bottom:10px">
+          <button onclick="go('settings')" style="font-size:19px;color:#7C64A6">‹</button>
+          <div style="flex:1"><h1>布布能做什么</h1><div class="d">34 个能力 · 全部只读</div></div>
+        </div>
+        <div class="p-body" style="padding-top:0">
+          <div class="pcard" style="border-left:3px solid #7C3AED">
+            <div style="font-size:13.5px;line-height:1.75;color:#3D2B57">
+              布布<b>不能改任何数据</b>。建任务、定心愿价、发鼓励，它只会给你一张确认卡，你点了才生效。
+            </div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">孩子端 · 只看自己</div><div class="pmeta">18 个</div></div>
+            <div class="kv"><span>今天怎么样（复合，最常用）</span><b style="color:#8B7FA0">只读</b></div>
+            <div class="kv"><span>有多少星 · 星星怎么来的</span><b style="color:#8B7FA0">只读</b></div>
+            <div class="kv"><span>任务进度 · 单个任务详情</span><b style="color:#8B7FA0">只读</b></div>
+            <div class="kv"><span>阅读 / 书单 / 运动 / 心情</span><b style="color:#8B7FA0">只读</b></div>
+            <div class="kv"><span>签到 · 闯关 · 错题 · 徽章</span><b style="color:#8B7FA0">只读</b></div>
+            <div class="kv"><span>商店 · 心愿 · 奖励规则</span><b style="color:#8B7FA0">只读</b></div>
+            <div class="kv"><span>小信箱 · 宠物</span><b style="color:#8B7FA0">只读</b></div>
+            <div class="warn">孩子端的布布永远看不到另一个孩子的数据，也没有任何排行榜。</div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">家长端 · 可以跨孩子</div><div class="pmeta">11 个</div></div>
+            <div class="kv"><span>两个孩子各做了什么（并列）</span><b style="color:#8B7FA0">只读</b></div>
+            <div class="kv"><span>有谁等我处理</span><b style="color:#8B7FA0">只读</b></div>
+            <div class="kv"><span>任务是怎么设的</span><b style="color:#8B7FA0">只读</b></div>
+            <div class="kv"><span>心愿积压 · 徽章配置</span><b style="color:#8B7FA0">只读</b></div>
+            <div class="kv"><span>需要关注的消息</span><b style="color:#8B7FA0">只给级别</b></div>
+            <div class="kv"><span>孩子最近聊了什么</span><b style="color:#8B7FA0">只给摘要</b></div>
+            <div class="kv"><span>布布记住了什么</span><b style="color:#8B7FA0">只读</b></div>
+            <div class="warn">并列数据不带排序，不做"谁更好"的结论；永远不给对话原文。</div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">会动手的（都要你点确认）</div><div class="pmeta">4 个</div></div>
+            <div class="kv"><span>起草一个新任务</span><b style="color:#B45309">需确认</b></div>
+            <div class="kv"><span>建议一个心愿定价</span><b style="color:#B45309">需确认</b></div>
+            <div class="kv"><span>起草一个徽章</span><b style="color:#B45309">需确认</b></div>
+            <div class="kv"><span>写一句鼓励的话</span><b style="color:#B45309">需确认</b></div>
+            <div class="warn">孩子端<b>没有</b>任何一个会动手的能力；"让布布帮我打卡"在物理上做不到。</div>
+          </div>
+
+          <div class="pcard">
+            <div class="ph"><div class="pnm">隐私边界</div></div>
+            <div class="kv"><span>孩子端查看小日记</span><b class="psw on"></b></div>
+            <div class="kv"><span>家长端查看对话原文</span><b class="psw on"></b></div>
+            <div class="kv"><span>布布记住孩子的偏好</span><b class="psw on"></b></div>
+            <div class="kv" onclick="go('pmemories')" style="cursor:pointer"><span>查看 / 清空记忆</span><b>6 条 ›</b></div>
+          </div>
+        </div>
+        ${pnav('settings')}
+      </div>`,
+  },
+
+  pchatpropose: {
+    title:'家长端 · 问布布的确认卡 /parent/chat/proposal',
+    notes:[
+      ['一张卡一次', '提议类工具一次只出一张卡，不做批量，避免"AI 一口气改了 8 个任务"'],
+      ['卡上必须有', '要改什么、改成什么、代价是什么（几颗星）、以及两个按钮：改一下 / 就这么建'],
+      ['不能跳过', '模型永远不落库；点「就这么建」走正常 POST /parent/tasks，审计记 actor=parent, source=ai_draft'],
+      ['改一下', '回到对话继续，卡留在原位变成「已废弃」，不消失（家长能回看 AI 原本想干什么）'],
+      ['星数上限', '草稿里的奖励硬顶 3 颗，卡上高亮显示，防止 AI 把奖励调大'],
+    ],
+    render: () => `
+      <div class="p-app" style="display:flex;flex-direction:column;height:100%">
+        <div class="p-head" style="display:flex;align-items:center;gap:10px;padding-bottom:10px">
+          <button onclick="go('pchat')" style="font-size:19px;color:#7C64A6;line-height:1">‹</button>
+          <div style="flex:1"><h1>问布布</h1><div class="d">小月亮 · 草稿等你确认</div></div>
+          <button onclick="go('paiusage')" class="envtag" style="margin:0;border:0;cursor:pointer">今天还能问 17 次 ›</button>
+        </div>
+
+        <div class="p-body" style="padding-top:0;flex:1;overflow:auto">
+          <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+            <div style="max-width:78%;background:linear-gradient(135deg,#FF6FB5,#A855F7);color:#fff;
+              padding:10px 13px;border-radius:14px 14px 4px 14px;font-size:13.5px;line-height:1.6">
+              给小月亮建个每天跳绳 100 个的任务吧
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-bottom:10px">
+            <div style="width:26px;height:26px;border-radius:9px;background:#F3E8FF;flex:0 0 26px;
+              display:flex;align-items:center;justify-content:center">${avatar('rabbit',20)}</div>
+            <div style="max-width:82%;background:#fff;padding:10px 13px;border-radius:14px 14px 14px 4px;
+              font-size:13.5px;line-height:1.65;color:#3D2B57;box-shadow:0 2px 8px rgba(150,90,205,.10)">
+              我拟了一个，你看看这样对不对：
+            </div>
+          </div>
+
+          <div class="pcard" style="border:1.5px solid #E9D5FF;border-left:3px solid #7C3AED;margin-bottom:10px">
+            <div class="ph"><div class="pnm">任务草稿</div><div class="pmeta" style="color:#B45309">等你确认</div></div>
+            <div class="kv"><span>任务名</span><b>跳绳</b></div>
+            <div class="kv"><span>周期</span><b>每天</b></div>
+            <div class="kv"><span>目标</span><b>100 个</b></div>
+            <div class="kv"><span>达标奖励</span><b style="color:#B45309">2 颗星</b></div>
+            <div class="kv"><span>拍照</span><b>可选</b></div>
+            <div class="kv"><span>需要我再确认</span><b>否</b></div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button class="pbtn ghost" style="flex:1;justify-content:center;height:44px" onclick="toast('回到对话继续改：想加几句话？')">改一下</button>
+              <button class="pbtn" style="flex:1.4;justify-content:center;height:44px" onclick="toast('已创建：跳绳 · 每天 100 个');go('tasks')">就这么建</button>
+            </div>
+            <div class="warn" style="margin-top:10px">布布不能直接改数据，只有你点了「就这么建」才会真的创建。</div>
+          </div>
+
+          <div style="font-size:12px;color:#7E7396;text-align:center;margin:14px 0 10px">再看一个：鼓励的话</div>
+
+          <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+            <div style="max-width:78%;background:linear-gradient(135deg,#FF6FB5,#A855F7);color:#fff;
+              padding:10px 13px;border-radius:14px 14px 4px 14px;font-size:13.5px;line-height:1.6">
+              帮我想句鼓励的话，发给小月亮
+            </div>
+          </div>
+
+          <div class="pcard" style="border:1.5px solid #E9D5FF;border-left:3px solid #7C3AED">
+            <div class="ph"><div class="pnm">鼓励消息草稿</div><div class="pmeta" style="color:#B45309">等你确认</div></div>
+            <div style="font-size:14px;line-height:1.7;color:#3D2B57;padding:6px 0">
+              「今天跳绳没断，妈妈看到了。」
+            </div>
+            <div class="kv"><span>发给</span><b>小月亮</b></div>
+            <div class="kv"><span>字数</span><b>12 / 40</b></div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button class="pbtn ghost" style="flex:1;justify-content:center;height:44px" onclick="toast('换一句')">换一句</button>
+              <button class="pbtn" style="flex:1.4;justify-content:center;height:44px" onclick="toast('已发到小月亮的小信箱')">发到小信箱</button>
+            </div>
+            <div class="warn" style="margin-top:10px">孩子端不会弹窗、不响铃，只会在小信箱里出现一个小信封。</div>
+          </div>
+        </div>
+
+        <div class="chatbar" style="padding:10px 14px 14px">
+          <div class="chatin">想问什么就打在这里…</div>
+          <button class="sendbtn" onclick="toast('问布布')">${ico('check',20)}</button>
+        </div>
+      </div>`,
+  },
+
   account: {
     title:'家长端 · 家庭账号 /parent/settings/account',
     notes:[
@@ -5773,6 +5923,11 @@ document.querySelectorAll('.envsw button').forEach(b=>{
       if (cnt) cnt.textContent = v ? shown : (g.dataset.total || '');
     });
   });
+})();
+
+(function setScreenCount(){
+  const el = document.getElementById('screencount');
+  if (el) el.textContent = Object.keys(SCREENS).length;
 })();
 
 document.querySelectorAll('.rail button[data-s]').forEach(b=>{
