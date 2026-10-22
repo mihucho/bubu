@@ -1,0 +1,226 @@
+/* 孩子端二级页共用样式（阅读 / 运动 / 我的）—— 只用 tokens.css */
+
+.rc-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 16px 12px;
+}
+
+.rc-head__ico {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: var(--k-pink-soft);
+  color: var(--k-pink);
+}
+
+.rc-head__title {
+  margin: 0;
+  font-size: var(--k-fs-title);
+  font-weight: 800;
+  color: var(--k-text-strong);
+}
+
+.rc-head__sub {
+  margin: 3px 0 0;
+  font-size: var(--k-fs-note);
+  color: var(--k-text-sub);
+}
+
+.rc-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 0 16px;
+}
+
+.rc-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: var(--k-radius-card);
+  background: var(--k-surface);
+  box-shadow: var(--clay-card);
+}
+
+.rc-card__k {
+  font-size: var(--k-fs-note);
+  color: var(--k-text-sub);
+}
+
+.rc-card__v {
+  font-family: var(--font-number);
+  font-size: var(--k-fs-number);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--k-text-strong);
+}
+
+.rc-panel {
+  margin: 12px 16px 0;
+  padding: 14px;
+  border-radius: var(--k-radius-card);
+  background: var(--k-surface);
+  box-shadow: var(--clay-card);
+}
+
+.rc-panel__title {
+  margin: 0 0 10px;
+  font-size: var(--k-fs-h2);
+  font-weight: 800;
+  color: var(--k-text-strong);
+}
+
+.rc-quick {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.rc-quick__item {
+  height: var(--k-tap);
+  padding: 0 14px;
+  border: 1.5px solid var(--k-border);
+  border-radius: var(--k-radius-pill);
+  background: var(--k-surface);
+  color: var(--k-text);
+  font-size: var(--k-fs-body);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.rc-quick__item.is-on {
+  border-color: transparent;
+  background: var(--k-grad-cta);
+  color: #fff;
+}
+
+.rc-field {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.rc-field__k {
+  font-size: var(--k-fs-body);
+  color: var(--k-text-sub);
+}
+
+.rc-field__in {
+  height: var(--k-tap);
+  padding: 0 12px;
+  border: 1.5px solid var(--k-input-border);
+  border-radius: 14px;
+  background: var(--k-input-bg);
+  color: var(--k-text-strong);
+  font-size: var(--k-fs-body);
+  font-family: inherit;
+}
+
+.rc-submit {
+  width: 100%;
+  height: var(--k-tap-lg);
+  border: 0;
+  border-radius: var(--k-radius-pill);
+  background: var(--k-grad-cta);
+  color: #fff;
+  font-size: var(--k-fs-body);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.rc-submit:disabled {
+  opacity: 0.6;
+}
+
+.rc-flash {
+  margin: 10px 0 0;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: var(--k-success);
+  color: #fff;
+  font-size: var(--k-fs-note);
+  text-align: center;
+}
+
+.rc-section {
+  margin-top: 14px;
+  padding: 0 16px 8px;
+}
+
+.rc-section__title {
+  margin: 0 0 8px;
+  font-size: var(--k-fs-h2);
+  font-weight: 800;
+  color: var(--k-text-strong);
+}
+
+.rc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rc-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--k-radius-card);
+  background: var(--k-surface);
+  box-shadow: var(--clay-card);
+}
+
+.rc-row__name {
+  font-size: var(--k-fs-body);
+  font-weight: 700;
+  color: var(--k-text-strong);
+}
+
+.rc-row__meta {
+  font-size: var(--k-fs-note);
+  color: var(--k-text-sub);
+  font-family: var(--font-number);
+  font-variant-numeric: tabular-nums;
+}
+
+.rc-empty {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 16px 14px;
+  border-radius: var(--k-radius-card);
+  background: var(--k-surface-2);
+  color: var(--k-text-sub);
+  font-size: var(--k-fs-note);
+}
+
+.rc-row--link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.rc-row--link .rc-row__name {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.me-forget {
+  border: 0;
+  background: transparent;
+  color: var(--k-text-sub);
+  font-size: var(--k-fs-note);
+  cursor: pointer;
+  text-decoration: underline;
+}

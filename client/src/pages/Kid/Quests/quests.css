@@ -1,0 +1,38 @@
+.qs-flash { margin: 0 16px 8px; }
+
+.qs-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border-radius: var(--k-radius-card);
+  background: var(--k-surface);
+  box-shadow: var(--clay-card);
+}
+
+.qs-card__main { display: flex; flex-direction: column; gap: 3px; }
+
+.qs-card__note {
+  margin-top: 4px;
+  font-size: var(--k-fs-note);
+  color: var(--k-text-sub);
+}
+
+.qs-card__btns { display: flex; gap: 8px; }
+
+.qs-btn {
+  flex: 1;
+  height: var(--k-tap);
+  border: 0;
+  border-radius: var(--k-radius-pill);
+  background: var(--k-grad-cta);
+  color: #fff;
+  font-size: var(--k-fs-body);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.qs-btn--ghost {
+  background: var(--k-surface-2);
+  color: var(--k-text-sub);
+}

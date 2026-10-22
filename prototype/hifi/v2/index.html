@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>布布 · 高保真 v2（117 屏）</title>
+<style>
+  :root { --ink:#2b1147; --ink-sub:#7c5a9e; }
+  * { box-sizing:border-box; }
+  body { margin:0; padding:34px 26px 60px; color:var(--ink); font-family:"Baloo 2","PingFang SC","HarmonyOS Sans SC",system-ui,sans-serif;
+    background: radial-gradient(60% 40% at 10% 0%, #ffe3f1 0%, transparent 60%), radial-gradient(55% 38% at 92% 6%, #efe0ff 0%, transparent 58%), linear-gradient(170deg,#fdf5fb,#f6f1fd 60%,#f3eefb); }
+  h1 { margin:0 0 6px; font-size:26px; }
+  .lead { margin:0; font-size:13px; line-height:1.75; color:var(--ink-sub); max-width:820px; }
+  .tags { display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; }
+  .tag { font-size:12px; font-weight:700; color:#7c3aed; background:#fff; border:1px solid #f0e4fb; border-radius:999px; padding:5px 12px; }
+  .grp { max-width:1240px; margin:32px auto 0; }
+  .grp__t { font-size:15px; margin:0 0 12px; display:flex; align-items:center; gap:8px; }
+  .grp__t span { font-size:11px; font-weight:700; color:#7c3aed; background:#fff; border-radius:999px; padding:2px 8px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(330px,1fr)); gap:20px; }
+  .frame { background:#fff; border-radius:22px; padding:11px; box-shadow:0 1px 2px rgba(120,60,170,.06), 0 14px 36px rgba(120,60,170,.10); }
+  .frame h2 { margin:2px 4px 8px; font-size:11.5px; font-weight:700; color:#6f6685; }
+  .frame iframe { width:100%; height:680px; border:0; border-radius:15px; display:block; background:#fbf7ff; }
+  .note { max-width:1240px; margin:30px auto 0; font-size:13px; color:#6f6685; line-height:1.8; }
+</style></head><body>
+  <h1>布布 · 高保真 v2</h1>
+  <p class="lead">117 屏手写高保真。孩子端字号收敛为 6 级（11.5 / 12 / 13 / 15 / 17 / 22），家长端 6 级（11 / 12 / 13 / 15 / 19 / 26）；图标按钮无容器、图标 = 按钮 × 0.56；顶部条滚动浮现置顶。</p>
+  <div class="tags">
+    <span class="tag">Claymorphism 克制版</span><span class="tag">数字 Baloo 2</span>
+    <span class="tag">孩子端 6 级字号</span><span class="tag">家长端 6 级字号</span>
+    <span class="tag">图标按钮无容器</span><span class="tag">顶部条滚动浮现</span>
+    <span class="tag">audit:hifi → 0</span>
+  </div>
+
+    <section class="grp"><h2 class="grp__t">引导 8 步 <span>8</span></h2><div class="grid">
+      <div class="frame"><h2>setup-child</h2><iframe loading="lazy" src="./setup-child.html" title="setup-child"></iframe></div>
+      <div class="frame"><h2>setup-consent</h2><iframe loading="lazy" src="./setup-consent.html" title="setup-consent"></iframe></div>
+      <div class="frame"><h2>setup-done</h2><iframe loading="lazy" src="./setup-done.html" title="setup-done"></iframe></div>
+      <div class="frame"><h2>setup-gate</h2><iframe loading="lazy" src="./setup-gate.html" title="setup-gate"></iframe></div>
+      <div class="frame"><h2>setup-preview</h2><iframe loading="lazy" src="./setup-preview.html" title="setup-preview"></iframe></div>
+      <div class="frame"><h2>setup-template</h2><iframe loading="lazy" src="./setup-template.html" title="setup-template"></iframe></div>
+      <div class="frame"><h2>setup-usage</h2><iframe loading="lazy" src="./setup-usage.html" title="setup-usage"></iframe></div>
+      <div class="frame"><h2>setup-welcome</h2><iframe loading="lazy" src="./setup-welcome.html" title="setup-welcome"></iframe></div>
+      </div></section>
+    <section class="grp"><h2 class="grp__t">认证 <span>3</span></h2><div class="grid">
+      <div class="frame"><h2>auth-forgot</h2><iframe loading="lazy" src="./auth-forgot.html" title="auth-forgot"></iframe></div>
+      <div class="frame"><h2>auth-login</h2><iframe loading="lazy" src="./auth-login.html" title="auth-login"></iframe></div>
+      <div class="frame"><h2>auth-register</h2><iframe loading="lazy" src="./auth-register.html" title="auth-register"></iframe></div>
+      </div></section>
+    <section class="grp"><h2 class="grp__t">前置文档 <span>2</span></h2><div class="grid">
+      <div class="frame"><h2>privacy-child</h2><iframe loading="lazy" src="./privacy-child.html" title="privacy-child"></iframe></div>
+      <div class="frame"><h2>privacy-doc</h2><iframe loading="lazy" src="./privacy-doc.html" title="privacy-doc"></iframe></div>
+      </div></section>
+    <section class="grp"><h2 class="grp__t">进入孩子端 <span>3</span></h2><div class="grid">
+      <div class="frame"><h2>choose-kid</h2><iframe loading="lazy" src="./choose-kid.html" title="choose-kid"></iframe></div>
+      <div class="frame"><h2>kid-login</h2><iframe loading="lazy" src="./kid-login.html" title="kid-login"></iframe></div>
+      <div class="frame"><h2>kid-pwd-set</h2><iframe loading="lazy" src="./kid-pwd-set.html" title="kid-pwd-set"></iframe></div>
+      </div></section>
+    <section class="grp"><h2 class="grp__t">孩子端 · 页面 <span>25</span></h2><div class="grid">
+      <div class="frame"><h2>kid-avatar</h2><iframe loading="lazy" src="./kid-avatar.html" title="kid-avatar"></iframe></div>
+      <div class="frame"><h2>kid-badge-detail</h2><iframe loading="lazy" src="./kid-badge-detail.html" title="kid-badge-detail"></iframe></div>
+      <div class="frame"><h2>kid-badges</h2><iframe loading="lazy" src="./kid-badges.html" title="kid-badges"></iframe></div>
+      <div class="frame"><h2>kid-chat</h2><iframe loading="lazy" src="./kid-chat.html" title="kid-chat"></iframe></div>
+      <div class="frame"><h2>kid-checkin</h2><iframe loading="lazy" src="./kid-checkin.html" title="kid-checkin"></iframe></div>
+      <div class="frame"><h2>kid-checkin-before</h2><iframe loading="lazy" src="./kid-checkin-before.html" title="kid-checkin-before"></iframe></div>
+      <div class="frame"><h2>kid-diary</h2><iframe loading="lazy" src="./kid-diary.html" title="kid-diary"></iframe></div>
+      <div class="frame"><h2>kid-exercise</h2><iframe loading="lazy" src="./kid-exercise.html" title="kid-exercise"></iframe></div>
+      <div class="frame"><h2>kid-home</h2><iframe loading="lazy" src="./kid-home.html" title="kid-home"></iframe></div>
+      <div class="frame"><h2>kid-inbox</h2><iframe loading="lazy" src="./kid-inbox.html" title="kid-inbox"></iframe></div>
+      <div class="frame"><h2>kid-inbox-read</h2><iframe loading="lazy" src="./kid-inbox-read.html" title="kid-inbox-read"></iframe></div>
+      <div class="frame"><h2>kid-ledger</h2><iframe loading="lazy" src="./kid-ledger.html" title="kid-ledger"></iframe></div>
+      <div class="frame"><h2>kid-me</h2><iframe loading="lazy" src="./kid-me.html" title="kid-me"></iframe></div>
+      <div class="frame"><h2>kid-memory</h2><iframe loading="lazy" src="./kid-memory.html" title="kid-memory"></iframe></div>
+      <div class="frame"><h2>kid-photo-camera</h2><iframe loading="lazy" src="./kid-photo-camera.html" title="kid-photo-camera"></iframe></div>
+      <div class="frame"><h2>kid-quest-level</h2><iframe loading="lazy" src="./kid-quest-level.html" title="kid-quest-level"></iframe></div>
+      <div class="frame"><h2>kid-quest-wrong</h2><iframe loading="lazy" src="./kid-quest-wrong.html" title="kid-quest-wrong"></iframe></div>
+      <div class="frame"><h2>kid-quests</h2><iframe loading="lazy" src="./kid-quests.html" title="kid-quests"></iframe></div>
+      <div class="frame"><h2>kid-reading</h2><iframe loading="lazy" src="./kid-reading.html" title="kid-reading"></iframe></div>
+      <div class="frame"><h2>kid-shop</h2><iframe loading="lazy" src="./kid-shop.html" title="kid-shop"></iframe></div>
+      <div class="frame"><h2>kid-shop-confirm</h2><iframe loading="lazy" src="./kid-shop-confirm.html" title="kid-shop-confirm"></iframe></div>
+      <div class="frame"><h2>kid-task-detail</h2><iframe loading="lazy" src="./kid-task-detail.html" title="kid-task-detail"></iframe></div>
+      <div class="frame"><h2>kid-task-done-detail</h2><iframe loading="lazy" src="./kid-task-done-detail.html" title="kid-task-done-detail"></iframe></div>
+      <div class="frame"><h2>kid-wish</h2><iframe loading="lazy" src="./kid-wish.html" title="kid-wish"></iframe></div>
+      <div class="frame"><h2>kid-wish-new</h2><iframe loading="lazy" src="./kid-wish-new.html" title="kid-wish-new"></iframe></div>
+      </div></section>
+    <section class="grp"><h2 class="grp__t">孩子端 · 弹层 <span>4</span></h2><div class="grid">
+      <div class="frame"><h2>kid-sheet-confirm</h2><iframe loading="lazy" src="./kid-sheet-confirm.html" title="kid-sheet-confirm"></iframe></div>
+      <div class="frame"><h2>kid-sheet-exercise</h2><iframe loading="lazy" src="./kid-sheet-exercise.html" title="kid-sheet-exercise"></iframe></div>
+      <div class="frame"><h2>kid-sheet-photo</h2><iframe loading="lazy" src="./kid-sheet-photo.html" title="kid-sheet-photo"></iframe></div>
+      <div class="frame"><h2>kid-sheet-read</h2><iframe loading="lazy" src="./kid-sheet-read.html" title="kid-sheet-read"></iframe></div>
+      </div></section>
+    <section class="grp"><h2 class="grp__t">孩子端 · 状态 <span>9</span></h2><div class="grid">
+      <div class="frame"><h2>kid-404</h2><iframe loading="lazy" src="./kid-404.html" title="kid-404"></iframe></div>
+      <div class="frame"><h2>kid-ai-degraded</h2><iframe loading="lazy" src="./kid-ai-degraded.html" title="kid-ai-degraded"></iframe></div>
+      <div class="frame"><h2>kid-empty-today</h2><iframe loading="lazy" src="./kid-empty-today.html" title="kid-empty-today"></iframe></div>
+      <div class="frame"><h2>kid-firstrun</h2><iframe loading="lazy" src="./kid-firstrun.html" title="kid-firstrun"></iframe></div>
+      <div class="frame"><h2>kid-ledger-empty</h2><iframe loading="lazy" src="./kid-ledger-empty.html" title="kid-ledger-empty"></iframe></div>
+      <div class="frame"><h2>kid-locked</h2><iframe loading="lazy" src="./kid-locked.html" title="kid-locked"></iframe></div>
+      <div class="frame"><h2>kid-photoview</h2><iframe loading="lazy" src="./kid-photoview.html" title="kid-photoview"></iframe></div>
+      <div class="frame"><h2>kid-restwall</h2><iframe loading="lazy" src="./kid-restwall.html" title="kid-restwall"></iframe></div>
+      <div class="frame"><h2>kid-wait-confirm</h2><iframe loading="lazy" src="./kid-wait-confirm.html" title="kid-wait-confirm"></iframe></div>
+      </div></section>
+    <section class="grp"><h2 class="grp__t">家长端 · 主 tab <span>5</span></h2><div class="grid">
+      <div class="frame"><h2>parent-children</h2><iframe loading="lazy" src="./parent-children.html" title="parent-children"></iframe></div>
+      <div class="frame"><h2>parent-overview</h2><iframe loading="lazy" src="./parent-overview.html" title="parent-overview"></iframe></div>
+      <div class="frame"><h2>parent-settings</h2><iframe loading="lazy" src="./parent-settings.html" title="parent-settings"></iframe></div>
+      <div class="frame"><h2>parent-tasks</h2><iframe loading="lazy" src="./parent-tasks.html" title="parent-tasks"></iframe></div>
+      <div class="frame"><h2>parent-wishes</h2><iframe loading="lazy" src="./parent-wishes.html" title="parent-wishes"></iframe></div>
+      </div></section>
+    <section class="grp"><h2 class="grp__t">家长端 · 配置 <span>15</span></h2><div class="grid">
+      <div class="frame"><h2>parent-backfill</h2><iframe loading="lazy" src="./parent-backfill.html" title="parent-backfill"></iframe></div>
+      <div class="frame"><h2>parent-badge-new</h2><iframe loading="lazy" src="./parent-badge-new.html" title="parent-badge-new"></iframe></div>
+      <div class="frame"><h2>parent-badges</h2><iframe loading="lazy" src="./parent-badges.html" title="parent-badges"></iframe></div>
+      <div class="frame"><h2>parent-child-edit</h2><iframe loading="lazy" src="./parent-child-edit.html" title="parent-child-edit"></iframe></div>
+      <div class="frame"><h2>parent-child-new</h2><iframe loading="lazy" src="./parent-child-new.html" title="parent-child-new"></iframe></div>
+      <div class="frame"><h2>parent-copy</h2><iframe loading="lazy" src="./parent-copy.html" title="parent-copy"></iframe></div>
+      <div class="frame"><h2>parent-shop-edit</h2><iframe loading="lazy" src="./parent-shop-edit.html" title="parent-shop-edit"></iframe></div>
+      <div class="frame"><h2>parent-shop-list</h2><iframe loading="lazy" src="./parent-shop-list.html" title="parent-shop-list"></iframe></div>
+      <div class="frame"><h2>parent-shop-new</h2><iframe loading="lazy" src="./parent-shop-new.html" title="parent-shop-new"></iframe></div>
+      <div class="frame"><h2>parent-sort</h2><iframe loading="lazy" src="./parent-sort.html" title="parent-sort"></iframe></div>
+      <div class="frame"><h2>parent-task-edit</h2><iframe loading="lazy" src="./parent-task-edit.html" title="parent-task-edit"></iframe></div>
+      <div class="frame"><h2>parent-task-new</h2><iframe loading="lazy" src="./parent-task-new.html" title="parent-task-new"></iframe></div>
+      <div class="frame"><h2>parent-template-mgr</h2><iframe loading="lazy" src="./parent-template-mgr.html" title="parent-template-mgr"></iframe></div>
+      <div class="frame"><h2>parent-templates</h2><iframe loading="lazy" src="./parent-templates.html" title="parent-templates"></iframe></div>
+      <div class="frame"><h2>parent-usage</h2><iframe loading="lazy" src="./parent-usage.html" title="parent-usage"></iframe></div>
+      </div></section>
+    <section class="grp"><h2 class="grp__t">家长端 · 其他 <span>29</span></h2><div class="grid">
+      <div class="frame"><h2>parent-account</h2><iframe loading="lazy" src="./parent-account.html" title="parent-account"></iframe></div>
+      <div class="frame"><h2>parent-audit</h2><iframe loading="lazy" src="./parent-audit.html" title="parent-audit"></iframe></div>
+      <div class="frame"><h2>parent-calendar</h2><iframe loading="lazy" src="./parent-calendar.html" title="parent-calendar"></iframe></div>
+      <div class="frame"><h2>parent-chat-detail</h2><iframe loading="lazy" src="./parent-chat-detail.html" title="parent-chat-detail"></iframe></div>
+      <div class="frame"><h2>parent-child-account</h2><iframe loading="lazy" src="./parent-child-account.html" title="parent-child-account"></iframe></div>
+      <div class="frame"><h2>parent-child-devices</h2><iframe loading="lazy" src="./parent-child-devices.html" title="parent-child-devices"></iframe></div>
+      <div class="frame"><h2>parent-confirm-ok</h2><iframe loading="lazy" src="./parent-confirm-ok.html" title="parent-confirm-ok"></iframe></div>
+      <div class="frame"><h2>parent-confirm-stale</h2><iframe loading="lazy" src="./parent-confirm-stale.html" title="parent-confirm-stale"></iframe></div>
+      <div class="frame"><h2>parent-danger</h2><iframe loading="lazy" src="./parent-danger.html" title="parent-danger"></iframe></div>
+      <div class="frame"><h2>parent-devices</h2><iframe loading="lazy" src="./parent-devices.html" title="parent-devices"></iframe></div>
+      <div class="frame"><h2>parent-diary-detail</h2><iframe loading="lazy" src="./parent-diary-detail.html" title="parent-diary-detail"></iframe></div>
+      <div class="frame"><h2>parent-exchanges</h2><iframe loading="lazy" src="./parent-exchanges.html" title="parent-exchanges"></iframe></div>
+      <div class="frame"><h2>parent-export</h2><iframe loading="lazy" src="./parent-export.html" title="parent-export"></iframe></div>
+      <div class="frame"><h2>parent-export-preview</h2><iframe loading="lazy" src="./parent-export-preview.html" title="parent-export-preview"></iframe></div>
+      <div class="frame"><h2>parent-invite</h2><iframe loading="lazy" src="./parent-invite.html" title="parent-invite"></iframe></div>
+      <div class="frame"><h2>parent-notif-detail</h2><iframe loading="lazy" src="./parent-notif-detail.html" title="parent-notif-detail"></iframe></div>
+      <div class="frame"><h2>parent-notifications</h2><iframe loading="lazy" src="./parent-notifications.html" title="parent-notifications"></iframe></div>
+      <div class="frame"><h2>parent-pending</h2><iframe loading="lazy" src="./parent-pending.html" title="parent-pending"></iframe></div>
+      <div class="frame"><h2>parent-privacy</h2><iframe loading="lazy" src="./parent-privacy.html" title="parent-privacy"></iframe></div>
+      <div class="frame"><h2>parent-records</h2><iframe loading="lazy" src="./parent-records.html" title="parent-records"></iframe></div>
+      <div class="frame"><h2>parent-reminders</h2><iframe loading="lazy" src="./parent-reminders.html" title="parent-reminders"></iframe></div>
+      <div class="frame"><h2>parent-report</h2><iframe loading="lazy" src="./parent-report.html" title="parent-report"></iframe></div>
+      <div class="frame"><h2>parent-report-empty</h2><iframe loading="lazy" src="./parent-report-empty.html" title="parent-report-empty"></iframe></div>
+      <div class="frame"><h2>parent-safety</h2><iframe loading="lazy" src="./parent-safety.html" title="parent-safety"></iframe></div>
+      <div class="frame"><h2>parent-search</h2><iframe loading="lazy" src="./parent-search.html" title="parent-search"></iframe></div>
+      <div class="frame"><h2>parent-search-empty</h2><iframe loading="lazy" src="./parent-search-empty.html" title="parent-search-empty"></iframe></div>
+      <div class="frame"><h2>parent-sent</h2><iframe loading="lazy" src="./parent-sent.html" title="parent-sent"></iframe></div>
+      <div class="frame"><h2>parent-wish-defer</h2><iframe loading="lazy" src="./parent-wish-defer.html" title="parent-wish-defer"></iframe></div>
+      <div class="frame"><h2>parent-wish-price</h2><iframe loading="lazy" src="./parent-wish-price.html" title="parent-wish-price"></iframe></div>
+      </div></section>
+    <section class="grp"><h2 class="grp__t">家长端 · AI <span>4</span></h2><div class="grid">
+      <div class="frame"><h2>parent-ai-degraded</h2><iframe loading="lazy" src="./parent-ai-degraded.html" title="parent-ai-degraded"></iframe></div>
+      <div class="frame"><h2>parent-ai-tools</h2><iframe loading="lazy" src="./parent-ai-tools.html" title="parent-ai-tools"></iframe></div>
+      <div class="frame"><h2>parent-ai-usage</h2><iframe loading="lazy" src="./parent-ai-usage.html" title="parent-ai-usage"></iframe></div>
+      <div class="frame"><h2>parent-chat</h2><iframe loading="lazy" src="./parent-chat.html" title="parent-chat"></iframe></div>
+      </div></section>
+    <section class="grp"><h2 class="grp__t">通用状态 <span>10</span></h2><div class="grid">
+      <div class="frame"><h2>state-empties</h2><iframe loading="lazy" src="./state-empties.html" title="state-empties"></iframe></div>
+      <div class="frame"><h2>state-empty</h2><iframe loading="lazy" src="./state-empty.html" title="state-empty"></iframe></div>
+      <div class="frame"><h2>state-error</h2><iframe loading="lazy" src="./state-error.html" title="state-error"></iframe></div>
+      <div class="frame"><h2>state-loading-fail</h2><iframe loading="lazy" src="./state-loading-fail.html" title="state-loading-fail"></iframe></div>
+      <div class="frame"><h2>state-offline</h2><iframe loading="lazy" src="./state-offline.html" title="state-offline"></iframe></div>
+      <div class="frame"><h2>state-quota</h2><iframe loading="lazy" src="./state-quota.html" title="state-quota"></iframe></div>
+      <div class="frame"><h2>state-skeleton</h2><iframe loading="lazy" src="./state-skeleton.html" title="state-skeleton"></iframe></div>
+      <div class="frame"><h2>state-update</h2><iframe loading="lazy" src="./state-update.html" title="state-update"></iframe></div>
+      <div class="frame"><h2>state-wall</h2><iframe loading="lazy" src="./state-wall.html" title="state-wall"></iframe></div>
+      <div class="frame"><h2>tablet-two-col</h2><iframe loading="lazy" src="./tablet-two-col.html" title="tablet-two-col"></iframe></div>
+      </div></section>
+
+  <p class="note">审计：<code>npm run audit:hifi</code> 0 项 · <code>npm run audit:ui</code> 0 项。线框版仍在 <code>prototype/hifi/index.html</code>。</p>
+</body></html>

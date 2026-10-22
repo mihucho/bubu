@@ -1,0 +1,36 @@
+.bd-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.bd-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 12px;
+  border-radius: var(--k-radius-card);
+  background: var(--k-surface-2);
+  color: var(--k-text-sub);
+  text-align: center;
+}
+
+.bd-item.is-on {
+  background: linear-gradient(160deg, var(--k-gold-soft), var(--k-surface));
+  color: var(--k-gold-text);
+  box-shadow: var(--clay-card);
+}
+
+.bd-item__name {
+  font-size: var(--k-fs-body);
+  font-weight: 700;
+  color: var(--k-text-strong);
+}
+
+.bd-item__note {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: var(--k-fs-note);
+}

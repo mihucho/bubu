@@ -1,0 +1,34 @@
+.sh-flash {
+  margin: 0 16px 8px;
+}
+
+.sh-cost {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--font-number);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--k-fs-body);
+  color: var(--k-gold-text);
+}
+
+.sh-buy {
+  min-width: var(--k-tap);
+  height: var(--k-tap);
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--k-radius-pill);
+  background: var(--k-grad-cta);
+  color: #fff;
+  font-size: var(--k-fs-body);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sh-buy:disabled {
+  opacity: 0.55;
+}
+
+.rc-row--muted {
+  background: var(--k-surface-2);
+}

@@ -1,0 +1,86 @@
+.gate {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: linear-gradient(180deg, var(--k-pink-50), var(--k-purple-50));
+}
+
+.gate__card {
+  width: 100%;
+  max-width: 320px;
+  padding: 22px;
+  border-radius: var(--k-radius-card);
+  background: var(--k-surface);
+  box-shadow: var(--clay-card);
+  text-align: center;
+}
+
+.gate__badge {
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 12px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: var(--k-purple-soft);
+  color: var(--k-purple);
+}
+
+.gate__title {
+  margin: 0 0 6px;
+  font-size: var(--k-fs-h2);
+  font-weight: 800;
+  color: var(--k-text-strong);
+}
+
+.gate__sub {
+  margin: 0 0 14px;
+  font-size: var(--k-fs-note);
+  color: var(--k-text-sub);
+}
+
+.gate__input {
+  width: 100%;
+  height: var(--k-tap-lg);
+  text-align: center;
+  letter-spacing: 10px;
+  font-family: var(--font-number);
+  font-size: 22px;
+  border: 1.5px solid var(--k-input-border);
+  border-radius: 14px;
+  background: var(--k-input-bg);
+  color: var(--k-text-strong);
+}
+
+.gate__error {
+  margin: 8px 0 0;
+  font-size: var(--k-fs-note);
+  color: var(--k-danger);
+}
+
+.gate__btn {
+  width: 100%;
+  height: var(--k-tap-lg);
+  margin-top: 12px;
+  border: 0;
+  border-radius: var(--k-radius-pill);
+  background: var(--k-grad-cta);
+  color: #fff;
+  font-size: var(--k-fs-body);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.gate__btn:disabled {
+  opacity: 0.5;
+}
+
+.gate__back {
+  margin-top: 10px;
+  border: 0;
+  background: transparent;
+  color: var(--k-text-sub);
+  font-size: var(--k-fs-note);
+  cursor: pointer;
+}

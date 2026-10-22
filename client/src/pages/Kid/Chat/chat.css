@@ -1,0 +1,86 @@
+.ct-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 16px 12px;
+}
+
+.ct-bubble {
+  max-width: 82%;
+  padding: 10px 14px;
+  border-radius: 18px;
+  font-size: var(--k-fs-body);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.ct-bubble--bubu {
+  align-self: flex-start;
+  background: var(--k-surface);
+  color: var(--k-text-strong);
+  border-bottom-left-radius: 6px;
+  box-shadow: var(--clay-card);
+}
+
+.ct-bubble--me {
+  align-self: flex-end;
+  background: var(--k-grad-cta);
+  color: #fff;
+  border-bottom-right-radius: 6px;
+}
+
+.ct-quick {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px 8px;
+  overflow-x: auto;
+}
+
+.ct-chip {
+  flex: 0 0 auto;
+  height: var(--k-tap);
+  padding: 0 14px;
+  border: 1.5px solid var(--k-border);
+  border-radius: var(--k-radius-pill);
+  background: var(--k-surface);
+  color: var(--k-text-sub);
+  font-size: var(--k-fs-note);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ct-compose {
+  display: flex;
+  gap: 8px;
+  padding: 8px 16px 12px;
+}
+
+.ct-input {
+  flex: 1;
+  height: var(--k-tap-lg);
+  padding: 0 14px;
+  border: 1.5px solid var(--k-input-border);
+  border-radius: var(--k-radius-pill);
+  background: var(--k-input-bg);
+  color: var(--k-text-strong);
+  font-size: var(--k-fs-body);
+  font-family: inherit;
+}
+
+.ct-send {
+  width: var(--k-tap-lg);
+  height: var(--k-tap-lg);
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: var(--k-grad-cta);
+  color: #fff;
+  cursor: pointer;
+}
+
+.ct-send:disabled {
+  opacity: 0.5;
+}

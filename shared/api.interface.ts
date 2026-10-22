@@ -130,3 +130,63 @@ export interface WrongQuestionStats {
   mastered: number;
   items: WrongQuestion[];
 }
+
+/* ============================================================
+   布布 v2 · 孩子端首页（server/modules/kid-home 产出）
+   ============================================================ */
+
+export type TaskCycleType = 'daily' | 'weekly' | 'weekly_days' | 'monthly' | 'once' | 'custom';
+
+export interface KidHomeTask {
+  id: string;
+  name: string;
+  iconKey: string;
+  color: string;
+  cycleType: TaskCycleType;
+  cycleTarget: number;
+  /** 当前周期已完成次数（由 task_checkins 现算，不读缓存列） */
+  currentCount: number;
+  starReward: number;
+  photoVisible: boolean;
+  photoRequired: boolean;
+  needConfirm: boolean;
+  isAchieved: boolean;
+  /** 有等家长确认的打卡 */
+  hasPendingConfirm: boolean;
+}
+
+export interface KidHomeDataCard {
+  /** 今日已完成 / 今日任务总数 */
+  taskDone: number;
+  taskTotal: number;
+  /** 可用星星 */
+  stars: number;
+  /** 今天净得星（正数才进宝箱） */
+  starsToday: number;
+  /** 宝箱：每箱 10 颗星 */
+  chestFilled: number;
+  chestSize: number;
+  chestReady: boolean;
+  /** 连续天数（阅读 + 运动取大者，孩子端只显示一个数） */
+  streak: number;
+  readingMinutesToday: number;
+  exerciseMinutesToday: number;
+  pendingConfirm: number;
+}
+
+export interface KidHomeDto {
+  child: {
+    id: string;
+    nickname: string;
+    title: string;
+    avatarKey: string;
+    colorKey: string;
+    petName: string;
+    mustChangePassword: boolean;
+  };
+  greeting: string;
+  cards: KidHomeDataCard;
+  daily: KidHomeTask[];
+  weekly: KidHomeTask[];
+  localDate: string;
+}

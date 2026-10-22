@@ -1,0 +1,129 @@
+/* ============================================================
+   布布 · 设计令牌（来自 DESIGN.md，唯一来源）
+   孩子端 = [data-surface="kid"]（默认） · 家长端 = [data-surface="parent"]
+   ============================================================ */
+
+:root {
+  /* ---------- 品牌色（装饰 / 填充，禁止承载白字的部分已注明） ---------- */
+  --k-pink: #ff85c1;
+  --k-pink-soft: #ffb3d9;
+  --k-pink-50: #ffd7ec;
+  --k-purple: #a855f7;
+  --k-purple-soft: #c4a6f5;
+  --k-purple-50: #ede0fd;
+
+  --k-grad-hero: linear-gradient(180deg, #ffb3d9 0%, #c4a6f5 100%);
+  --k-grad-cta: linear-gradient(135deg, #db2777 0%, #7c3aed 100%);
+  --k-bg: linear-gradient(180deg, #fff0f5 0%, #f3e8ff 100%);
+
+  /* ---------- 文字 ---------- */
+  --k-text: #4a2666;
+  --k-text-strong: #2e1065;
+  --k-text-sub: #7c4fb0;
+
+  /* ---------- 面 ---------- */
+  --k-surface: #ffffff;
+  --k-surface-2: #fbf7ff;
+  --k-surface-3: #f7f0fe;
+  /* 输入框（DESIGN §4.5.1）：软填充而不是白底细线 */
+  --k-input-border: #f0e4fb;
+  --k-input-border-parent: #efe6fa;
+  --k-input-bg: linear-gradient(180deg, #fdf9ff 0%, #f7f0fe 100%);
+  --k-input-bg-parent: linear-gradient(180deg, #fdfaff 0%, #f8f2fe 100%);
+  --k-focus-ring: 0 0 0 4px rgba(168, 85, 247, 0.14);
+  --k-border: #ffd7ec;
+
+  /* ---------- 语义 ---------- */
+  --k-gold: #ffd700;
+  --k-gold-soft: #ffe680;
+  --k-gold-strong: #ffd23f;
+  --k-gold-text: #a16207;
+  --k-success: #22c55e;
+  --k-success-text: #15803d;
+  --k-danger: #dc2626;
+
+  /* ---------- 字体 ---------- */
+  --font-kids: "HarmonyOS Sans SC", "MiSans", "PingFang SC", "Source Han Sans SC", system-ui, sans-serif;
+  --font-number: "Baloo 2", "Nunito", "HarmonyOS Sans SC", "PingFang SC", ui-rounded, sans-serif;
+  --font-parent: -apple-system, "PingFang SC", "HarmonyOS Sans SC", system-ui, sans-serif;
+
+  /* ---------- 间距（4 的倍数） ---------- */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+
+  /* ---------- clay 双阴影 ---------- */
+  --clay-card: 0 1px 2px rgba(27, 18, 48, 0.04), 0 8px 24px rgba(150, 90, 205, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --clay-btn: 0 4px 12px rgba(219, 39, 119, 0.22), inset 0 2px 0 rgba(255, 255, 255, 0.4);
+
+  /* ---------- 孩子端密度（默认） ---------- */
+  --k-radius-card: 20px;
+  --k-radius-btn: 25px;
+  --k-radius-pill: 999px;
+  --k-nav-h: 70px;
+  --k-tap: 56px;
+  --k-tap-lg: 72px;
+  --k-fs-title: 22px;
+  --k-fs-h2: 18px;
+  --k-fs-body: 14px;
+  --k-fs-note: 12px;
+  --k-fs-number: 28px;
+
+  /* ---------- 家长端密度（挂在 [data-surface="parent"] 上） ---------- */
+  --p-bg: #f8f9fb;
+  --p-surface: #ffffff;
+  --p-border: #e7e5ee;
+  --p-text: #1b1230;
+  --p-text-sub: #6b6480;
+  --p-accent: #7c3aed;
+  --p-accent-weak: #f3e8ff;
+  --p-radius-card: 14px;
+  --p-tap: 40px;
+  --p-fs-body: 14px;
+  --p-fs-note: 12px;
+}
+
+/* 家长端作用域：把「密度」换成家长端，但品牌令牌不动 */
+[data-surface="parent"] {
+  --k-radius-card: var(--p-radius-card);
+  --k-nav-h: 64px;
+  --k-tap: var(--p-tap);
+  --k-tap-lg: 48px;
+  --k-fs-title: 18px;
+  --k-fs-h2: 15px;
+  --k-fs-body: var(--p-fs-body);
+  --k-fs-note: var(--p-fs-note);
+  --font-kids: var(--font-parent);
+  --clay-card: 0 1px 2px rgba(27, 18, 48, 0.05);
+}
+
+/* ---------- 基础 ---------- */
+.bbu-root {
+  min-height: 100dvh;
+  background: var(--k-bg);
+  color: var(--k-text);
+  font-family: var(--font-kids);
+  font-size: var(--k-fs-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+[data-surface="parent"].bbu-root {
+  background: var(--p-bg);
+  color: var(--p-text);
+}
+
+.bbu-root *,
+.bbu-root *::before,
+.bbu-root *::after {
+  box-sizing: border-box;
+}
+
+.bbu-num {
+  font-family: var(--font-number);
+  font-variant-numeric: tabular-nums;
+}

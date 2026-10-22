@@ -1,0 +1,77 @@
+.setup {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: linear-gradient(180deg, var(--k-pink-50), var(--k-purple-50));
+}
+
+.setup__card {
+  width: 100%;
+  max-width: 340px;
+  padding: 22px;
+  border-radius: var(--k-radius-card);
+  background: var(--k-surface);
+  box-shadow: var(--clay-card);
+}
+
+.setup__badge {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: var(--k-purple-soft);
+  color: var(--k-purple);
+  margin-bottom: 12px;
+}
+
+.setup__title {
+  margin: 0 0 8px;
+  font-size: var(--k-fs-title);
+  font-weight: 800;
+  color: var(--k-text-strong);
+}
+
+.setup__body {
+  margin: 0 0 16px;
+  font-size: var(--k-fs-body);
+  line-height: 1.6;
+  color: var(--k-text-sub);
+}
+
+.setup__input {
+  width: 100%;
+  height: var(--k-tap-lg);
+  margin-bottom: 12px;
+  padding: 0 14px;
+  border: 1.5px solid var(--k-input-border);
+  border-radius: 14px;
+  background: var(--k-input-bg);
+  color: var(--k-text-strong);
+  font-size: var(--k-fs-body);
+  font-family: inherit;
+}
+
+.setup__btn {
+  width: 100%;
+  height: var(--k-tap-lg);
+  border: 0;
+  border-radius: var(--k-radius-pill);
+  background: var(--k-grad-cta);
+  color: #fff;
+  font-size: var(--k-fs-body);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.setup__btn:disabled {
+  opacity: 0.6;
+}
+
+.setup__error {
+  margin: 10px 0 0;
+  font-size: var(--k-fs-note);
+  color: var(--k-danger);
+  text-align: center;
+}

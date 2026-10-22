@@ -1,126 +1,186 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles } from 'lucide-react';
 import { logger } from '@lark-apaas/client-toolkit/logger';
-import { toast } from 'sonner';
-import { Input } from '@client/src/components/ui/input';
-import { Button } from '@client/src/components/ui/button';
-import { useProfile } from '../../contexts/ProfileContext';
+import { axiosForBackend } from '@lark-apaas/client-toolkit/utils/getAxiosForBackend';
+import { ShieldCheck } from 'lucide-react';
+import './setup.css';
 
-const ROLE_OPTIONS = ['妈妈', '爸爸', '爷爷', '奶奶'];
+type Step = 'consent' | 'child' | 'task' | 'reward' | 'done';
 
-const SetupPage: React.FC = () => {
+/**
+ * 引导（W8 的最小闭环）：同意 → 建孩子 → 完成。
+ * 每一步都落 `setup_step`，中途退出再进来能续上（后续批次再把任务/奖励/边界补进来）。
+ */
+export const SetupPage: React.FC = () => {
   const navigate = useNavigate();
-  const { initProfile } = useProfile();
-  const [nickname, setNickname] = useState<string>('布布');
-  const [parentRole, setParentRole] = useState<string>('妈妈');
-  const [submitting, setSubmitting] = useState<boolean>(false);
+  const [step, setStep] = useState<Step>('consent');
+  const [nickname, setNickname] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [newChildId, setNewChildId] = useState('');
+  const [taskName, setTaskName] = useState('叫叫阅读');
+  const [rewardName, setRewardName] = useState('周末多玩 1 小时');
 
-  const handleSubmit = async (): Promise<void> => {
-    const trimmed = nickname.trim();
-    if (!trimmed) {
-      toast.error('昵称不能为空');
-      return;
-    }
-    if (trimmed.length > 10) {
-      toast.error('昵称最多10个字符');
-      return;
-    }
+  const createTask = async () => {
+    if (!newChildId) return;
+    setBusy(true);
     try {
-      setSubmitting(true);
-      await initProfile(trimmed, parentRole);
-      toast.success('设置成功，开始成长之旅吧~');
-      navigate('/', { replace: true });
-    } catch (error) {
-      logger.error('初始化档案失败', error);
-      toast.error('设置失败，请重试');
+      await post('/api/v2/parent/tasks', {
+        childId: newChildId,
+        name: taskName.trim(),
+        cycleType: 'daily',
+        cycleTarget: 1,
+        starReward: 1,
+      });
+      await post('/api/v2/family/setup-step', { step: 'tasks' });
+      setStep('reward');
+    } catch (e) {
+      logger.error('创建任务失败', e);
+      setError('任务没加上，稍后再试');
     } finally {
-      setSubmitting(false);
+      setBusy(false);
+    }
+  };
+
+  const createReward = async () => {
+    if (!newChildId) return;
+    setBusy(true);
+    try {
+      await post('/api/v2/parent/shop', { childId: newChildId, name: rewardName.trim(), starCost: 20 });
+      await post('/api/v2/family/setup-step', { step: 'done' });
+      setStep('done');
+    } catch (e) {
+      logger.error('创建商店物品失败', e);
+      setError('没放进商店，稍后再试');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const post = async (url: string, data: unknown) => {
+    const res = await axiosForBackend({ url, method: 'POST', data });
+    return res.data;
+  };
+
+  const agree = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      await post('/api/v2/family/setup-step', { step: 'consent' });
+      setStep('child');
+    } catch (e) {
+      logger.error('保存同意失败', e);
+      setError('没能保存，稍后再试');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const createKid = async () => {
+    const clean = nickname.trim();
+    if (!clean) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const res = (await post('/api/v2/family/children', { nickname: clean })) as { id: string };
+      setNewChildId(res.id);
+      await post('/api/v2/family/setup-step', { step: 'children' });
+      setStep('task');
+    } catch (e) {
+      logger.error('创建孩子失败', e);
+      setError('没能创建，稍后再试');
+    } finally {
+      setBusy(false);
     }
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center p-6"
-      style={{ background: 'linear-gradient(180deg, #FF85C1 0%, #A855F7 100%)' }}
-    >
-      <div className="w-full max-w-sm">
-        {/* 标题 */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <Sparkles size={28} className="text-[#FFD700]" />
-            <h1 className="text-2xl font-bold text-white">
-              欢迎来到布布的学习小天地
-            </h1>
-            <Sparkles size={28} className="text-[#FFD700]" />
-          </div>
-          <p className="text-white/80 text-sm">
-            设置一下，开始我们的成长之旅吧~
-          </p>
+    <div className="setup">
+      <div className="setup__card">
+        <div className="setup__badge" aria-hidden>
+          <ShieldCheck size={22} strokeWidth={2.2} />
         </div>
 
-        {/* 卡片 */}
-        <div className="bg-white rounded-[20px] p-6 shadow-lg">
-          {/* 昵称输入 */}
-          <div className="mb-6">
-            <label className="block text-sm font-bold text-[#4A2666] mb-2">
-              孩子昵称
-            </label>
-            <Input
-              type="text"
+        {step === 'consent' ? (
+          <>
+            <h1 className="setup__title">先说清楚一件事</h1>
+            <p className="setup__body">
+              我们只收集孩子的学习与心情记录，用来看进步和安排任务。
+              不会把孩子的信息给第三方，也不会做成排名。
+            </p>
+            <button type="button" className="setup__btn" disabled={busy} onClick={() => void agree()}>
+              {busy ? '稍等…' : '我知道了，继续'}
+            </button>
+          </>
+        ) : null}
+
+        {step === 'child' ? (
+          <>
+            <h1 className="setup__title">先加一个孩子</h1>
+            <p className="setup__body">可以之后再加第二个、第三个。</p>
+            <input
+              className="setup__input"
               value={nickname}
+              maxLength={12}
+              placeholder="孩子的昵称"
               onChange={(e) => setNickname(e.target.value)}
-              maxLength={10}
-              placeholder="请输入昵称"
-              className="rounded-xl bg-pink-50 border-pink-100 text-[#4A2666] text-center text-lg font-bold placeholder:text-pink-300 focus:border-pink-300 focus:ring-2 focus:ring-pink-200 h-12"
             />
-          </div>
+            <button
+              type="button"
+              className="setup__btn"
+              disabled={busy || !nickname.trim()}
+              onClick={() => void createKid()}
+            >
+              {busy ? '正在建…' : '建好，进去看看'}
+            </button>
+          </>
+        ) : null}
 
-          {/* 家长身份选择 */}
-          <div className="mb-8">
-            <label className="block text-sm font-bold text-[#4A2666] mb-3">
-              我是谁
-            </label>
-            <div className="grid grid-cols-2 gap-3">
-              {ROLE_OPTIONS.map((role) => (
-                <button
-                  key={role}
-                  type="button"
-                  onClick={() => setParentRole(role)}
-                  className={`py-3 rounded-xl text-sm font-medium transition-all ${
-                    parentRole === role
-                      ? 'text-white shadow-sm'
-                      : 'bg-pink-50 text-[#8B5FBF] hover:bg-pink-100'
-                  }`}
-                  style={
-                    parentRole === role
-                      ? { background: 'linear-gradient(135deg, #FF85C1, #A855F7)' }
-                      : undefined
-                  }
-                >
-                  {role}
-                </button>
-              ))}
-            </div>
-          </div>
+        {step === 'task' ? (
+          <>
+            <h1 className="setup__title">给她安排第一件事</h1>
+            <p className="setup__body">比如「叫叫阅读」每天 1 次，做到就有一颗星。</p>
+            <input
+              className="setup__input"
+              value={taskName}
+              maxLength={20}
+              placeholder="任务名"
+              onChange={(e) => setTaskName(e.target.value)}
+            />
+            <button type="button" className="setup__btn" disabled={busy || !taskName.trim()} onClick={() => void createTask()}>
+              {busy ? '正在加…' : '加上这个任务'}
+            </button>
+          </>
+        ) : null}
 
-          {/* 开始使用按钮 */}
-          <Button
-            onClick={() => void handleSubmit()}
-            disabled={submitting}
-            className="w-full h-12 rounded-full text-white font-bold text-base shadow-md"
-            style={{
-              background: 'linear-gradient(90deg, #FF85C1 0%, #A855F7 100%)',
-            }}
-          >
-            {submitting ? '设置中...' : '开始使用'}
-          </Button>
-        </div>
+        {step === 'reward' ? (
+          <>
+            <h1 className="setup__title">星星能换什么</h1>
+            <p className="setup__body">先放一个孩子想要的东西，攒够星就能换。</p>
+            <input
+              className="setup__input"
+              value={rewardName}
+              maxLength={20}
+              placeholder="比如：周末多玩 1 小时"
+              onChange={(e) => setRewardName(e.target.value)}
+            />
+            <button type="button" className="setup__btn" disabled={busy || !rewardName.trim()} onClick={() => void createReward()}>
+              {busy ? '正在加…' : '放进商店'}
+            </button>
+          </>
+        ) : null}
 
-        {/* 底部装饰文字 */}
-        <p className="text-center text-white/60 text-xs mt-6">
-          每天一点点，成长看得见 ✨
-        </p>
+        {step === 'done' ? (
+          <>
+            <h1 className="setup__title">好了，可以开始啦</h1>
+            <p className="setup__body">任务和奖励都备好了。</p>
+            <button type="button" className="setup__btn" onClick={() => navigate('/kid', { replace: true })}>
+              进首页
+            </button>
+          </>
+        ) : null}
+
+        {error ? <p className="setup__error">{error}</p> : null}
       </div>
     </div>
   );

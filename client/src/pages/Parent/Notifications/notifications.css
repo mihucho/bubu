@@ -1,0 +1,31 @@
+.nt-flash {
+  margin: 0 16px 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #ecfdf5;
+  color: #047857;
+  font-size: 13px;
+  text-align: center;
+}
+
+.nt-btn {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--p-border);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--p-text-sub);
+  cursor: pointer;
+}
+
+.nt-btn--ok {
+  border-color: transparent;
+  background: var(--p-accent);
+  color: #fff;
+}
+
+.nt-unread {
+  box-shadow: 0 0 0 2px var(--p-accent-weak);
+}

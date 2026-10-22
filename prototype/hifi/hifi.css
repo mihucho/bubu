@@ -1,0 +1,726 @@
+/* ============================================================
+   布布 · 高保真覆盖层（hifi.css）
+   作用：在既有 112 屏结构之上，把视觉升级到「定稿方向」
+   依据：docs/视觉方向-v1.md · DESIGN.md §2.5/§2.6/§10/§11
+   原则：只改视觉，不改结构；所有值走令牌
+   ============================================================ */
+
+/* ---------- 0. 数字字体（自托管，19KB，只含 Latin + 数字） ---------- */
+@font-face {
+  font-family: "Baloo 2";
+  src: url("./fonts/baloo2-700.woff2") format("woff2");
+  font-weight: 600 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* ---------- 字体：Baloo 2 在前，中文字形自动落到系统栈 ---------- */
+  --font-kids: "Baloo 2", "HarmonyOS Sans SC", "MiSans", "PingFang SC",
+    "Source Han Sans SC", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-number: "Baloo 2", "Nunito", "HarmonyOS Sans SC", "PingFang SC", ui-rounded, sans-serif;
+  --font-parent: "Baloo 2", -apple-system, "PingFang SC", "HarmonyOS Sans SC", system-ui, sans-serif;
+
+  /* ---------- 文字：对比度校准（§2.6） ---------- */
+  --k-text: #4a2666;
+  --k-text-strong: #2e1065;
+  --k-text-sub: #7c4fb0;
+
+  /* ---------- clay：双阴影（外层扩散 + 贴边 + 内高光） ---------- */
+  --clay-card: 0 1px 1px rgba(150, 90, 205, 0.06),
+    0 6px 16px rgba(150, 90, 205, 0.1),
+    0 18px 40px rgba(150, 90, 205, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  --clay-btn: 0 2px 6px rgba(219, 39, 119, 0.18),
+    0 10px 24px rgba(219, 39, 119, 0.22),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.42),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.06);
+
+  /* ---------- 形状 ---------- */
+  --k-radius-card: 20px;
+  --k-radius-btn: 999px;
+
+  /* ---------- 材质：孩子端卡片 2px 边（1px 在浅粉底上会消失） ---------- */
+  --k-card-border: 2px solid var(--k-border);
+
+  /* 兼容旧变量名：原型里混用了 --shadow-card / --shadow-float */
+  --shadow-card: var(--clay-card);
+  --shadow-float: 0 8px 28px rgba(168, 85, 247, 0.16);
+}
+
+/* ---------- 1. 全局排版基准 ---------- */
+html,
+body {
+  font-family: var(--k-font, var(--font-kids));
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* 数字与拉丁字母统一走 Baloo 2（中文自动回落，无需单独包 span） */
+.screen,
+.p-app {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   2. 孩子端 · 壳与头图
+   ============================================================ */
+.hero {
+  background: linear-gradient(168deg, var(--k-pink-soft) 0%, var(--k-purple-soft) 100%);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.55);
+  /* 头图高度自适应：固定高度会把内部宝箱面板裁掉 */
+  height: auto !important;
+  min-height: var(--hero-h);
+  padding-bottom: 14px;
+  overflow: visible;
+}
+
+/* 头图文字一律深紫：渐变底上白字只有 2.1:1（§2.6 禁用） */
+.hero .name {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  color: #2e1065;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.hero .weekday,
+.hero .sub,
+.hero .date {
+  color: #4a2666;
+}
+
+/* 头图里的白色圆形按钮：图标用深紫，不用主题色 */
+.hero button {
+  color: #7c3aed;
+}
+
+/* 宝箱进度条：轨道要有边界，否则在浅底上看不见 */
+.chest .bar {
+  background: rgba(74, 38, 102, 0.14);
+  box-shadow: inset 0 1px 2px rgba(74, 38, 102, 0.12);
+}
+
+.chest .bar i {
+  background: var(--k-grad-cta);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+/* 未开的格子：虚线凹槽，看得出"还差一格" */
+.cell:not(.open) {
+  background: rgba(255, 255, 255, 0.45);
+  border: 2px dashed rgba(124, 58, 237, 0.35);
+  box-shadow: inset 0 1px 3px rgba(120, 60, 170, 0.08);
+}
+
+/* ============================================================
+   3. 孩子端 · 卡片 / 任务行 / 宝箱
+   ============================================================ */
+.task,
+.wcard,
+.dhero,
+.badge-card,
+.empty-demo,
+.choose-card {
+  border: var(--k-card-border);
+  border-radius: var(--k-radius-card);
+  box-shadow: var(--clay-card);
+  background: #fff;
+}
+
+/* 宝箱面板：内部件，保持半透明 + 内高光，不加实边 */
+.chest {
+  background: rgba(255, 255, 255, 0.55);
+  border: 1.5px solid rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 4px 12px rgba(120, 60, 160, 0.09);
+}
+
+/* 布布说：浮在头图下沿的软卡 */
+.bubble {
+  background: #fff;
+  border: 1.5px solid rgba(255, 255, 255, 0.92);
+  border-radius: var(--k-radius-card);
+  box-shadow: 0 8px 22px rgba(150, 90, 205, 0.13), inset 0 2px 0 rgba(255, 255, 255, 0.95);
+}
+
+.task {
+  transition: transform 0.14s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.14s ease;
+}
+
+.task:active {
+  transform: scale(0.985);
+  box-shadow: 0 1px 2px rgba(150, 90, 205, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.task.done {
+  border-color: #86efac;
+  background: linear-gradient(180deg, #f6fef9 0%, #f0fdf4 100%);
+}
+
+/* 任务名 */
+.task .ttl {
+  font-size: 16.5px;
+  font-weight: 800;
+  letter-spacing: 0.1px;
+  color: var(--k-text);
+}
+
+/* 周期标签：小胶囊，不用纯文字 */
+.task .cyc {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #7c4fb0;
+  background: #f6f0fe;
+  border-radius: 6px;
+  padding: 1px 6px;
+  margin-left: 2px;
+  vertical-align: 2px;
+}
+
+/* 完成态小字 */
+.task .give {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #6b5a85;
+}
+
+/* 完成态的 +1 按钮：浅绿实心，白字，不抢视线 */
+.task.done .plus {
+  background: linear-gradient(160deg, #4ade80 0%, #22c55e 100%);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(34, 197, 94, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+  letter-spacing: 0;
+}
+
+/* 次数点阵：点要做成"软糖" */
+.task .dots i,
+.dots i {
+  border-radius: 999px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8);
+}
+
+/* 主操作 +1：胶囊 + 软高光 */
+.task .plus,
+.plus {
+  border-radius: 999px;
+  background: var(--k-grad-cta);
+  box-shadow: var(--clay-btn);
+  font-family: var(--font-number);
+  font-weight: 800;
+  letter-spacing: 0.4px;
+}
+
+.task .plus:active,
+.plus:active {
+  transform: scale(0.94);
+}
+
+/* 宝箱格：开 = 金色软块，未开 = 浅紫凹槽 */
+.chest .cell {
+  border-radius: 11px;
+  box-shadow: inset 0 2px 4px rgba(120, 60, 170, 0.12);
+  background: var(--k-surface-3, #f7f0fe);
+}
+
+.chest .cell.open {
+  background: linear-gradient(160deg, var(--k-gold-soft, #ffe680) 0%, var(--k-gold-strong, #ffd23f) 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75), 0 2px 6px rgba(232, 178, 58, 0.35);
+  border-color: transparent;
+}
+
+/* ============================================================
+   4. 孩子端 · 底部导航
+   ============================================================ */
+.nav {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: saturate(1.2) blur(12px);
+  border-top: 1px solid rgba(255, 215, 236, 0.9);
+  box-shadow: 0 -8px 24px rgba(150, 90, 205, 0.08);
+}
+
+.nav button {
+  color: #8b7fa8;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1px;
+}
+
+.nav button.on {
+  color: #db2777;
+}
+
+.nav button.on svg {
+  filter: drop-shadow(0 2px 6px rgba(219, 39, 119, 0.28));
+}
+
+/* ============================================================
+   5. 孩子端 · 按钮 / 气泡 / chip
+   ============================================================ */
+.btn-l {
+  font-family: inherit;
+}
+
+.btn-primary {
+  border-radius: 999px;
+  background: var(--k-grad-cta);
+  box-shadow: var(--clay-btn);
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.btn-primary:active {
+  transform: scale(0.97);
+}
+
+.btn-ghost {
+  border-radius: 999px;
+  background: #fff;
+  border: var(--k-card-border);
+  box-shadow: var(--clay-card);
+  color: var(--k-text-sub);
+  font-weight: 700;
+}
+
+.msg .bubble,
+.bubble-s {
+  border-radius: 16px;
+  line-height: 1.62;
+}
+
+.msg.bub .bubble-s {
+  border: 1.5px solid rgba(255, 215, 236, 0.9);
+  box-shadow: 0 2px 8px rgba(150, 90, 205, 0.09);
+}
+
+.msg.kid .bubble-s {
+  background: var(--k-grad-cta);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(219, 39, 119, 0.24);
+  border: 0;
+}
+
+.chips button,
+.chip,
+button.chip {
+  border-radius: 999px;
+  border: 1.5px solid var(--k-border);
+  background: #fff;
+  font-weight: 700;
+  color: var(--k-text);
+  box-shadow: 0 2px 6px rgba(150, 90, 205, 0.07);
+  transition: transform 0.12s ease;
+}
+
+.chips button:active,
+.chip:active {
+  transform: scale(0.96);
+}
+
+/* 输入框（孩子端） */
+.chatin {
+  border: 2px solid rgba(255, 215, 236, 0.95);
+  box-shadow: inset 0 2px 5px rgba(150, 90, 205, 0.06);
+}
+
+/* ============================================================
+   6. 家长端 · 壳、卡片、行
+   ============================================================ */
+.p-app {
+  background: #fbfbfd;
+  font-family: var(--font-parent);
+}
+
+.p-head {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: saturate(1.1) blur(8px);
+  border-bottom: 1px solid #eceaeff2;
+}
+
+.p-head h1 {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.1px;
+}
+
+.p-head .d {
+  font-size: 12px;
+  color: var(--p-text-sub);
+}
+
+.pcard {
+  border: 1px solid #eceaf2;
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(27, 18, 48, 0.045);
+  padding: 14px;
+}
+
+.pcard .ph {
+  margin-bottom: 8px;
+}
+
+.pcard .pnm {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--p-text);
+}
+
+.pcard .pmeta {
+  font-size: 11.5px;
+  color: var(--p-text-sub);
+}
+
+.prow {
+  font-size: 13px;
+  line-height: 1.65;
+  color: #3b3350;
+  padding: 5px 0;
+}
+
+.kv {
+  font-size: 13px;
+  padding: 10px 0;
+  border-top: 1px solid #f2f0f7;
+}
+
+.kv span {
+  color: #6b6480;
+}
+
+.kv b {
+  font-weight: 700;
+  color: var(--p-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.pbtn {
+  height: 36px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--p-accent);
+  box-shadow: 0 1px 2px rgba(124, 58, 237, 0.18);
+}
+
+.pbtn.ghost {
+  background: #fff;
+  border: 1px solid #e7e5ee;
+  color: var(--p-text);
+  box-shadow: none;
+}
+
+.pbtn:active {
+  transform: translateY(0.5px);
+}
+
+/* 家长端底部导航 */
+.pnav {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid #efecf5;
+  box-shadow: none;
+}
+
+.pnav button {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #8a83a0;
+}
+
+.pnav button.on {
+  color: var(--p-accent);
+}
+
+/* ============================================================
+   6.5 表单行（DESIGN §4.19）：标签列等宽，控件左边缘对齐
+   ============================================================ */
+.frow {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid #f2f0f7;
+}
+
+.frow:first-child {
+  border-top: 0;
+}
+
+.frow > .frow__label,
+.frow > span:first-child {
+  color: #6b6480;
+  font-size: 13px;
+  white-space: nowrap; /* 超宽时整列加宽，不省略、不换行 */
+  text-align: right; /* 中文表单惯例：标签右对齐，控件左边缘成线 */
+}
+
+.frow > .frow__control,
+.frow > b {
+  min-width: 0;
+  text-align: left;
+  font-weight: 700;
+  color: var(--p-text);
+}
+
+[data-surface="parent"] .frow,
+.p-app .frow {
+  grid-template-columns: 104px minmax(0, 1fr);
+}
+
+/* 长标签（≥7 字）：整列加宽，同行全部跟着变宽 */
+.frow--wide,
+.p-app .frow--wide {
+  grid-template-columns: 128px minmax(0, 1fr);
+}
+
+/* ============================================================
+   7. 通用 · 开关 / 徽标 / 提示 / 分段
+   ============================================================ */
+.psw {
+  width: 44px;
+  height: 26px;
+  border-radius: 999px;
+  background: #e5e1ee;
+  box-shadow: inset 0 1px 2px rgba(27, 18, 48, 0.08);
+}
+
+.kv b.psw,
+.kv .psw {
+  flex: 0 0 44px;
+  width: 44px;
+  font-size: 0;
+}
+
+.psw.on {
+  background: var(--p-accent);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(124, 58, 237, 0.24);
+}
+
+.warn {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #6f6685;
+  background: #f7f5fb;
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+.tagpill {
+  font-size: 11.5px;
+  font-weight: 600;
+  border-radius: 999px;
+  background: var(--k-purple-50, #f5f0fe);
+  color: #6d28d9;
+  padding: 4px 10px;
+}
+
+.seg {
+  background: #f4f1f9;
+  border-radius: 12px;
+  padding: 3px;
+  gap: 3px;
+}
+
+.seg button {
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #6b6480;
+}
+
+.seg button.on {
+  background: #fff;
+  color: #4a2666;
+  box-shadow: 0 1px 3px rgba(27, 18, 48, 0.1);
+}
+
+/* ============================================================
+   8. 通用 · 数字与数据
+   ============================================================ */
+.stat-num,
+.dname,
+.big,
+.mn + div b,
+[data-num] {
+  font-family: var(--font-number);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.2px;
+}
+
+/* ============================================================
+   9. 降级：尊重系统偏好
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+/* ============================================================
+   12. 滚动与导航吸底
+   说明：部分孩子端页面没有 .body 滚动容器（hero 直接拼内容），
+   让 .screen 自身可滚，导航 sticky 吸底，避免内容把导航顶出屏幕。
+   ============================================================ */
+.screen {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+}
+
+.screen::-webkit-scrollbar {
+  display: none;
+}
+
+.nav,
+.pnav {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+}
+
+/* 家长端壳（.p-app）内部已有滚动区，不重复设置 */
+.p-app {
+  overflow: hidden;
+}
+
+/* ---------- 设置型行（Q5）：标签左、值右对齐，标签不换行 ---------- */
+.kv {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.kv > span {
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.kv > b {
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 表单型行（.frow）里的值靠左，覆盖上面的右对齐 */
+.kv.frow > b,
+.frow > b {
+  text-align: left;
+}
+
+/* .kv 与 .frow 同时出现时：必须走 grid（否则后定义的 flex 会覆盖 frow 的列宽） */
+.kv.frow {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+}
+
+.p-app .kv.frow {
+  grid-template-columns: 104px minmax(0, 1fr);
+}
+
+.p-app .kv.frow.frow--wide,
+.kv.frow.frow--wide {
+  grid-template-columns: 128px minmax(0, 1fr);
+}
+
+/* ============================================================
+   13. 认证页字段（上行式，DESIGN §4.19 B 类）
+   登录/注册/忘记密码：标签在输入框上方，所有输入框同宽同起点
+   ============================================================ */
+.authfield {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 0;
+  border-top: 1px solid #f2f0f7;
+}
+
+.authfield:first-child {
+  border-top: 0;
+}
+
+.authfield > label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b6480;
+  letter-spacing: 0.2px;
+}
+
+.authfield > .authinput {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  /* 参考 clay：浅紫填充 + 内凹阴影，而不是"白底细边框" */
+  border: 1.5px solid #f0e4fb;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #fdf9ff 0%, #f7f0fe 100%);
+  box-shadow: inset 0 2px 5px rgba(150, 90, 205, 0.07),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--k-text);
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-number);
+}
+
+/* 聚焦态：紫色柔光环，不用浏览器默认 outline */
+.authfield > .authinput:focus-within,
+.authfield > .authinput:focus {
+  border-color: var(--k-purple-soft);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.14),
+    inset 0 1px 2px rgba(150, 90, 205, 0.06);
+  outline: none;
+}
+
+/* 认证页卡片：更圆、更软，和粉色底融在一起 */
+.authcard {
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 6px rgba(150, 90, 205, 0.06),
+    0 14px 34px rgba(150, 90, 205, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  padding: 18px 16px 16px;
+}
+
+/* 认证页主按钮：胶囊 + 渐变，与孩子端按钮同族 */
+.authcard .pbtn {
+  height: 48px;
+  border-radius: 999px;
+  background: var(--k-grad-cta);
+  box-shadow: var(--clay-btn);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+/* 认证页主按钮文字必须白 */
+.authcard .pbtn {
+  color: #fff;
+}
+
+/* 认证页次要链接（不能命中主按钮） */
+.authcard button:not(.pbtn) {
+  background: none;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--k-text-sub);
+}
+
+.authfield > .authinput--row {
+  justify-content: space-between;
+}

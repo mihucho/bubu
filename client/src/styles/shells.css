@@ -1,0 +1,360 @@
+/* ============================================================
+   四个壳：Gate / Setup / Kid / Parent
+   只放布局，不放业务样式；视觉值一律走 tokens.css
+   ============================================================ */
+
+/* ---------- 手机竖屏画布：375 设计稿，桌面居中 ---------- */
+.bbu-canvas {
+  width: 100%;
+  max-width: 375px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.bbu-canvas--wide {
+  max-width: 720px;
+}
+
+/* ---------- 壳骨架 ---------- */
+.bbu-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.bbu-shell__main {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--sp-4);
+}
+
+.bbu-shell__main--flush {
+  padding: 0;
+}
+
+/* ---------- 孩子端标题头 ---------- */
+.bbu-kidhead {
+  background: var(--k-grad-hero);
+  padding: 18px 16px 14px;
+  color: var(--k-text-strong);
+}
+
+.bbu-kidhead__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bbu-kidhead__title {
+  margin: 0;
+  font-size: var(--k-fs-title);
+  font-weight: 800;
+}
+
+.bbu-kidhead__sub {
+  margin: 2px 0 0;
+  font-size: var(--k-fs-note);
+  color: var(--k-text);
+  opacity: 0.85;
+}
+
+/* ---------- 家长端标题头 ---------- */
+.bbu-phead {
+  background: var(--p-surface);
+  border-bottom: 1px solid var(--p-border);
+  padding: 16px var(--sp-4) 12px;
+}
+
+.bbu-phead__title {
+  margin: 0;
+  font-size: var(--k-fs-title);
+  font-weight: 700;
+  color: var(--p-text);
+}
+
+.bbu-phead__sub {
+  margin: 3px 0 0;
+  font-size: var(--k-fs-note);
+  color: var(--p-text-sub);
+}
+
+/* ---------- 底部导航 ---------- */
+.bbu-nav {
+  height: var(--k-nav-h);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  background: var(--k-surface);
+  border-top: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 -6px 18px rgba(150, 90, 205, 0.1);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.bbu-nav__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-height: var(--k-tap);
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: var(--k-text-sub);
+  font-size: 10px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.bbu-nav__item[aria-current="page"] {
+  color: #db2777;
+}
+
+[data-surface="parent"] .bbu-nav {
+  background: var(--p-surface);
+  border-top: 1px solid var(--p-border);
+  box-shadow: none;
+}
+
+[data-surface="parent"] .bbu-nav__item {
+  color: var(--p-text-sub);
+  font-size: 11px;
+}
+
+[data-surface="parent"] .bbu-nav__item[aria-current="page"] {
+  color: var(--p-accent);
+}
+
+/* ---------- 卡片 ---------- */
+.bbu-card {
+  background: var(--k-surface);
+  border-radius: var(--k-radius-card);
+  border: 2px solid var(--k-border); /* clay：1px 在浅粉底上会消失（视觉方向-v1 §三） */
+  box-shadow: var(--clay-card);
+  padding: var(--sp-4);
+}
+
+[data-surface="parent"] .bbu-card {
+  border-radius: var(--p-radius-card);
+  border: 1px solid var(--p-border);
+  box-shadow: 0 1px 2px rgba(27, 18, 48, 0.05);
+  padding: 14px;
+}
+
+/* ---------- 按钮 ---------- */
+.bbu-btn {
+  height: var(--k-tap);
+  border: 0;
+  border-radius: var(--k-radius-btn);
+  background: var(--k-grad-cta);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: var(--clay-btn);
+  transition: transform 0.12s ease;
+  font-family: inherit;
+}
+
+.bbu-btn:active {
+  transform: scale(0.97);
+}
+
+.bbu-btn:disabled {
+  opacity: 0.45; /* Q31：禁用态只降透明度，不改色相 */
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.bbu-btn--ghost {
+  background: var(--k-surface);
+  color: var(--k-text-sub);
+  box-shadow: var(--clay-card);
+}
+
+[data-surface="parent"] .bbu-btn {
+  height: var(--p-tap);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: none;
+}
+
+[data-surface="parent"] .bbu-btn--ghost {
+  background: var(--p-surface);
+  border: 1px solid var(--p-border);
+  color: var(--p-text);
+  box-shadow: none;
+}
+
+/* ---------- 表单 ---------- */
+.bbu-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bbu-field__label {
+  font-size: var(--k-fs-note);
+  font-weight: 700;
+  color: var(--k-text-sub);
+}
+
+.bbu-input {
+  height: 52px;
+  width: 100%;
+  border-radius: 16px;
+  border: 1.5px solid var(--k-input-border);
+  /* clay：浅紫填充 + 内凹阴影，替代"白底细线" */
+  background: var(--k-input-bg);
+  box-shadow: inset 0 2px 5px rgba(150, 90, 205, 0.07), inset 0 -1px 0 rgba(255, 255, 255, 0.9);
+  padding: 0 16px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--k-text);
+  font-family: var(--font-number);
+  outline: none;
+}
+
+.bbu-input::placeholder {
+  color: #7e7396;
+}
+
+.bbu-input:focus {
+  border-color: var(--k-purple-soft);
+  background: #fff;
+  box-shadow: var(--k-focus-ring), inset 0 1px 2px rgba(150, 90, 205, 0.06);
+}
+
+/* 家长端作用域下仍是软填充，不退回白底细线 */
+[data-surface="parent"] .bbu-input {
+  height: 48px;
+  border-radius: 12px;
+  border: 1.5px solid var(--k-input-border-parent);
+  background: var(--k-input-bg-parent);
+}
+
+.bbu-input[aria-invalid="true"] {
+  border-color: var(--k-danger);
+}
+
+[data-surface="parent"] .bbu-input {
+  height: var(--p-tap);
+  border-radius: 10px;
+  border: 1px solid var(--p-border);
+  background: var(--p-surface);
+  font-size: var(--p-fs-body);
+}
+
+.bbu-error {
+  font-size: var(--k-fs-note);
+  color: var(--k-danger);
+  margin: 0;
+}
+
+.bbu-hint {
+  font-size: var(--k-fs-note);
+  color: var(--k-text-sub);
+  line-height: 1.6;
+  margin: 0;
+  text-align: center;
+}
+
+
+/* ---------- 表单行（DESIGN §4.19）：标签列等宽 ---------- */
+.bbu-frow {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--k-border);
+}
+
+.bbu-frow:first-child {
+  border-top: 0;
+}
+
+[data-surface="parent"] .bbu-frow {
+  grid-template-columns: 104px minmax(0, 1fr);
+  border-top-color: var(--p-border);
+}
+
+.bbu-frow--wide,
+[data-surface="parent"] .bbu-frow--wide {
+  grid-template-columns: 128px minmax(0, 1fr);
+}
+
+.bbu-frow__label {
+  color: var(--k-text-sub);
+  font-size: 13px;
+  white-space: nowrap;
+  text-align: right; /* 标签右对齐（DESIGN §4.19） */
+}
+
+[data-surface="parent"] .bbu-frow__label {
+  color: var(--p-text-sub);
+}
+
+.bbu-frow__control {
+  min-width: 0;
+  font-weight: 700;
+  color: var(--k-text);
+}
+
+[data-surface="parent"] .bbu-frow__control {
+  color: var(--p-text);
+}
+
+/* ---------- 居中型壳（Gate / 认证） ---------- */
+.bbu-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+  text-align: center;
+}
+
+.bbu-center__body {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+}
+
+/* ---------- 引导壳 ---------- */
+.bbu-progress {
+  display: flex;
+  gap: 6px;
+  padding: 14px var(--sp-4) 0;
+}
+
+.bbu-progress__dot {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(168, 85, 247, 0.18);
+}
+
+.bbu-progress__dot--done {
+  background: var(--k-grad-cta);
+}
+
+.bbu-setup__foot {
+  padding: var(--sp-4);
+  display: flex;
+  gap: 10px;
+}
+
+.bbu-setup__foot > * {
+  flex: 1;
+}

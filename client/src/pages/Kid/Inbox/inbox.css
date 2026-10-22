@@ -1,0 +1,33 @@
+.ib-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px;
+  border: 0;
+  border-radius: var(--k-radius-card);
+  background: var(--k-surface);
+  box-shadow: var(--clay-card);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ib-item.is-new {
+  box-shadow: var(--clay-card), 0 0 0 2px var(--k-pink-soft);
+}
+
+.ib-item__title {
+  font-size: var(--k-fs-body);
+  font-weight: 700;
+  color: var(--k-text-strong);
+}
+
+.ib-item__body {
+  font-size: var(--k-fs-body);
+  color: var(--k-text);
+  line-height: 1.5;
+}
+
+.ib-item__meta {
+  font-size: var(--k-fs-note);
+  color: var(--k-text-sub);
+}

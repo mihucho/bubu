@@ -1,0 +1,52 @@
+.rc-monthbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.rc-monthbar__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-number);
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
+  color: var(--p-text);
+}
+
+.rc-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.rc-grid__head {
+  text-align: center;
+  font-size: 11px;
+  color: var(--p-text-sub);
+  padding-bottom: 4px;
+}
+
+.rc-grid__cell {
+  aspect-ratio: 1 / 1;
+  border: 1px solid var(--p-border);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--p-text-sub);
+  font-size: 12px;
+  font-family: var(--font-number);
+  cursor: pointer;
+}
+
+.rc-grid__cell--pad {
+  border: 0;
+  background: transparent;
+  cursor: default;
+}
+
+.rc-grid__cell--task { background: #eef6ff; color: #2563eb; }
+.rc-grid__cell--read { background: #f0fdf4; color: #15803d; }
+.rc-grid__cell--both { background: #fdf4ff; color: #a21caf; }
+.rc-grid__cell.is-on { outline: 2px solid var(--p-accent); }

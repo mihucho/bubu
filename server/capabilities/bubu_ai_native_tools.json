@@ -1,0 +1,46 @@
+{
+  "id": "bubu_ai_native_tools",
+  "pluginKey": "@official-plugins/ai-text-generate",
+  "pluginVersion": "1.0.21",
+  "name": "布布 · 原生工具调用（探针）",
+  "description": "同一个模型插件，但把 messages / tools / tool_choice 原样透传，用于验证接口是否支持原生 function calling。",
+  "paramsSchema": {
+    "type": "object",
+    "properties": {
+      "messages": {
+        "type": "array",
+        "description": "完整消息数组（role/content 或 role/tool_calls/tool_call_id）"
+      },
+      "tools": {
+        "type": "array",
+        "description": "OpenAI 风格工具定义：{type:'function',function:{name,description,parameters}}"
+      },
+      "tool_choice": {
+        "type": "string",
+        "description": "auto / none / required"
+      },
+      "response_format": {
+        "type": "object",
+        "description": "{type:'json_object'} 等"
+      },
+      "chat_role": { "type": "string" },
+      "user_message": { "type": "string" },
+      "data_context": { "type": "string" }
+    },
+    "required": ["messages"]
+  },
+  "formValue": {
+    "modelID": "2015",
+    "modelParams": {
+      "temperature": 0.3,
+      "maxTokens": 2048
+    },
+    "messages": "{{input.messages}}",
+    "tools": "{{input.tools}}",
+    "tool_choice": "{{input.tool_choice}}",
+    "response_format": "{{input.response_format}}",
+    "prompt": "你是「布布的学习小天地」里的布布，陪孩子聊天。只能用工具查到的事实说话，不要编造数字。"
+  },
+  "createdAt": 1792600000000,
+  "updatedAt": 1792600000000
+}
