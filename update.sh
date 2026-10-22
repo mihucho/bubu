@@ -264,11 +264,34 @@ done
 # ============================================================================
 step "[3/5] 解压…"
 mkdir -p "$SRC"
-case "$UNZIPPER" in
-  python) python3 -m zipfile -e "$ZIP" "$SRC" || die "解压失败（zip 可能损坏）" ;;
-  ditto)  ditto -x -k "$ZIP" "$SRC"             || die "解压失败（zip 可能损坏）" ;;
-  unzip)  unzip -q "$ZIP" -d "$SRC"            || die "解压失败（zip 可能损坏）" ;;
-esac
+# 注意：python3 -m zipfile 会丢掉 zip 里的权限位（脚本全变 0644），
+# 直接用它解压会让 `npm run build`（./scripts/build.sh）报 Permission denied。
+# 所以自己解压，并按 zip 里的 external_attr 还原权限。
+extract_zip() {
+  case "$UNZIPPER" in
+    python)
+      python3 - "$1" "$2" <<'PY'
+import os, sys, zipfile
+
+zip_path, dest = sys.argv[1], sys.argv[2]
+with zipfile.ZipFile(zip_path) as z:
+    for info in z.infolist():
+        z.extract(info, dest)
+        mode = (info.external_attr >> 16) & 0o777
+        if not mode:
+            continue
+        try:
+            os.chmod(os.path.join(dest, info.filename), mode)
+        except OSError:
+            pass
+PY
+      ;;
+    ditto) ditto -x -k "$1" "$2" ;;
+    unzip) unzip -q "$1" -d "$2" ;;
+  esac
+}
+
+extract_zip "$ZIP" "$SRC" || die "解压失败（zip 可能损坏）"
 
 # GitHub 的 zip 顶层会多一层 <repo>-<branch>/
 TOP="$(find "$SRC" -mindepth 1 -maxdepth 1 -type d | head -1)"
@@ -425,6 +448,20 @@ else
     cp -f "$TOP/update.sh" "$ROOT/.update.sh.new" && mv -f "$ROOT/.update.sh.new" "$ROOT/update.sh"
     chmod +x "$ROOT/update.sh" 2>/dev/null || true
   fi
+fi
+
+# ---- 兜底：修正可执行位（解压器/拷贝器可能丢 +x，丢了就 `npm run build` 报 Permission denied）----
+FIXPERM=0
+while IFS= read -r -d '' f; do
+  rel="${f#./}"
+  if skip_rel "$rel"; then continue; fi
+  [ -f "$ROOT/$rel" ] || continue
+  if [ ! -x "$ROOT/$rel" ]; then
+    chmod +x "$ROOT/$rel" 2>/dev/null && FIXPERM=$((FIXPERM + 1))
+  fi
+done < <( cd "$TOP" && find . -type f -perm -u+x -print0 )
+if [ "$FIXPERM" -gt 0 ]; then
+  warn "修正了 $FIXPERM 个文件的执行权限（脚本丢 +x 会导致 npm run build/dev 失败）"
 fi
 
 # ---- 清理远端已删除的文件（--prune）----
