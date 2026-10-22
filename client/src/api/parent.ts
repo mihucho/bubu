@@ -241,6 +241,16 @@ export async function updateFamilySettings(patch: Partial<FamilySettings>) {
   return res.data as { ok: true };
 }
 
+/** 家长密码有没有设过：家庭设置里带 pinSet 字段 */
+export async function isParentPinSet(): Promise<boolean> {
+  try {
+    const res = await axiosForBackend({ url: '/api/v2/parent/family', method: 'GET' });
+    return Boolean((res.data as { pinSet?: boolean }).pinSet);
+  } catch {
+    return false;
+  }
+}
+
 export async function setParentPin(pin: string) {
   const res = await axiosForBackend({ url: '/api/v2/parent/family/pin', method: 'POST', data: { pin } });
   return res.data as { ok: true };

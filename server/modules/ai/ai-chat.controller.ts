@@ -2,6 +2,8 @@ import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
 import type { Request } from 'express';
 import { FamilyService } from '../family/family.service';
 import { NeedLogin } from '@lark-apaas/fullstack-nestjs-core';
+import { existsSync, readdirSync } from 'node:fs';
+import { join } from 'node:path';
 import { AiChatService } from './ai-chat.service';
 import { MemoryService } from './memory.service';
 import { AiQuotaService } from './quota.service';
@@ -25,6 +27,46 @@ export class AiChatController {
   ) {
     const family = await this.family.ensureFamily(req.userContext.userId!);
     return this.quota.status(family.id, side, inDoubao === 'true');
+  }
+
+  /**
+   * 自检：AI 为什么答不上来，一眼看结果。
+   * 只报"有没有/能不能"，不泄露 prompt、不泄露密钥。
+   * 浏览器直接开 /api/v2/ai/diag 就能看。
+   */
+  @Get('diag')
+  async diag(@Req() req: Request) {
+    const cwd = process.cwd();
+    const capabilitiesDir = join(cwd, 'server/capabilities');
+    const capabilities = existsSync(capabilitiesDir)
+      ? readdirSync(capabilitiesDir).filter((f) => f.endsWith('.json'))
+      : [];
+
+    const pluginsDir = join(cwd, 'node_modules/@official-plugins');
+    const plugins = existsSync(pluginsDir) ? readdirSync(pluginsDir) : [];
+
+    // 真正试一次最小的能力调用：能抛错就说明问题在这一层
+    let callOk = false;
+    let callError: string | null = null;
+    try {
+      const family = await this.family.ensureFamily(req.userContext.userId!);
+      const result = await this.ai.replyPing(family.id);
+      callOk = result.ok;
+      callError = result.error;
+    } catch (e) {
+      callError = (e as Error).message.slice(0, 200);
+    }
+
+    return {
+      cwd,
+      capabilitiesDir,
+      capabilitiesDirExists: existsSync(capabilitiesDir),
+      capabilities,
+      pluginsInstalled: plugins,
+      nativeToolsEnabled: process.env.AI_NATIVE_TOOLS === '1',
+      capabilityCallOk: callOk,
+      capabilityCallError: callError,
+    };
   }
 
   @Post('chat')

@@ -28,6 +28,31 @@ export class AiChatService {
     private readonly memory: MemoryService,
   ) {}
 
+  /**
+   * 自检用：拿能力跑一次最小调用，只回 ok / 错误信息。
+   * 不走数据库、不落库、不花额度。
+   */
+  async replyPing(_familyAccountId: string): Promise<{ ok: boolean; error: string | null }> {
+    try {
+      const executor = this.capability.load('child_learning_ai_chat_1');
+      const stream = executor.callStream('textGenerate', {
+        chat_role: '布布',
+        user_message: '在吗',
+        data_context: '{}',
+      });
+      const normalized =
+        stream && typeof stream === 'object' && 'output' in stream
+          ? (stream as { output: AsyncIterable<{ content?: string }> }).output
+          : (stream as AsyncIterable<{ content?: string }>);
+      let text = '';
+      for await (const chunk of normalized) text += chunk?.content ?? '';
+      if (!text.trim()) return { ok: false, error: '能力返回空内容（插件未真正响应）' };
+      return { ok: true, error: null };
+    } catch (e) {
+      return { ok: false, error: (e as Error).message.slice(0, 200) };
+    }
+  }
+
   async reply(childId: string, message: string, side: ToolSide = 'kid') {
     const clean = (message ?? '').trim().slice(0, 200);
     if (!clean) throw new Error('MESSAGE_REQUIRED');

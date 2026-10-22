@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useKidChild } from '../../contexts/KidContext';
 import { setSetupStep } from '../../api';
+import { setParentPin } from '../../api/parent';
 import { logger } from '@lark-apaas/client-toolkit/logger';
 import { axiosForBackend } from '@lark-apaas/client-toolkit/utils/getAxiosForBackend';
 import { ShieldCheck } from 'lucide-react';
 import './setup.css';
 
-type Step = 'consent' | 'child' | 'task' | 'reward' | 'done';
+type Step = 'consent' | 'child' | 'task' | 'reward' | 'pin' | 'done';
 
 /**
  * 引导（W8 的最小闭环）：同意 → 建孩子 → 完成。
@@ -23,6 +24,8 @@ export const SetupPage: React.FC = () => {
   const [newChildId, setNewChildId] = useState('');
   const [taskName, setTaskName] = useState('叫叫阅读');
   const [rewardName, setRewardName] = useState('周末多玩 1 小时');
+  const [pin, setPin] = useState('');
+  const [pin2, setPin2] = useState('');
 
   const childId = newChildId || familyChildren[0]?.id || '';
 
@@ -52,11 +55,27 @@ export const SetupPage: React.FC = () => {
     setBusy(true);
     try {
       await post('/api/v2/parent/shop', { childId, name: rewardName.trim(), starCost: 20 });
-      await setSetupStep('done');
-      setStep('done');
+      await setSetupStep('rewards');
+      setStep('pin');
     } catch (e) {
       logger.error('创建商店物品失败', e);
       setError('没放进商店，稍后再试');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const setupPin = async () => {
+    if (!/^\d{6}$/.test(pin) || pin !== pin2) return;
+    setBusy(true);
+    setError(null);
+    try {
+      await setParentPin(pin);
+      await setSetupStep('done');
+      setStep('done');
+    } catch (e) {
+      logger.error('保存家长密码失败', e);
+      setError('密码没存上，再试一次');
     } finally {
       setBusy(false);
     }
@@ -185,6 +204,42 @@ export const SetupPage: React.FC = () => {
           </>
         ) : null}
 
+        {step === 'pin' ? (
+          <>
+            <h1 className="setup__title">设一个家长密码</h1>
+            <p className="setup__body">
+              6 位数字，只有你知道。之后进家长端（改任务、看报告）都要输它。
+            </p>
+            <input
+              className="setup__input"
+              value={pin}
+              inputMode="numeric"
+              maxLength={6}
+              placeholder="6 位数字"
+              onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
+            />
+            <input
+              className="setup__input"
+              value={pin2}
+              inputMode="numeric"
+              maxLength={6}
+              placeholder="再输一次"
+              onChange={(e) => setPin2(e.target.value.replace(/\D/g, ''))}
+            />
+            {pin.length === 6 && pin2.length === 6 && pin !== pin2 ? (
+              <p className="setup__error">两次不一样，再对一下</p>
+            ) : null}
+            <button
+              type="button"
+              className="setup__btn"
+              disabled={busy || pin.length !== 6 || pin !== pin2}
+              onClick={() => void setupPin()}
+            >
+              {busy ? '正在存…' : '设好了，继续'}
+            </button>
+          </>
+        ) : null}
+
         {step === 'done' ? (
           <>
             <h1 className="setup__title">好了，可以开始啦</h1>
@@ -217,6 +272,7 @@ function uiStepOf(serverStep: string): Step {
       return 'reward';
     case 'rewards':
     case 'boundary':
+      return 'pin';
     case 'done':
       return 'done';
     default:

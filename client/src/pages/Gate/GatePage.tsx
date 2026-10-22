@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { logger } from '@lark-apaas/client-toolkit/logger';
 import { Shield } from 'lucide-react';
-import { setParentPin, verifyParentPin } from '../../api/parent';
+import { isParentPinSet, setParentPin, verifyParentPin } from '../../api/parent';
 import './gate.css';
 
 /**
@@ -18,6 +18,20 @@ export const GatePage: React.FC = () => {
   const [lockedUntil, setLockedUntil] = useState(0);
   const [busy, setBusy] = useState(false);
   const [failCount, setFailCount] = useState(0);
+  const [checking, setChecking] = useState(true);
+
+  // 进来先问一句「设过密码没」：没设过直接进设置态，别让家长先错一次才知道
+  useEffect(() => {
+    let alive = true;
+    void isParentPinSet().then((set) => {
+      if (!alive) return;
+      setMode(set ? 'verify' : 'setup');
+      setChecking(false);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const locked = lockedUntil > Date.now();
 
@@ -70,6 +84,8 @@ export const GatePage: React.FC = () => {
           {mode === 'setup' ? '6 位数字，只有你知道' : '输入 6 位家长密码'}
         </p>
 
+        {checking ? <p className="gate__sub">检查中…</p> : null}
+
         <input
           className="gate__input"
           value={pin}
@@ -88,7 +104,7 @@ export const GatePage: React.FC = () => {
         <button
           type="button"
           className="gate__btn"
-          disabled={busy || pin.length !== 6 || locked}
+          disabled={checking || busy || pin.length !== 6 || locked}
           onClick={() => void submit()}
         >
           {busy ? '校验中…' : mode === 'setup' ? '保存并进入' : '进入'}

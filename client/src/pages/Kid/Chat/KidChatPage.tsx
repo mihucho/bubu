@@ -44,6 +44,14 @@ export const KidChatPage: React.FC<{ childId: string }> = ({ childId }) => {
     ]);
     try {
       const res = await sendChat(childId, clean);
+      if (res.degraded) {
+        // 兜底回答时把服务端轨迹打到控制台：出问题直接看 F12，不用翻服务器日志
+        logger.warn('[ai] 降级回答', {
+          path: res.path,
+          modelCalls: res.modelCalls,
+          trace: res.trace,
+        });
+      }
       if (res.blocked) {
         // 被额度闸拦下：把额度状态刷一遍，页面会切到降级态
         setQuota(await getAiQuota('kid'));
@@ -75,7 +83,7 @@ export const KidChatPage: React.FC<{ childId: string }> = ({ childId }) => {
   }
 
   return (
-    <>
+    <div className="ct-page">
       <header className="rc-head">
         <div className="rc-head__ico" aria-hidden>
           <MessageCircle size={20} strokeWidth={2.2} />
@@ -122,7 +130,7 @@ export const KidChatPage: React.FC<{ childId: string }> = ({ childId }) => {
           <Send size={18} strokeWidth={2.2} aria-hidden />
         </button>
       </div>
-    </>
+    </div>
   );
 };
 

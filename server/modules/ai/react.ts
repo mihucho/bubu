@@ -63,6 +63,71 @@ async function callModel(
 }
 
 /**
+ * 关键词 → 只读工具：模型不可用时的确定性兜底用表（不依赖模型）
+ */
+const KID_KEYWORD_TOOLS: { test: RegExp; tools: string[] }[] = [
+  { test: /(表现|怎么样|今天|完成|做到|打卡)/, tools: ['kid_today_tasks'] },
+  { test: /(读|看书|阅读|分钟|书)/, tools: ['kid_reading'] },
+  { test: /(星星|积分|攒|兑换)/, tools: ['kid_stars'] },
+  { test: /(运动|跑步|跳绳|动起)/, tools: ['kid_exercise'] },
+  { test: /(心情|开心|难过|烦)/, tools: ['kid_mood_recent'] },
+  { test: /(心愿|想要|许愿|礼物)/, tools: ['kid_wishes'] },
+];
+
+const PARENT_KEYWORD_TOOLS: { test: RegExp; tools: string[] }[] = [
+  { test: /(孩子|概览|表现|今天)/, tools: ['parent_children_overview'] },
+  { test: /(待确认|打卡|审核)/, tools: ['parent_pending_confirm'] },
+  { test: /(星星|积分|流水)/, tools: ['parent_stars_recent'] },
+  { test: /(任务|安排)/, tools: ['parent_tasks_list'] },
+];
+
+/**
+ * 模型不可用（应用 AI 额度用尽 / 插件异常）时的确定性兜底。
+ *
+ * 这时 modelCalls 还是 0、scratchpad 空，如果直接走「无事实兜底」，
+ * 家长和孩子都只会看到「这个我暂时看不到」——但实际上数据都在库里，
+ * 只读工具根本不需要模型。所以按关键词挑 1~2 个工具，用真实数据拼一句话。
+ */
+async function deterministicAnswer(input: {
+  question: string;
+  ctx: ToolContext;
+  side: ToolSide;
+  step: number;
+  trace: ReActTrace[];
+}): Promise<string | null> {
+  const { question, ctx, side, step, trace } = input;
+  const rules = side === 'parent' ? PARENT_KEYWORD_TOOLS : KID_KEYWORD_TOOLS;
+  const matched = rules.filter((r) => r.test.test(question)).flatMap((r) => r.tools);
+  const names = Array.from(new Set(matched)).slice(0, 2);
+  if (!names.length) return null;
+
+  const facts: string[] = [];
+  for (const name of names) {
+    const result =
+      side === 'parent'
+        ? await runParentTool(name, {
+            db: ctx.db,
+            familyAccountId: ctx.familyAccountId,
+            today: ctx.today,
+            weekStart: ctx.weekStart,
+            childId: ctx.childId,
+          })
+        : await runTool(name, ctx, side);
+    if (result.summary) {
+      facts.push(result.summary);
+      trace.push({ step, kind: 'action', tool: name, summary: result.summary });
+    }
+  }
+  if (!facts.length) return null;
+  trace.push({ step: step + 1, kind: 'final', summary: '确定性工具兜底' });
+
+  const body = facts.join('；');
+  return side === 'kid'
+    ? `${body}。想再聊哪一件？`
+    : `${body}（AI 额度暂时用尽，这条是直接查库得到的）`;
+}
+
+/**
  * N 步 ReAct：Action → Observation → Action … → Final
  *
  * 这层只做三件事，不做别的：
@@ -136,8 +201,22 @@ export async function runReAct(input: {
       raw = await callModel(capability, capabilityId, role, question, dataContext);
       modelCalls += 1;
     } catch (e) {
-      logger.warn(`step ${step} 模型调用失败: ${(e as Error).message}`);
-      trace.push({ step, kind: 'error', raw: String((e as Error).message).slice(0, 120) });
+      const reason = (e as Error).message ?? '';
+      logger.warn(`step ${step} 模型调用失败: ${reason}`);
+      trace.push({ step, kind: 'error', raw: String(reason).slice(0, 120) });
+
+      // 第一次就没调通（典型：应用 AI 额度用尽）→ 用只读工具拼真实数据回答，
+      // 不让「额度问题」变成一句「这个我暂时看不到」。
+      if (modelCalls === 0 && !scratchpad.length) {
+        const fallback = await deterministicAnswer({
+          question,
+          ctx,
+          side,
+          step,
+          trace,
+        });
+        if (fallback) return { reply: fallback, trace, modelCalls, degraded: true };
+      }
       break;
     }
 

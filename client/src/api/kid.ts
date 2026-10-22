@@ -230,6 +230,13 @@ export interface ChatReply {
   /** 被额度闸拦下时返回原因，此时 reply 为空 */
   blocked?: 'AI_UNAVAILABLE' | 'DAILY_LIMIT' | 'RATE_LIMITED';
   facts?: { tool: string; ok: boolean; summary: string }[];
+  /** 是否走了兜底（模型没给出有效回答）*/
+  degraded?: boolean;
+  /** native / react：走的哪条链路 */
+  path?: 'native' | 'react';
+  modelCalls?: number;
+  /** 每一步的轨迹；degraded 时这里会带 error 摘要，是排查的唯一线索 */
+  trace?: { step: number; kind: string; tool?: string; summary?: string; raw?: string }[];
 }
 
 export async function sendChat(childId: string, message: string): Promise<ChatReply> {
