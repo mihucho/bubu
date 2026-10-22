@@ -1,13 +1,16 @@
 .gate {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
+  height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
   padding: 24px;
   background: linear-gradient(180deg, var(--k-pink-50), var(--k-purple-50));
 }
 
 .gate__card {
   width: 100%;
+  margin: auto;
   max-width: 320px;
   padding: 22px;
   border-radius: var(--k-radius-card);

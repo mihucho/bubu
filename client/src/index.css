@@ -4,3 +4,19 @@
 @import "./typography.css";
 
 @config "../../tailwind.config.ts";
+
+/* ---------- 视口基准 ----------
+   整页只有「可视区域那么高」：外层不滚，滚动交给各页自己的滚动区
+   （.bbu-shell__main / .setup / .gate），这样底部导航不会跟着滚走。 */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: #fff;
+}

@@ -104,7 +104,6 @@
 
 /* ---------- 基础 ---------- */
 .bbu-root {
-  min-height: 100dvh;
   background: var(--k-bg);
   color: var(--k-text);
   font-family: var(--font-kids);
