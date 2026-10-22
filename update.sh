@@ -27,14 +27,44 @@
 #
 # 被覆盖的旧文件默认备份到 .update-backup/<时间戳>/，只保留最近 5 份。
 #
+# 下载源：改脚本开头「可配置区」的 MIRRORS 数组，或临时
+#   UPDATE_MIRRORS="https://我的代理/,https://gh-proxy.org/" ./update.sh
+#
 # 依赖：curl 或 wget；python3 / ditto / unzip 之一；rsync 或 cp
 # ============================================================================
 set -euo pipefail
 
+# ============================================================================
+# 可配置区（要换源/换仓库，只改这里）
+# ============================================================================
 REPO="mihucho/bubu"
 BRANCH="main"
-KEEP_BACKUPS=5
+
+# 下载源（按顺序尝试，前一个失败自动换下一个）。
+# 每项是「代理前缀」，最终地址 = <前缀>https://github.com/<REPO>/archive/refs/heads/<BRANCH>.zip
+#   - 空字符串 "" 表示直连 github.com（不走任何代理）
+#   - 想加自己的镜像/内网地址，直接往数组里加一行；想只走直连，把上面几行注释掉
+#   - 临时覆盖：UPDATE_MIRRORS="https://my-proxy/,https://gh-proxy.org/" ./update.sh
+# 最后脚本还会兜底试一次 codeload.github.com（不受这里影响）。
+MIRRORS=(
+  "https://gh-proxy.org/"
+  "https://ghfast.top/"
+  ""
+)
+
+KEEP_BACKUPS=5   # .update-backup/ 只保留最近几份
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# 环境变量覆盖下载源（逗号分隔前缀，"" 表示直连）
+if [ -n "${UPDATE_MIRRORS:-}" ]; then
+  MIRRORS=()
+  IFS=',' read -r -a _mirror_items <<<"$UPDATE_MIRRORS"
+  for _m in "${_mirror_items[@]}"; do
+    MIRRORS+=("$_m")
+  done
+  unset _mirror_items _m
+fi
+
 
 FORCE=0
 DRY_RUN=0
@@ -220,16 +250,20 @@ fi
 # ============================================================================
 step "[2/5] 下载…"
 
-MIRRORS=(
-  "https://gh-proxy.org/https://github.com/$REPO/archive/refs/heads/$BRANCH.zip"
-  "https://ghfast.top/https://github.com/$REPO/archive/refs/heads/$BRANCH.zip"
-  "https://github.com/$REPO/archive/refs/heads/$BRANCH.zip"
-  "https://codeload.github.com/$REPO/zip/refs/heads/$BRANCH"
-)
+# 由上面的 MIRRORS 前缀拼出候选地址（末尾兜底 codeload 直连）
+URLS=()
+for _prefix in "${MIRRORS[@]}"; do
+  URLS+=("${_prefix}https://github.com/$REPO/archive/refs/heads/$BRANCH.zip")
+done
+URLS+=("https://codeload.github.com/$REPO/zip/refs/heads/$BRANCH")
+unset _prefix
 
 GOT=0
-for url in "${MIRRORS[@]}"; do
+for url in "${URLS[@]}"; do
   host="$(printf '%s' "$url" | sed -E 's#^https?://([^/]+)/.*#\1#')"
+  case "$host" in
+    github.com|codeload.github.com) host="$host（直连）" ;;
+  esac
   say "${D}尝试 $host…${N}"
   rm -f "$ZIP"
   if [ "$DOWNLOADER" = "curl" ]; then
