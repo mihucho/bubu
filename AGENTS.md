@@ -126,9 +126,8 @@
 
 | 脚本 | 作用 |
 | --- | --- |
-| `update.sh` | 从 GitHub（多镜像回退：gh-proxy → ghfast → 直连）拉取 main 并覆盖到当前目录。`--check` 只判断远端是否更新，`--dry-run` 列出变更文件，`--prune` 顺带删除远端已不存在的文件，`--no-backup` 不备份，`--force` 忽略本地告警并连 `.env` 一起覆盖 |
-| `update.sh` 安全闸 | 在 git 仓库里执行时，若工作区有未提交改动、或本地领先远端（有未 push 的提交），默认**拒绝执行**——覆盖会拿远端旧版本盖掉本地新代码；确认要回退才加 `--force` |
-| `update.sh` 版本对比 | 通过 `git ls-remote` 把本地 HEAD 与远端 `main` 对比（same / behind / ahead / diverged），输出里能直接看出"已是最新"还是"本地还有未推送提交" |
+| `update.sh` | 从 GitHub 拉取 main，解压后按**文件内容**比对并覆盖到当前目录（不比较 git 版本、不拦截）。下载源在脚本开头「可配置区」：`MIRRORS` 前缀数组（`""` 表示直连），或用 `UPDATE_MIRRORS="前缀1,前缀2"` 临时覆盖，末尾兜底 codeload 直连 |
+| `update.sh` 选项 | `--check` 只列出新增/更新/远端已删除，不落盘；`--dry-run` 同上但输出更详细；`--prune` 顺带删除远端已不存在的文件（只删 git 跟踪过的路径）；`--no-backup` 不备份；`--force` 连 `.env*` / `.spark_project` 一起覆盖 |
 
 默认不覆盖：`.env*` · `node_modules/` · `dist/` · `build/` · `logs/` · `.git/` · `.spark*`。被覆盖的旧文件默认备份到 `.update-backup/<时间戳>/`，只保留最近 5 份。
 
