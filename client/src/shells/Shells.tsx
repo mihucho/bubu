@@ -1,6 +1,5 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { KidProvider } from '../contexts/KidContext';
 import { Activity, BookOpen, Heart, Home, MessageCircle, ReceiptText, Settings, UserRound, Users } from 'lucide-react';
 
 import '../styles/tokens.css';
@@ -45,14 +44,12 @@ const PARENT_NAV: NavItem[] = [
 /** 孩子端壳：粉紫渐变 + 5 tab 底部导航 */
 export const KidShell: React.FC = () => (
   <div className="bbu-root bbu-canvas" data-surface="kid">
-    <KidProvider>
-      <div className="bbu-shell">
-        <main className="bbu-shell__main bbu-shell__main--flush">
-          <Outlet />
-        </main>
-        <NavBar items={KID_NAV} />
-      </div>
-    </KidProvider>
+    <div className="bbu-shell">
+      <main className="bbu-shell__main bbu-shell__main--flush">
+        <Outlet />
+      </main>
+      <NavBar items={KID_NAV} />
+    </div>
   </div>
 );
 

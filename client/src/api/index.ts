@@ -1,6 +1,12 @@
 import { axiosForBackend } from '@lark-apaas/client-toolkit/utils/getAxiosForBackend';
 import { logger } from '@lark-apaas/client-toolkit/logger';
-import type { ProfileStatusResponse, KidProfile } from '@shared/api.interface';
+import type {
+  ProfileStatusResponse,
+  KidProfile,
+  FamilyBootstrap,
+  SetupStep,
+  SetupStepResponse,
+} from '@shared/api.interface';
 
 axiosForBackend.interceptors.response.use(
   (response) => response,
@@ -35,6 +41,32 @@ export async function initProfile(nickname: string, parentRole: string): Promise
     return response.data as KidProfile;
   } catch (error) {
     logger.error('初始化档案失败', error);
+    throw error;
+  }
+}
+
+/** 家庭引导：拿到家庭 + 孩子（没有家庭时服务端会建一条） */
+export async function getFamilyBootstrap(): Promise<FamilyBootstrap> {
+  try {
+    const response = await axiosForBackend({ url: '/api/v2/family/bootstrap', method: 'GET' });
+    return response.data as FamilyBootstrap;
+  } catch (error) {
+    logger.error('读取家庭信息失败', error);
+    throw error;
+  }
+}
+
+/** 引导断点：每完成一步落库，中途退出再进来能续上 */
+export async function setSetupStep(step: SetupStep): Promise<SetupStepResponse> {
+  try {
+    const response = await axiosForBackend({
+      url: '/api/v2/family/setup-step',
+      method: 'POST',
+      data: { step },
+    });
+    return response.data as SetupStepResponse;
+  } catch (error) {
+    logger.error('保存引导进度失败', error);
     throw error;
   }
 }

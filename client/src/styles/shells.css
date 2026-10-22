@@ -331,6 +331,26 @@
   text-align: left;
 }
 
+.bbu-center__text {
+  margin: 0;
+  color: var(--fg-2);
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.bbu-center__btn {
+  align-self: center;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ff85c1 0%, #a855f7 100%);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 /* ---------- 引导壳 ---------- */
 .bbu-progress {
   display: flex;

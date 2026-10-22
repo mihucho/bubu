@@ -335,8 +335,22 @@ export interface AiQuota {
   inDoubao: boolean;
 }
 
-/** 是否在豆包环境：目前只有 UA 判定一个布尔（不做微信/浏览器细分） */
+/**
+ * 是否在豆包环境。
+ *
+ * 以「平台有没有把身份注入到页面」为准：`window.__platform__` 是服务端
+ * ViewContextMiddleware → ViewController → index.html 渲染下来的，
+ * 里面有 userId / appId 就说明是平台在跑（豆包内 H5、妙搭预览都算）。
+ *
+ * 以前只嗅 UA 里的 doubao/bytedance —— 桌面浏览器、部分容器 UA 不带这两个词，
+ * 会被误判成「豆包外」，导致孩子端「说说话」整页降级，误伤太大。
+ * UA 现在只作最后兜底（本地 vite 直连时 __platform__ 通常为空）。
+ */
 export function detectInDoubao(): boolean {
+  if (typeof window !== 'undefined') {
+    const platform = window.__platform__;
+    if (platform && (platform.userId || platform.appId)) return true;
+  }
   if (typeof navigator === 'undefined') return false;
   const ua = navigator.userAgent.toLowerCase();
   return ua.includes('doubao') || ua.includes('bytedance');

@@ -190,3 +190,35 @@ export interface KidHomeDto {
   weekly: KidHomeTask[];
   localDate: string;
 }
+
+/** 家庭引导：可落库的引导步骤（顺序即进度） */
+export type SetupStep =
+  | 'consent'
+  | 'family'
+  | 'children'
+  | 'tasks'
+  | 'rewards'
+  | 'boundary'
+  | 'done';
+
+export interface FamilyChildSummary {
+  id: string;
+  nickname: string;
+  avatarKey: string;
+  colorKey: string;
+  title: string;
+  availableStars: number;
+  firstRunDone: boolean;
+}
+
+export interface FamilyBootstrap {
+  familyAccountId: string;
+  parentDisplayName: string;
+  setupStep: SetupStep | string;
+  children: FamilyChildSummary[];
+}
+
+export interface SetupStepResponse {
+  ok: boolean;
+  step: string;
+}

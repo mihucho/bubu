@@ -45,7 +45,10 @@ export class FamilyService {
   async bootstrap(platformUserId: string): Promise<FamilyBootstrap> {
     const family = await this.ensureFamily(platformUserId);
     let children = await this.listChildren(family.id);
-    if (children.length === 0) {
+    // 只有引导走完（setupStep=done）才补占位孩子：「首屏不空」。
+    // 引导没走完时留空，前端 SetupGate 会把人顶到 /setup 去建真实的孩子，
+    // 否则「小月亮」会和家长刚建的孩子并存。
+    if (children.length === 0 && family.setupStep === 'done') {
       await this.createChild(family.id, { nickname: '小月亮', sortOrder: 0 });
       children = await this.listChildren(family.id);
     }

@@ -85,15 +85,7 @@ export function searchUserInfoToUser(
   };
 }
 
-declare global {
-  interface Window {
-    MIAODA_APP_ID?: string;
-    __platform__?: {
-      appId?: string;
-    };
-    appId?: string;
-  }
-}
+// window.__platform__ / MIAODA_APP_ID / appId 的类型声明统一在 client/src/types/global.d.ts
 
 export function getAppId(path: string): string | null | undefined {
   if (window?.__platform__?.appId) {
